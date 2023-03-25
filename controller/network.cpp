@@ -101,6 +101,24 @@ boolean connect_mqtt(){
       DEBUG_SERIAL.println("Activation subcription unsuccessful");
       }
 
+  if(mqtt_client.subscribe("irrigation/cancel")){
+    DEBUG_SERIAL.println("Cancel subcription successful");
+    }else{
+      DEBUG_SERIAL.println("Cancel subcription unsuccessful");
+      }
+
+  if(mqtt_client.subscribe("irrigation/drain")){
+    DEBUG_SERIAL.println("Drain subcription successful");
+    }else{
+      DEBUG_SERIAL.println("Drain subcription unsuccessful");
+      }
+  
+  if(mqtt_client.subscribe("irrigation/config")){
+    DEBUG_SERIAL.println("Config subcription successful");
+    }else{
+      DEBUG_SERIAL.println("Config subcription unsuccessful");
+      }
+
   return true;
     
   }
@@ -124,6 +142,10 @@ void on_message(const char topic[], byte* payload, unsigned int len){
     DEBUG_SERIAL.print("Recieved volume: ");
     DEBUG_SERIAL.println(recieved_volume);
     
+    }else if(strcmp(topic, "irrigation/cancel") == 0){
+      
+        recieved_cancel = true;
+      
     }else if(strcmp(topic, "irrigation/drain") == 0){
 
       char payload_char[len];
@@ -135,11 +157,11 @@ void on_message(const char topic[], byte* payload, unsigned int len){
       DEBUG_SERIAL.print("Recieved drain pressure: ");
       DEBUG_SERIAL.println(recieved_drain_pressure);
       
-      }else if(strcmp(topic, "irrigation/cancel") == 0){
+      }else if(strcmp(topic, "irrigation/config") == 0){
       
-        recieved_cancel = true;
+        
       
-        }
+      }
     
   }
 
