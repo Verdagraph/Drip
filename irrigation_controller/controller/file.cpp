@@ -1,7 +1,10 @@
+// file.cpp
+
 #include <FS.h> // File system
 #include <ArduinoJson.h> //https://github.com/bblanchon/ArduinoJson
 
 #include "config.h"
+#include "services.h"
 
 #include "file.h"
 
@@ -33,13 +36,13 @@ MQTTConfig read_mqtt_config(){
   }
 
   // Open config file
-  DEBUG_OUT.println("Reading config file");
+  DEBUG_OUT.println("Reading mqtt config file");
   File configFile = SPIFFS.open("/mqtt_config.json", "r");
   if (!configFile) {
     DEBUG_OUT.println("MQTT config file failed to open. Returning to defaults");
     return config;
   }
-  DEBUG_OUT.println("Opened config file");
+  DEBUG_OUT.println("Opened mqtt config file");
 
   // Allocate a buffer to store contents of the file.
   size_t size = configFile.size();
@@ -114,3 +117,68 @@ bool delete_mqtt_config(){
 
 }
 */
+
+void read_config(DeviceState state){
+
+  // Nullify unused configs
+  if (!USING_INEXHAUSTIBLE_RESEVOIR_): state.inexhaustible_resevoir_config = NULL;
+  if (!USING_EXHAUSTIBLE_RESEVOIR_): state.exhaustible_resevoir_config = NULL;
+  if (!USING_FLOW_SENSOR_): state.flow_sensor_config = NULL;
+  if (!USING_PRESSURE_SENSOR_): state.pressure_sensor_config = NULL;
+
+  // Check if config file exists
+  if(!SPIFFS.exists("/device_config.json")) {
+    DEBUG_OUT.println("Main config file not found. Returning to defaults");
+    return;
+  }
+
+  DEBUG_OUT.println("Reading main config file");
+  File configFile = SPIFFS.open("/device_config.json", "r");
+  if (!configFile) {
+    DEBUG_OUT.println("Main config file failed to open. Returning to defaults");
+    return;
+  }
+  DEBUG_OUT.println("Opened main config file");
+
+  // Allocate a buffer to store contents of the file.
+  size_t size = configFile.size();
+  std::unique_ptr<char[]> buffer(new char[size]);
+  configFile.readBytes(buffer.get(), size);
+  configFile.close();
+
+  StaticJsonDocument<512> json;
+  DeserializationError error = deserializeJson(json, buffer.get());
+
+  // Catch deserialization error
+  if (error) {
+    DEBUG_OUT.print("Main config failed to deserialize with error: ");
+    DEBUG_OUT.print(error.f_str());
+    DEBUG_OUT.println(". Returning to defaults");
+    return;
+  }
+  DEBUG_OUT.println("Main config serialized");
+
+  // Assign config values to config structs
+  state.services_config.data_resolution_ml = json["services"]["res"];
+
+  if (USING_INEXHAUSTIBLE_RESEVOIR_) {
+    state.inexhaustible_resevoir_config.static_flow_rate = json["inex"]["static_flow"];
+  }
+
+  if (USING_EXHAUSTIBLE_RESEVOIR_) {
+    state.exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"];
+    state.exhaustible_resevoir_config.shape_type = json["ex"]["shape"];
+    state.exhaustible_resevoir_config.dimension_1 = json["ex"]["dim_1"];
+    state.exhaustible_resevoir_config.dimension_2 = json["ex"]["dim_2"];
+    state.exhaustible_resevoir_config.dimension_3 = json["ex"]["dim_3"];
+  }
+
+  if (USING_FLOW_SENSOR_) {
+    state.flow_sensor_config.pulses_per_ml = json["flow"]["ppml"];
+  }
+
+  if (USING_PRESSURE_SENSOR_) {
+    state.pressure_sensor_config.use_calibration = json["pressure"]["calibration"];
+  }
+
+}

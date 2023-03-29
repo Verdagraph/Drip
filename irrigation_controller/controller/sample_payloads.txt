@@ -1,6 +1,6 @@
 if (strcmp(topic, DISPENSE_ACTIVATE_TOPIC_) == 0){
 
-{"target_volume": 20}
+{"target_volume": 2000}
       
 }
 

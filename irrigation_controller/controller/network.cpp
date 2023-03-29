@@ -1,3 +1,5 @@
+// network.cpp
+
 #include <ESP8266WiFi.h> //General WiFi
 #include <WiFiManager.h> // WiFiManager allows configuration through an access point
 #include <PubSubClient.h> // https://pubsubclient.knolleary.net/api
@@ -181,29 +183,29 @@ void on_message(const char topic[], byte* payload, unsigned int len){
   // Store whether recieved topic has been handled
   bool handled_topic = false;
 
-    if (strcmp(topic, DISPENSE_ACTIVATE_TOPIC_) == 0){
-      dispense_activate(payload, len);
-      handled_topic = true;
-    }
-
-    if (strcmp(topic, DEACTIVATE_TOPIC_) == 0){
-      deactivate();
-      handled_topic = true;
-    } 
-
-    if (strcmp(topic, CONFIG_CHANGE_TOPIC_) == 0){
-      config_change(payload, len);
-      handled_topic = true;
-    } 
-
-    if (USING_DRAIN_VALVE_ && strcmp(topic, DRAIN_ACTIVATE_TOPIC_) == 0){
-      drain_activate(payload, len);
-      handled_topic = true;
-    } 
-
-    if (!handled_topic){
-      DEBUG_OUT.println("Topic is unhandled");
-    }
-
+  if (strcmp(topic, DISPENSE_ACTIVATE_TOPIC_) == 0){
+    dispense_activate(payload, len);
+    handled_topic = true;
   }
+
+  if (strcmp(topic, DEACTIVATE_TOPIC_) == 0){
+    deactivate();
+    handled_topic = true;
+  } 
+
+  if (strcmp(topic, CONFIG_CHANGE_TOPIC_) == 0){
+    config_change(payload, len);
+    handled_topic = true;
+  } 
+
+  if (USING_DRAIN_VALVE_ && strcmp(topic, DRAIN_ACTIVATE_TOPIC_) == 0){
+    drain_activate(payload, len);
+    handled_topic = true;
+  } 
+
+  if (!handled_topic){
+    DEBUG_OUT.println("Topic is unhandled");
+  }
+
+}
 

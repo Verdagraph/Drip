@@ -1,6 +1,9 @@
+// services.cpp
+
 #include <ArduinoJson.h>
 
-#include "config.h";
+#include "config.h"
+#include "services.h"
 
 
 void deserialize_json(byte* payload, unsigned int len, StaticJsonDocument<512>& json){
@@ -15,6 +18,8 @@ void dispense_activate(byte* payload, unsigned int len){
 
   StaticJsonDocument<512> json; 
   deserialize_json(payload, len, json);
+
+  int target_volume = (int)json["target_volume"];
 
 }
 
