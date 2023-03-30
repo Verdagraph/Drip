@@ -51,14 +51,6 @@ false: A pressure sensor is not being used with the resevoir
 // ************* Read the documentation before setting these!
 // *************
 
-// ************* Pin config ************* //
-
-#define INEXHAUSTIBLE_VALVE_PIN 13 // Pin to control the inexaustible resevoir supply valve
-#define EXHAUSTIBLE_OUTPUT_VALVE_PIN 12 // Pin controlling the exhaustible resevoir supply valve
-#define EXHAUSTIBLE_DRAIN_VALVE_PIN 14 // Pin controlling the exhaustible resevoir drain valve
-#define FLOW_SENSOR_PIN 5 // Pin reading the flow sensor data output
-#define PRESSURE_SENSOR_PIN 1 // Pin connected to pressure sensor I2C interface
-
 // ************* WiFiManager AutoConnect config ************* //
 
 #define AP_NAME "irrigation_controller" // Autoconnect access point name
@@ -98,6 +90,14 @@ false: A pressure sensor is not being used with the resevoir
 #define PRESSURE_REPORT_TOPIC "pressure/read" // Topic to publish current pressure sensor reading
 //#define CALIBRATE_PRESSURE_TOPIC "pressure/calibrate "
 
+// ************* Pin config ************* //
+
+#define INEXHAUSTIBLE_VALVE_PIN 13 // Pin to control the inexaustible resevoir supply valve
+#define EXHAUSTIBLE_OUTPUT_VALVE_PIN 12 // Pin controlling the exhaustible resevoir supply valve
+#define EXHAUSTIBLE_DRAIN_VALVE_PIN 14 // Pin controlling the exhaustible resevoir drain valve
+#define FLOW_SENSOR_PIN 5 // Pin reading the flow sensor data output
+#define PRESSURE_SENSOR_PIN 1 // Pin connected to pressure sensor I2C interface
+
 // *************
 // ************* The following configs are defaults 
 // ************* and can be changed during runtime 
@@ -116,13 +116,17 @@ false: A pressure sensor is not being used with the resevoir
 // returned by the flow sensor
 #define PULSES_PER_ML_DEFAULT 1.265289
 
+// The max flow rate capable of being sensed
+// by the flow sensor in liters/min
+#define MAX_FLOW_RATE_DEFAULT 0.6
+
 // The amount of miliseconds to wait for the 
 // flow sensor to sense flow before switching
 // from the exhaustible to the inexhaustible resevoir
 #define EXHAUSTIBLE_RESEVOIR_TIMEOUT_DEFAULT 5000
 
 /*
-Shape to use for height-volume calculatinos
+Shape to use for height->volume calculatinos
 
 1: Rectangular prism (length, width, height)
 2: Cylinder (radius, height, N/A)
@@ -218,14 +222,15 @@ struct ExhaustibleResevoirConfig {
 
 struct FlowSensorConfig {
   float pulses_per_ml;
+  float max_flow_rate;
 
   FlowSensorConfig() {
     pulses_per_ml = PULSES_PER_ML_DEFAULT;
+    max_flow_rate = MAX_FLOW_RATE_DEFAULT;
   }
 };
 
 struct PressureSensorConfig {
-
   bool use_calibration;
 
   PressureSensorConfig() {

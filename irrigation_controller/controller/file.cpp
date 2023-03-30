@@ -118,6 +118,8 @@ bool delete_mqtt_config(){
 }
 */
 
+// Read the config from the file system
+// into the device state
 void read_config(DeviceState state){
 
   // Nullify unused configs
@@ -159,26 +161,27 @@ void read_config(DeviceState state){
   DEBUG_OUT.println("Main config serialized");
 
   // Assign config values to config structs
-  state.services_config.data_resolution_ml = json["services"]["res"];
+  state.services_config.data_resolution_ml = json["services"]["res"].as<int>();
 
   if (USING_INEXHAUSTIBLE_RESEVOIR_) {
-    state.inexhaustible_resevoir_config.static_flow_rate = json["inex"]["static_flow"];
+    state.inexhaustible_resevoir_config.static_flow_rate = json["inex"]["static_flow"].as<float>();
   }
 
   if (USING_EXHAUSTIBLE_RESEVOIR_) {
-    state.exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"];
-    state.exhaustible_resevoir_config.shape_type = json["ex"]["shape"];
-    state.exhaustible_resevoir_config.dimension_1 = json["ex"]["dim_1"];
-    state.exhaustible_resevoir_config.dimension_2 = json["ex"]["dim_2"];
-    state.exhaustible_resevoir_config.dimension_3 = json["ex"]["dim_3"];
+    state.exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"].as<int>();
+    state.exhaustible_resevoir_config.shape_type = json["ex"]["shape"].as<int>();
+    state.exhaustible_resevoir_config.dimension_1 = json["ex"]["dim_1"].as<float>();
+    state.exhaustible_resevoir_config.dimension_2 = json["ex"]["dim_2"].as<float>();
+    state.exhaustible_resevoir_config.dimension_3 = json["ex"]["dim_3"].as<float>();
   }
 
   if (USING_FLOW_SENSOR_) {
-    state.flow_sensor_config.pulses_per_ml = json["flow"]["ppml"];
+    state.flow_sensor_config.pulses_per_ml = json["flow"]["ppml"].as<float>();
+    state.flow_sensor_config.max_flow_rate = json["flow"]["max_flow"].as<float>();
   }
 
   if (USING_PRESSURE_SENSOR_) {
-    state.pressure_sensor_config.use_calibration = json["pressure"]["calibration"];
+    state.pressure_sensor_config.use_calibration = json["pressure"]["calibration"].as<bool>();
   }
 
 }
