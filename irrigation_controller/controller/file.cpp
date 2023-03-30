@@ -118,7 +118,7 @@ bool delete_mqtt_config(){
 }
 */
 
-void read_config(DeviceState state){
+void read_config(DeviceState* state){
 
   // Nullify unused configs
   if (!USING_INEXHAUSTIBLE_RESEVOIR_): state.inexhaustible_resevoir_config = NULL;
