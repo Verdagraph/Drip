@@ -121,10 +121,10 @@ bool delete_mqtt_config(){
 void read_config(DeviceState* state){
 
   // Nullify unused configs
-  if (!USING_INEXHAUSTIBLE_RESEVOIR_): state.inexhaustible_resevoir_config = NULL;
-  if (!USING_EXHAUSTIBLE_RESEVOIR_): state.exhaustible_resevoir_config = NULL;
-  if (!USING_FLOW_SENSOR_): state.flow_sensor_config = NULL;
-  if (!USING_PRESSURE_SENSOR_): state.pressure_sensor_config = NULL;
+  if (!USING_INEXHAUSTIBLE_RESEVOIR_): state->inexhaustible_resevoir_config = NULL;
+  if (!USING_EXHAUSTIBLE_RESEVOIR_): state->exhaustible_resevoir_config = NULL;
+  if (!USING_FLOW_SENSOR_): state->flow_sensor_config = NULL;
+  if (!USING_PRESSURE_SENSOR_): state->pressure_sensor_config = NULL;
 
   // Check if config file exists
   if(!SPIFFS.exists("/device_config.json")) {
@@ -159,14 +159,14 @@ void read_config(DeviceState* state){
   DEBUG_OUT.println("Main config serialized");
 
   // Assign config values to config structs
-  state.services_config.data_resolution_ml = json["services"]["res"];
+  state->services_config->data_resolution_ml = json["services"]["res"];
 
   if (USING_INEXHAUSTIBLE_RESEVOIR_) {
-    state.inexhaustible_resevoir_config.static_flow_rate = json["inex"]["static_flow"];
+    state->inexhaustible_resevoir_config->static_flow_rate = json["inex"]["static_flow"];
   }
 
   if (USING_EXHAUSTIBLE_RESEVOIR_) {
-    state.exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"];
+    state->exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"];
     state.exhaustible_resevoir_config.shape_type = json["ex"]["shape"];
     state.exhaustible_resevoir_config.dimension_1 = json["ex"]["dim_1"];
     state.exhaustible_resevoir_config.dimension_2 = json["ex"]["dim_2"];
