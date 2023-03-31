@@ -4,11 +4,19 @@
 #include "config.h"
 
 struct DeviceState {
-  volatile int pulses;
-  float current_output_volume;
-  float target_output_volume;
+
   bool dispense_flag;
   bool deactivate_flag;
+  
+  float current_output_volume;
+  float target_output_volume;
+
+  volatile int pulses;
+  float pressure;
+
+  int target_drain_time;
+  float target_drain_volume;
+  float target_drain_pressure;
 
   ServicesConfig services_config;
   InexhaustibleResevoirConfig inexhaustible_resevoir_config;
@@ -24,6 +32,9 @@ void dispense_activate(byte* payload, unsigned int len);
 
 // Deactivate all current dispense or drain processes
 void deactivate();
+
+// Restart the ESP
+void restart();
 
 // Update config file
 void config_change(byte* payload, unsigned int len);

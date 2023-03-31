@@ -64,11 +64,11 @@ MQTTConfig read_mqtt_config(){
   DEBUG_OUT.println("MQTT config serialized");
         
   // Return config struct
-  const char* domain = json["domain"];
-  const char* port = json["port"];
-  const char* id = json["id"];
-  const char* username = json["username"];
-  const char* password = json["password"];
+  const char* domain = json["domain"].as<const char*>() const;
+  const char* port = json["port"].as<const char*>() const;
+  const char* id = json["id".as<const char*>() const];
+  const char* username = json["username"].as<const char*>() const;
+  const char* password = json["password"].as<const char*>() const;
 
   strlcpy(config.domain, domain, sizeof(config.domain));
   strlcpy(config.port, port, sizeof(config.port));
@@ -159,14 +159,14 @@ void read_config(DeviceState* state){
   DEBUG_OUT.println("Main config serialized");
 
   // Assign config values to config structs
-  state.services_config.data_resolution_ml = json["services"]["res"].as<int>();
+  state->services_config->data_resolution_ml = json["services"]["res"].as<int>();
 
   if (USING_INEXHAUSTIBLE_RESEVOIR_) {
-    state.inexhaustible_resevoir_config.static_flow_rate = json["inex"]["static_flow"].as<float>();
+    state->inexhaustible_resevoir_config->static_flow_rate = json["inex"]["static_flow"].as<float>();
   }
 
   if (USING_EXHAUSTIBLE_RESEVOIR_) {
-    state.exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"].as<int>();
+    state->exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"]..as<int>();
     state.exhaustible_resevoir_config.shape_type = json["ex"]["shape"].as<int>();
     state.exhaustible_resevoir_config.dimension_1 = json["ex"]["dim_1"].as<float>();
     state.exhaustible_resevoir_config.dimension_2 = json["ex"]["dim_2"].as<float>();

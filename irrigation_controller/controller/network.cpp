@@ -176,10 +176,6 @@ void on_message(const char topic[], byte* payload, unsigned int len){
   DEBUG_OUT.print("Recieved a message in: ");
   DEBUG_OUT.println(topic);
 
-  // Convert payload to a json document
-  StaticJsonDocument<512> json;
-  deserializeJson(json, payload, len);
-
   // Store whether recieved topic has been handled
   bool handled_topic = false;
 
@@ -192,6 +188,11 @@ void on_message(const char topic[], byte* payload, unsigned int len){
     deactivate();
     handled_topic = true;
   } 
+
+  if (strcmp(topic, RESTART_TOPIC_) == 0) {
+    restart();
+    handled_topic = true;  
+  }
 
   if (strcmp(topic, CONFIG_CHANGE_TOPIC_) == 0){
     config_change(payload, len);
@@ -208,4 +209,3 @@ void on_message(const char topic[], byte* payload, unsigned int len){
   }
 
 }
-
