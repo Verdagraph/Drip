@@ -118,15 +118,13 @@ bool delete_mqtt_config(){
 }
 */
 
-// Read the config from the file system
-// into the device state
-void read_config(DeviceState state){
+void read_config(DeviceState* state){
 
   // Nullify unused configs
-  if (!USING_INEXHAUSTIBLE_RESEVOIR_): state.inexhaustible_resevoir_config = NULL;
-  if (!USING_EXHAUSTIBLE_RESEVOIR_): state.exhaustible_resevoir_config = NULL;
-  if (!USING_FLOW_SENSOR_): state.flow_sensor_config = NULL;
-  if (!USING_PRESSURE_SENSOR_): state.pressure_sensor_config = NULL;
+  if (!USING_INEXHAUSTIBLE_RESEVOIR_): state->inexhaustible_resevoir_config = NULL;
+  if (!USING_EXHAUSTIBLE_RESEVOIR_): state->exhaustible_resevoir_config = NULL;
+  if (!USING_FLOW_SENSOR_): state->flow_sensor_config = NULL;
+  if (!USING_PRESSURE_SENSOR_): state->pressure_sensor_config = NULL;
 
   // Check if config file exists
   if(!SPIFFS.exists("/device_config.json")) {
