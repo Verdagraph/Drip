@@ -130,7 +130,7 @@ void connect_wifi(bool auto_connect){
     save_config = false;
   }else{
     DEBUG_OUT.println("Using MQTT config from file");
-    mqtt_config = read_mqtt_config();
+    read_mqtt_config(&config);
   }
 
 }

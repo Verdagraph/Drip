@@ -8,16 +8,16 @@
 void init_files();
 
 // Read the MQTT config from the filesystem
-MQTTConfig read_mqtt_config();
+void read_mqtt_config(MQTT *config);
 
 // Save the MQTT config to the filesystem. Returns true on success
-bool save_mqtt_config(MQTTConfig config);
+bool save_mqtt_config(MQTTConfig *config);
 
 // Delete the MQTT config from the file system
 //bool delete_mqtt_config();
 
 // Read the config from the file system
 // into the device state
-void read_config(DeviceState state);
+void read_config(DeviceState *state);
 
 #endif

@@ -25,14 +25,12 @@ void init_files(){
 }
 
 // Read the MQTT config from the filesystem
-MQTTConfig read_mqtt_config(){
-
-  MQTTConfig config;
+void read_mqtt_config(MQTTConfig *config){
 
   // Check if config file exists
   if(!SPIFFS.exists("/mqtt_config.json")) {
     DEBUG_OUT.println("MQTT config file not found. Returning to defaults");
-    return config;
+    return;
   }
 
   // Open config file
@@ -40,7 +38,7 @@ MQTTConfig read_mqtt_config(){
   File configFile = SPIFFS.open("/mqtt_config.json", "r");
   if (!configFile) {
     DEBUG_OUT.println("MQTT config file failed to open. Returning to defaults");
-    return config;
+    return;
   }
   DEBUG_OUT.println("Opened mqtt config file");
 
@@ -59,7 +57,7 @@ MQTTConfig read_mqtt_config(){
     DEBUG_OUT.print("MQTT config failed to deserialize with error: ");
     DEBUG_OUT.print(error.f_str());
     DEBUG_OUT.println(". Returning to defaults");
-    return config;
+    return;
   }
   DEBUG_OUT.println("MQTT config serialized");
         
@@ -70,26 +68,26 @@ MQTTConfig read_mqtt_config(){
   const char* username = json["username"].as<const char*>() const;
   const char* password = json["password"].as<const char*>() const;
 
-  strlcpy(config.domain, domain, sizeof(config.domain));
-  strlcpy(config.port, port, sizeof(config.port));
-  strlcpy(config.id, port, sizeof(config.id));
-  strlcpy(config.username, username, sizeof(config.username));
-  strlcpy(config.password, password, sizeof(config.password));
+  strlcpy(config->domain, domain, sizeof(config.domain));
+  strlcpy(config->port, port, sizeof(config.port));
+  strlcpy(config->id, port, sizeof(config.id));
+  strlcpy(config->username, username, sizeof(config.username));
+  strlcpy(config->password, password, sizeof(config.password));
 
-  return config;
+  return;
 
 }
 
 // Save the MQTT config to the filesystem
-bool save_mqtt_config(MQTTConfig config){
+bool save_mqtt_config(MQTTConfig *config){
 
   DynamicJsonDocument json(1024);
 
-  json["domain"] = config.domain;
-  json["port"] = config.port;
-  json["id"] = config.id;
-  json["username"] = config.username;
-  json["passsword"] = config.password;
+  json["domain"] = config->domain;
+  json["port"] = config->port;
+  json["id"] = config->id;
+  json["username"] = config->username;
+  json["passsword"] = config->password;
 
   File configFile = SPIFFS.open("/mqtt_config.json", "w");
   if (!configFile){
@@ -166,20 +164,28 @@ void read_config(DeviceState* state){
   }
 
   if (USING_EXHAUSTIBLE_RESEVOIR_) {
+<<<<<<< Updated upstream
     state->exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"]..as<int>();
     state.exhaustible_resevoir_config.shape_type = json["ex"]["shape"].as<int>();
     state.exhaustible_resevoir_config.dimension_1 = json["ex"]["dim_1"].as<float>();
     state.exhaustible_resevoir_config.dimension_2 = json["ex"]["dim_2"].as<float>();
     state.exhaustible_resevoir_config.dimension_3 = json["ex"]["dim_3"].as<float>();
+=======
+    state->exhaustible_resevoir_config->exhaustible_resevoir_timeout = json["ex"]["timeout"].as<int>();
+    state->exhaustible_resevoir_config->shape_type = json["ex"]["shape"].as<int>();
+    state->exhaustible_resevoir_config->dimension_1 = json["ex"]["dim_1"].as<float>();
+    state->exhaustible_resevoir_config->dimension_2 = json["ex"]["dim_2"].as<float>();
+    state->exhaustible_resevoir_config->dimension_3 = json["ex"]["dim_3"].as<float>();
+>>>>>>> Stashed changes
   }
 
   if (USING_FLOW_SENSOR_) {
-    state.flow_sensor_config.pulses_per_ml = json["flow"]["ppml"].as<float>();
-    state.flow_sensor_config.max_flow_rate = json["flow"]["max_flow"].as<float>();
+    state->flow_sensor_config->pulses_per_ml = json["flow"]["ppml"].as<float>();
+    state->flow_sensor_config->max_flow_rate = json["flow"]["max_flow"].as<float>();
   }
 
   if (USING_PRESSURE_SENSOR_) {
-    state.pressure_sensor_config.use_calibration = json["pressure"]["calibration"].as<bool>();
+    state->pressure_sensor_config->use_calibration = json["pressure"]["calibration"].as<bool>();
   }
 
 }
