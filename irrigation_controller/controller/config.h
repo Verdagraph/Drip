@@ -82,6 +82,7 @@ false: A pressure sensor is not being used with the resevoir
 #define DISPENSE_ACTIVATE_TOPIC "dispense/activate" // Topic to subscribe to dispensation commands
 #define DISPENSE_REPORT_TOPIC "dispense/report" // Topic to publish dispensation reports
 #define DEACTIVATE_TOPIC "deactivate" // Topic to subscribe to deactivation commands
+#define RESTART_TOPIC "restart" // Topic to restart the device
 #define STATUS_TOPIC "status" // Topic to publish device status
 #define CONFIG_TOPIC "config" // Topic to publish current configuration values  
 #define CONFIG_CHANGE_TOPIC "config/change" // Topic to subscribe to configuration change commands
@@ -156,6 +157,7 @@ Shape to use for height-volume calculatinos
 #define DISPENSE_ACTIVATE_TOPIC_ (BASE_TOPIC DISPENSE_ACTIVATE_TOPIC)
 #define DISPENSE_REPORT_TOPIC_ (BASE_TOPIC DISPENSE_REPORT_TOPIC)
 #define DEACTIVATE_TOPIC_ (BASE_TOPIC DEACTIVATE_TOPIC)
+#define RESTART_TOPIC_ (BASE_TOPIC RESTART_TOPIC)
 #define STATUS_TOPIC_ (BASE_TOPIC STATUS_TOPIC)
 #define CONFIG_TOPIC_ (BASE_TOPIC CONFIG_TOPIC)
 #define CONFIG_CHANGE_TOPIC_ (BASE_TOPIC CONFIG_CHANGE_TOPIC)
