@@ -1,15 +1,14 @@
 // file.cpp
 
-#include <FS.h> // File system
-#include <ArduinoJson.h> //https://github.com/bblanchon/ArduinoJson
+#include <FS.h>           // File system
+#include <ArduinoJson.h>  //https://github.com/bblanchon/ArduinoJson
 
 #include "config.h"
-#include "services.h"
+#include "state.h"
 
 #include "file.h"
 
-// Initialize file system or restart
-void init_files(){
+void init_files() {
 
   //Turn off autoformatting just in case
   SPIFFSConfig cfg;
@@ -17,24 +16,24 @@ void init_files(){
   SPIFFS.setConfig(cfg);
 
   //Initialize file system. If this fails we can't store data so restart
-  if(!SPIFFS.begin()){
-      DEBUG_OUT.println("File system failed to mount");
-      ESP.restart();
-      }
-
+  DEBUG_OUT.println("Initializing file system");
+  if (!SPIFFS.begin()) {
+    DEBUG_OUT.println("File system failed to mount");
+    ESP.restart();
+  }
 }
 
-// Read the MQTT config from the filesystem
-void read_mqtt_config(MQTTConfig *config){
+void read_mqtt_config(MQTTConfig* config) {
+
+  DEBUG_OUT.println("Reading MQTT config file");
 
   // Check if config file exists
-  if(!SPIFFS.exists("/mqtt_config.json")) {
+  if (!SPIFFS.exists("/mqtt_config.json")) {
     DEBUG_OUT.println("MQTT config file not found. Returning to defaults");
     return;
   }
 
   // Open config file
-  DEBUG_OUT.println("Reading mqtt config file");
   File configFile = SPIFFS.open("/mqtt_config.json", "r");
   if (!configFile) {
     DEBUG_OUT.println("MQTT config file failed to open. Returning to defaults");
@@ -49,7 +48,7 @@ void read_mqtt_config(MQTTConfig *config){
   configFile.close();
 
   // Assign to a JSON document
-  DynamicJsonDocument json(1024);
+  StaticJsonDocument<512> json;
   DeserializationError error = deserializeJson(json, buffer.get());
 
   // Catch deserialization error
@@ -60,26 +59,26 @@ void read_mqtt_config(MQTTConfig *config){
     return;
   }
   DEBUG_OUT.println("MQTT config serialized");
-        
-  // Return config struct
-  const char* domain = json["domain"].as<const char*>() const;
-  const char* port = json["port"].as<const char*>() const;
-  const char* id = json["id".as<const char*>() const];
-  const char* username = json["username"].as<const char*>() const;
-  const char* password = json["password"].as<const char*>() const;
 
-  strlcpy(config->domain, domain, sizeof(config.domain));
-  strlcpy(config->port, port, sizeof(config.port));
-  strlcpy(config->id, port, sizeof(config.id));
-  strlcpy(config->username, username, sizeof(config.username));
-  strlcpy(config->password, password, sizeof(config.password));
+  // Return config struct
+  const char* domain = json["domain"].as<const char*>();
+  const char* port = json["port"].as<const char*>();
+  const char* id = json["id"].as<const char*>();
+  const char* username = json["username"].as<const char*>();
+  const char* password = json["password"].as<const char*>();
+
+  strlcpy(config->domain, domain, sizeof(config->domain));
+  strlcpy(config->port, port, sizeof(config->port));
+  strlcpy(config->id, port, sizeof(config->id));
+  strlcpy(config->username, username, sizeof(config->username));
+  strlcpy(config->password, password, sizeof(config->password));
 
   return;
-
 }
 
-// Save the MQTT config to the filesystem
-bool save_mqtt_config(MQTTConfig *config){
+bool save_mqtt_config(MQTTConfig* config) {
+
+  DEBUG_OUT.println("Saving MQTT config to file");
 
   DynamicJsonDocument json(1024);
 
@@ -90,18 +89,17 @@ bool save_mqtt_config(MQTTConfig *config){
   json["passsword"] = config->password;
 
   File configFile = SPIFFS.open("/mqtt_config.json", "w");
-  if (!configFile){
+  if (!configFile) {
     DEBUG_OUT.println("MQTT config file failed to open");
     return false;
   }
 
   serializeJson(json, configFile);
   configFile.close();
+  DEBUG_OUT.println("MQTT config written to file");
   return true;
-
 }
 
-// Delete the MQTT config from the file system
 /*
 bool delete_mqtt_config(){
 
@@ -116,21 +114,16 @@ bool delete_mqtt_config(){
 }
 */
 
-void read_config(DeviceState* state){
+void read_config(DeviceState* state) {
 
-  // Nullify unused configs
-  if (!USING_INEXHAUSTIBLE_RESEVOIR_): state->inexhaustible_resevoir_config = NULL;
-  if (!USING_EXHAUSTIBLE_RESEVOIR_): state->exhaustible_resevoir_config = NULL;
-  if (!USING_FLOW_SENSOR_): state->flow_sensor_config = NULL;
-  if (!USING_PRESSURE_SENSOR_): state->pressure_sensor_config = NULL;
+  DEBUG_OUT.println("Reading device config from file");
 
   // Check if config file exists
-  if(!SPIFFS.exists("/device_config.json")) {
+  if (!SPIFFS.exists("/device_config.json")) {
     DEBUG_OUT.println("Main config file not found. Returning to defaults");
     return;
   }
 
-  DEBUG_OUT.println("Reading main config file");
   File configFile = SPIFFS.open("/device_config.json", "r");
   if (!configFile) {
     DEBUG_OUT.println("Main config file failed to open. Returning to defaults");
@@ -157,35 +150,71 @@ void read_config(DeviceState* state){
   DEBUG_OUT.println("Main config serialized");
 
   // Assign config values to config structs
-  state->services_config->data_resolution_ml = json["services"]["res"].as<int>();
+  state->services_config.data_resolution_l = json["services"]["res"].as<int>();
 
-  if (USING_INEXHAUSTIBLE_RESEVOIR_) {
-    state->inexhaustible_resevoir_config->static_flow_rate = json["inex"]["static_flow"].as<float>();
+  if (USING_SOURCE_) {
+    state->source_config.static_flow_rate = json["source"]["static_flow"].as<float>();
   }
 
-  if (USING_EXHAUSTIBLE_RESEVOIR_) {
-<<<<<<< Updated upstream
-    state->exhaustible_resevoir_config.exhaustible_resevoir_timeout = json["ex"]["timeout"]..as<int>();
-    state.exhaustible_resevoir_config.shape_type = json["ex"]["shape"].as<int>();
-    state.exhaustible_resevoir_config.dimension_1 = json["ex"]["dim_1"].as<float>();
-    state.exhaustible_resevoir_config.dimension_2 = json["ex"]["dim_2"].as<float>();
-    state.exhaustible_resevoir_config.dimension_3 = json["ex"]["dim_3"].as<float>();
-=======
-    state->exhaustible_resevoir_config->exhaustible_resevoir_timeout = json["ex"]["timeout"].as<int>();
-    state->exhaustible_resevoir_config->shape_type = json["ex"]["shape"].as<int>();
-    state->exhaustible_resevoir_config->dimension_1 = json["ex"]["dim_1"].as<float>();
-    state->exhaustible_resevoir_config->dimension_2 = json["ex"]["dim_2"].as<float>();
-    state->exhaustible_resevoir_config->dimension_3 = json["ex"]["dim_3"].as<float>();
->>>>>>> Stashed changes
+  if (USING_TANK_) {
+    state->tank_config.tank_timeout = json["tank"]["timeout"].as<int>();
+    state->tank_config.shape_type = json["tank"]["shape"].as<int>();
+    state->tank_config.dimension_1 = json["tank"]["dim_1"].as<float>();
+    state->tank_config.dimension_2 = json["tank"]["dim_2"].as<float>();
+    state->tank_config.dimension_3 = json["tank"]["dim_3"].as<float>();
   }
 
   if (USING_FLOW_SENSOR_) {
-    state->flow_sensor_config->pulses_per_ml = json["flow"]["ppml"].as<float>();
-    state->flow_sensor_config->max_flow_rate = json["flow"]["max_flow"].as<float>();
+    state->flow_sensor_config.pulses_per_l = json["flow"]["ppl"].as<float>();
+    state->flow_sensor_config.max_flow_rate = json["flow"]["max_flow"].as<float>();
+    state->flow_sensor_config.min_flow_rate = json["flow"]["min_flow"].as<float>();
   }
 
   if (USING_PRESSURE_SENSOR_) {
-    state->pressure_sensor_config->use_calibration = json["pressure"]["calibration"].as<bool>();
+    state->pressure_sensor_config.use_calibration = json["pressure"]["calibration"].as<bool>();
+    state->pressure_sensor_config.report_mode = json["pressure"]["mode"].as<int>();
   }
 
+}
+
+bool save_config(DeviceState * state) {
+
+  StaticJsonDocument<512> json;
+
+  json["services"]["res"] = state->services_config.data_resolution_l;
+
+
+  if (USING_SOURCE_) {
+    json["source"]["static_flow"] = state->source_config.static_flow_rate;
+  }
+
+  if (USING_TANK_) {
+    json["tank"]["timeout"] = state->tank_config.tank_timeout;
+    json["tank"]["shape"] = state->tank_config.shape_type;
+    json["tank"]["dim_1"] = state->tank_config.dimension_1;
+    json["tank"]["dim_2"] = state->tank_config.dimension_2;
+    json["tank"]["dim_3"] = state->tank_config.dimension_3;
+  }
+
+  if (USING_FLOW_SENSOR_) {
+    json["flow"]["ppl"] = state->flow_sensor_config.pulses_per_l;
+    json["flow"]["max_flow"] = state->flow_sensor_config.max_flow_rate;
+    json["flow"]["min_flow"] = state->flow_sensor_config.min_flow_rate;
+  }
+
+  if (USING_PRESSURE_SENSOR_) {
+    json["pressure"]["calibration"] = state->pressure_sensor_config.use_calibration;
+    json["pressure"]["mode"] = state->pressure_sensor_config.report_mode;
+  }
+
+  File configFile = SPIFFS.open("/device_config.json", "w");
+  if (!configFile) {
+    DEBUG_OUT.println("Config file failed to open");
+    return false;
+  }
+
+  serializeJson(json, configFile);
+  configFile.close();
+  DEBUG_OUT.println("MQTT config written to file");
+  return true;
 }

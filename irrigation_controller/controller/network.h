@@ -6,6 +6,7 @@
 // Initialize WiFi, use an autoconnect AP to set wifi 
 // and MQTT config if no connection can be found.
 // Then initialize MQTT connection
+// And return to fallback portal on MQTT connection failure
 void init_network();
 
 // Configure WiFiManager
@@ -20,7 +21,7 @@ void connect_wifi(bool auto_connect);
 // Connect to MQTT server using mqtt config file
 bool connect_mqtt();
 
-// Callback for when MQTT message is received
-void on_message(const char topic[], byte* payload, unsigned int len);
+// Publish message to MQTT client
+void publish(const char topic[], const char message[], size_t size, bool retain);
 
 #endif

@@ -1,9 +1,10 @@
 // controller.ino
 
-#include "config.h" // Provides default configuration values
-#include "file.h" // Provides API for the SPIFFS file system
-#include "network.h" // MQTT API and network functions
-#include "services.h" // Main logic layer
+#include "config.h"    // Provides default configuration values
+#include "file.h"      // Provides API for the SPIFFS file system
+#include "network.h"   // MQTT and network setup functions
+#include "services.h"  // MQTT input and output relations to device state
+#include "state.h"     // Device state management
 
 void setup() {
 
@@ -12,7 +13,6 @@ void setup() {
 
   init_files();
   init_network();
-
 }
 
-void loop(){}
+void loop() {}

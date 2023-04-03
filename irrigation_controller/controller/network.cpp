@@ -25,16 +25,12 @@ PubSubClient mqtt_client; // Initialize MQTT client
 MQTTConfig mqtt_config; // Initialize MQTT config
 
 // Flag and callback to save config after configuration through WiFiManager portal
-bool save_config = false;
+bool save_config_flag = false;
 void save_callback() {
   DEBUG_OUT.println("Save config flag set to true");
-  save_config = true;
+  save_config_flag = true;
 }
 
-// Initialize WiFi, use an autoconnect AP to set wifi 
-// and MQTT config if no connection can be found.
-// Then initialize MQTT connection
-// And return to fallback portal on MQTT connection failure
 void init_network(){
 
   // Assign configuration to wifi and mqtt clients
@@ -55,7 +51,6 @@ void init_network(){
 
 }
 
-// Configure WiFiManager
 void setup_wifi(){
 
   wifi_manager.setDebugOutput(DEBUG);
@@ -79,7 +74,6 @@ void setup_wifi(){
 
 }
 
-// Configure MQTT PubSubClient
 void setup_mqtt(){
 
   mqtt_client.setClient(wifi_client);
@@ -97,7 +91,6 @@ void on_wifi_failure(){
     ESP.deepSleep(AP_RETRY_DELAY);
   }
 
-// Connect to wifi using autoconnect or on-demand fallback portal
 void connect_wifi(bool auto_connect){
 
   // Connect to the network, and deep sleep on AP timeout
@@ -119,23 +112,22 @@ void connect_wifi(bool auto_connect){
   DEBUG_OUT.println("WiFi connected successfully");
 
   // If config save flagged, write to file, otherwise read from file
-  if(save_config){
+  if(save_config_flag){
     DEBUG_OUT.println("Saving MQTT config");
     strcpy(mqtt_config.domain, mqtt_domain.getValue());
     strcpy(mqtt_config.port, mqtt_port.getValue());
     strcpy(mqtt_config.id, mqtt_id.getValue());
     strcpy(mqtt_config.username, mqtt_username.getValue());
     strcpy(mqtt_config.password, mqtt_password.getValue());
-    save_mqtt_config(mqtt_config);
-    save_config = false;
+    save_mqtt_config(&mqtt_config);
+    save_config_flag = false;
   }else{
     DEBUG_OUT.println("Using MQTT config from file");
-    read_mqtt_config(&config);
+    read_mqtt_config(&mqtt_config);
   }
 
 }
 
-// Connect to MQTT server using mqtt config file
 bool connect_mqtt(){
 
   DEBUG_OUT.println("Connecting to mqtt server...");
@@ -160,52 +152,22 @@ bool connect_mqtt(){
 
   mqtt_client.subscribe(DISPENSE_ACTIVATE_TOPIC_);
   mqtt_client.subscribe(DEACTIVATE_TOPIC_);
+  mqtt_client.subscribe(RESTART_TOPIC_);
   mqtt_client.subscribe(CONFIG_CHANGE_TOPIC_);
+  mqtt_client.subscribe(SETTINGS_RESET_TOPIC_);
 
   if (USING_DRAIN_VALVE_){
     mqtt_client.subscribe(DRAIN_ACTIVATE_TOPIC_);
   }
 
+  char message[] = "Connected";
+  publish_log(0, message);
+  publish_config();
+
   return true;
 
 }
 
-// Callback for when MQTT message is received
-void on_message(const char topic[], byte* payload, unsigned int len){
-
-  DEBUG_OUT.print("Recieved a message in: ");
-  DEBUG_OUT.println(topic);
-
-  // Store whether recieved topic has been handled
-  bool handled_topic = false;
-
-  if (strcmp(topic, DISPENSE_ACTIVATE_TOPIC_) == 0){
-    dispense_activate(payload, len);
-    handled_topic = true;
-  }
-
-  if (strcmp(topic, DEACTIVATE_TOPIC_) == 0){
-    deactivate();
-    handled_topic = true;
-  } 
-
-  if (strcmp(topic, RESTART_TOPIC_) == 0) {
-    restart();
-    handled_topic = true;  
-  }
-
-  if (strcmp(topic, CONFIG_CHANGE_TOPIC_) == 0){
-    config_change(payload, len);
-    handled_topic = true;
-  } 
-
-  if (USING_DRAIN_VALVE_ && strcmp(topic, DRAIN_ACTIVATE_TOPIC_) == 0){
-    drain_activate(payload, len);
-    handled_topic = true;
-  } 
-
-  if (!handled_topic){
-    DEBUG_OUT.println("Topic is unhandled");
-  }
-
+void publish(const char topic[], const char message[], size_t size, bool retain) {
+  mqtt_client.publish(topic, message, size);
 }
