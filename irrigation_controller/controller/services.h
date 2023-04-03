@@ -5,8 +5,7 @@
 
 #include <Arduino.h>
 
-#include "config.h"
-#include "state.h"
+namespace srvc {
 
 // Callback for when MQTT message is received
 void on_message(const char topic[], byte* payload, unsigned int len);
@@ -32,16 +31,21 @@ void drain_activate(byte* payload, unsigned int len);
 // Reflect the current config values on the config topic
 void publish_config();
 
-// Publish the dispensation report to the dispensation report topic
-void publish_dispense_report(int inexhaustible_resevoir_volume_output, int resevoir_switch_timestamp, int time[], int volume_output[], int avg_rate[], float avg_resevoir_pressure[], float avg_resevoir_volume[]); 
+// Publish the dispensation report to the dispensation slice report topic
+void publish_dispense_slice_report(bool cache, unsigned long int time, float volume, float avg_flow, float avg_pressure);
+
+// Publish the dispensation report to the dispensation summary report topic
+void publish_dispense_summary_report(unsigned long int total_time, float total_volume, float tank_volume, unsigned long int tank_time); 
 
 // Publish the drain report to the drain report topic
-void publish_drain_report(int time[], int avg_resevoir_pressure[], int avg_resevoir_volume[]);
+void publish_drain_report();
 
 // Publish
 void publish_pressure_report(float pressure, float volume);
 
 // Publish the given message to the log topic
 void publish_log(int level, const char message[]);
+
+}
 
 #endif

@@ -5,7 +5,7 @@
 #include <cstring>
 
 #define DEBUG true  //set to true for debug output, false for no debug output
-#define DEBUG_OUT if(DEBUG)Serial
+#define SLOG if(DEBUG)Serial
 
 // *************
 // ************* This group of settings are key configs that describe specific
@@ -75,7 +75,8 @@ false: A pressure sensor is not being used with the tank
 // ************* MQTT topic config ************* //
 #define BASE_TOPIC "irrigation_controller1/" // Base MQTT topic to be pre-fixed to all other topics
 #define DISPENSE_ACTIVATE_TOPIC "dispense/activate" // Topic to subscribe to dispensation commands
-#define DISPENSE_REPORT_TOPIC "dispense/report" // Topic to publish dispensation reports
+#define DISPENSE_REPORT_SLICE_TOPIC "dispense/report/slice" // Topic to publish slice of dispensation reports
+#define DISPENSE_REPORT_SUMMARY_TOPIC "dispense/report/summary" // Topic to publish summary of dispensation reports
 #define DEACTIVATE_TOPIC "deactivate" // Topic to subscribe to deactivation commands
 #define RESTART_TOPIC "restart" // Topic to restart the device
 #define LOG_TOPIC "log/info" // Topic to publish device status logs
@@ -178,7 +179,8 @@ Select the output types of the pressure sensor
 // ************* MQTT topics ************* //
 // Define topics to NULL to indicate non-use based on operational mode
 #define DISPENSE_ACTIVATE_TOPIC_ (BASE_TOPIC DISPENSE_ACTIVATE_TOPIC)
-#define DISPENSE_REPORT_TOPIC_ (BASE_TOPIC DISPENSE_REPORT_TOPIC)
+#define DISPENSE_REPORT_SLICE_TOPIC_ (BASE_TOPIC DISPENSE_REPORT_SLICE_TOPIC)
+#define DISPENSE_REPORT_SUMMARY_TOPIC_ (BASE_TOPIC DISPENSE_REPORT_SUMMARY_TOPIC)
 #define DEACTIVATE_TOPIC_ (BASE_TOPIC DEACTIVATE_TOPIC)
 #define RESTART_TOPIC_ (BASE_TOPIC RESTART_TOPIC)
 #define LOG_TOPIC_ (BASE_TOPIC LOG_TOPIC)
@@ -191,6 +193,8 @@ Select the output types of the pressure sensor
 //#define CALIBRATE_FLOW_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC CALIBRATE_FLOW_TOPIC) : NULL)
 #define PRESSURE_REPORT_TOPIC_ (USING_PRESSURE_SENSOR_ ? (BASE_TOPIC PRESSURE_REPORT_TOPIC) : NULL)
 //#define CALIBRATE_PRESSURE_TOPIC_ (USING_PRESSURE_SENSOR_ ? (BASE_TOPIC CALIBRATE_PRESSURE_TOPIC) : NULL)
+
+namespace conf {
 
 // Struct to hold and assign defaults for the MQTT connection
 struct MQTTConfig {
@@ -265,5 +269,7 @@ struct PressureSensorConfig {
   }
 
 };
+
+}
 
 #endif

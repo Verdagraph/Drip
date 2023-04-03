@@ -1,7 +1,9 @@
-// peripherals.h
+// pins.h
 
-#ifndef PERIPHERALS_H
-#define PERIPHERALS_H
+#ifndef PINS_H
+#define PINS_H
+
+namespace pins {
 
 void open_source_output();
 
@@ -13,6 +15,8 @@ void close_tank_output();
 
 void open_tank_drain();
 
-void clost_tank_drain();
+void close_tank_drain();
+
+}
 
 #endif

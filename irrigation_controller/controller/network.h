@@ -3,6 +3,12 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#include <PubSubClient.h>  // https://pubsubclient.knolleary.net/api
+
+namespace net {
+
+extern PubSubClient mqtt_client;
+
 // Initialize WiFi, use an autoconnect AP to set wifi 
 // and MQTT config if no connection can be found.
 // Then initialize MQTT connection
@@ -21,7 +27,12 @@ void connect_wifi(bool auto_connect);
 // Connect to MQTT server using mqtt config file
 bool connect_mqtt();
 
+// Recieve new MQTT messages
+void loop_mqtt();
+
 // Publish message to MQTT client
 void publish(const char topic[], const char message[], size_t size, bool retain);
+
+}
 
 #endif

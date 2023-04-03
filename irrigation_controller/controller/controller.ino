@@ -4,15 +4,19 @@
 #include "file.h"      // Provides API for the SPIFFS file system
 #include "network.h"   // MQTT and network setup functions
 #include "services.h"  // MQTT input and output relations to device state
-#include "state.h"     // Device state management
+#include "app.h"     // Device state management
 
 void setup() {
 
-  DEBUG_OUT.begin(115200);
-  DEBUG_OUT.println();
+  SLOG.begin(115200);
+  SLOG.println();
 
-  init_files();
-  init_network();
+  file::init_files();
+  net::init_network();
+  app::init_app();
 }
 
-void loop() {}
+void loop() {
+  net::loop_mqtt();
+  app::loop_app();
+}

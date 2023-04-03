@@ -4,11 +4,11 @@
 #include <ArduinoJson.h>  //https://github.com/bblanchon/ArduinoJson
 
 #include "config.h"
-#include "state.h"
+#include "app.h"
 
 #include "file.h"
 
-void init_files() {
+void file::init_files() {
 
   //Turn off autoformatting just in case
   SPIFFSConfig cfg;
@@ -16,30 +16,30 @@ void init_files() {
   SPIFFS.setConfig(cfg);
 
   //Initialize file system. If this fails we can't store data so restart
-  DEBUG_OUT.println("Initializing file system");
+  SLOG.println("Initializing file system");
   if (!SPIFFS.begin()) {
-    DEBUG_OUT.println("File system failed to mount");
+    SLOG.println("File system failed to mount");
     ESP.restart();
   }
 }
 
-void read_mqtt_config(MQTTConfig* config) {
+void file::read_mqtt_config(conf::MQTTConfig* config) {
 
-  DEBUG_OUT.println("Reading MQTT config file");
+  SLOG.println("Reading MQTT config file");
 
   // Check if config file exists
   if (!SPIFFS.exists("/mqtt_config.json")) {
-    DEBUG_OUT.println("MQTT config file not found. Returning to defaults");
+    SLOG.println("MQTT config file not found. Returning to defaults");
     return;
   }
 
   // Open config file
   File configFile = SPIFFS.open("/mqtt_config.json", "r");
   if (!configFile) {
-    DEBUG_OUT.println("MQTT config file failed to open. Returning to defaults");
+    SLOG.println("MQTT config file failed to open. Returning to defaults");
     return;
   }
-  DEBUG_OUT.println("Opened mqtt config file");
+  SLOG.println("Opened mqtt config file");
 
   // Allocate a buffer to store contents of the file.
   size_t size = configFile.size();
@@ -53,12 +53,12 @@ void read_mqtt_config(MQTTConfig* config) {
 
   // Catch deserialization error
   if (error) {
-    DEBUG_OUT.print("MQTT config failed to deserialize with error: ");
-    DEBUG_OUT.print(error.f_str());
-    DEBUG_OUT.println(". Returning to defaults");
+    SLOG.print("MQTT config failed to deserialize with error: ");
+    SLOG.print(error.f_str());
+    SLOG.println(". Returning to defaults");
     return;
   }
-  DEBUG_OUT.println("MQTT config serialized");
+  SLOG.println("MQTT config serialized");
 
   // Return config struct
   const char* domain = json["domain"].as<const char*>();
@@ -76,9 +76,9 @@ void read_mqtt_config(MQTTConfig* config) {
   return;
 }
 
-bool save_mqtt_config(MQTTConfig* config) {
+bool file::save_mqtt_config(conf::MQTTConfig* config) {
 
-  DEBUG_OUT.println("Saving MQTT config to file");
+  SLOG.println("Saving MQTT config to file");
 
   DynamicJsonDocument json(1024);
 
@@ -90,13 +90,13 @@ bool save_mqtt_config(MQTTConfig* config) {
 
   File configFile = SPIFFS.open("/mqtt_config.json", "w");
   if (!configFile) {
-    DEBUG_OUT.println("MQTT config file failed to open");
+    SLOG.println("MQTT config file failed to open");
     return false;
   }
 
   serializeJson(json, configFile);
   configFile.close();
-  DEBUG_OUT.println("MQTT config written to file");
+  SLOG.println("MQTT config written to file");
   return true;
 }
 
@@ -104,32 +104,32 @@ bool save_mqtt_config(MQTTConfig* config) {
 bool delete_mqtt_config(){
 
   if (!SPIFFS.remove("/mqtt_config.json")){
-    DEBUG_OUT.println("Failed to delete MQTT config file");
+    SLOG.println("Failed to delete MQTT config file");
     return false;
   }
 
-  DEBUG_OUT.println("Deleted MQTT config file");
+  SLOG.println("Deleted MQTT config file");
   return true;
 
 }
 */
 
-void read_config(DeviceState* state) {
+void file::read_config(app::DeviceState* state) {
 
-  DEBUG_OUT.println("Reading device config from file");
+  SLOG.println("Reading device config from file");
 
   // Check if config file exists
   if (!SPIFFS.exists("/device_config.json")) {
-    DEBUG_OUT.println("Main config file not found. Returning to defaults");
+    SLOG.println("Main config file not found. Returning to defaults");
     return;
   }
 
   File configFile = SPIFFS.open("/device_config.json", "r");
   if (!configFile) {
-    DEBUG_OUT.println("Main config file failed to open. Returning to defaults");
+    SLOG.println("Main config file failed to open. Returning to defaults");
     return;
   }
-  DEBUG_OUT.println("Opened main config file");
+  SLOG.println("Opened main config file");
 
   // Allocate a buffer to store contents of the file.
   size_t size = configFile.size();
@@ -142,12 +142,12 @@ void read_config(DeviceState* state) {
 
   // Catch deserialization error
   if (error) {
-    DEBUG_OUT.print("Main config failed to deserialize with error: ");
-    DEBUG_OUT.print(error.f_str());
-    DEBUG_OUT.println(". Returning to defaults");
+    SLOG.print("Main config failed to deserialize with error: ");
+    SLOG.print(error.f_str());
+    SLOG.println(". Returning to defaults");
     return;
   }
-  DEBUG_OUT.println("Main config serialized");
+  SLOG.println("Main config serialized");
 
   // Assign config values to config structs
   state->services_config.data_resolution_l = json["services"]["res"].as<int>();
@@ -177,7 +177,7 @@ void read_config(DeviceState* state) {
 
 }
 
-bool save_config(DeviceState * state) {
+bool file::save_config(app::DeviceState * state) {
 
   StaticJsonDocument<512> json;
 
@@ -209,12 +209,12 @@ bool save_config(DeviceState * state) {
 
   File configFile = SPIFFS.open("/device_config.json", "w");
   if (!configFile) {
-    DEBUG_OUT.println("Config file failed to open");
+    SLOG.println("Config file failed to open");
     return false;
   }
 
   serializeJson(json, configFile);
   configFile.close();
-  DEBUG_OUT.println("MQTT config written to file");
+  SLOG.println("MQTT config written to file");
   return true;
 }

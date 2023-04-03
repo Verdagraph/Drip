@@ -1,7 +1,11 @@
-// state.h
+// app.h
 
-#ifndef STATE_H
-#define STATE_H
+#ifndef APP_H
+#define APP_H
+
+#include "config.h"
+
+namespace app {
 
 // Stores flags on process states
 struct FlagStore {
@@ -9,12 +13,14 @@ struct FlagStore {
   bool drain_flag; // True if draining
   bool deactivate_flag; // True if pending deactivation
   bool resevoir_switch_flag; // True if dispensing and resevoir has been switched
+  bool mqtt_disconnect_flag; // True if no longer connected to MQTT
 
   FlagStore() {
     dispense_flag = false;
     drain_flag = false;
     deactivate_flag = false;
     resevoir_switch_flag = false;
+    mqtt_disconnect_flag = false;
   }
 };
 
@@ -71,10 +77,9 @@ struct SliceStore {
   unsigned int total_time_elapsed; // Time since process start
   float total_output_volume; // Total volume output since process begin
 
-  float current_avg_rate; // Current total flow rate between reports
+  float current_avg_flow; // Current total flow rate between reports
   int avg_flow_count; // Number of flow rate measurments between reports
   float current_avg_tank_pressure; // Current tank pressure between reports
-  float current_avg_tank_volume; // Current tank volume between reports
   int avg_tank_count; // Number of tank pressure measurments between reports
 
   SliceStore() {
@@ -84,10 +89,9 @@ struct SliceStore {
     flow_rate = 0;
     total_time_elapsed = 0;
     total_output_volume = 0;
-    current_avg_rate = 0;
+    current_avg_flow = 0;
     avg_flow_count = 0;
     current_avg_tank_pressure = 0;
-    current_avg_tank_volume = 0;
     avg_tank_count = 0;
   }
 };
@@ -96,6 +100,13 @@ struct SliceStore {
 struct ReportStore {
   float last_output_volume_report; // Last volume at which a slice report was sent
   float total_tank_output_volume; // Total volume output from the tank
+  size_t current_report_size; // Size in bytes of the current publish message
+
+  ReportStore() {
+    last_output_volume_report = 0;
+    total_tank_output_volume = 0;
+    current_report_size = 0;
+  }
 };
 
 // This struct holds all of the global state
@@ -109,20 +120,20 @@ struct DeviceState {
   SliceStore slice;
   ReportStore report;
 
-  ServicesConfig services_config;
-  SourceConfig source_config;
-  TankConfig tank_config;
-  FlowSensorConfig flow_sensor_config;
-  PressureSensorConfig pressure_sensor_config;
+  conf::ServicesConfig services_config;
+  conf::SourceConfig source_config;
+  conf::TankConfig tank_config;
+  conf::FlowSensorConfig flow_sensor_config;
+  conf::PressureSensorConfig pressure_sensor_config;
 };
 
-extern DeviceState global;
+extern DeviceState env;
 
 // Initialize global state from configs
-void init_state();
+void init_app();
 
 // Run all necessary update functions for global state
-void loop_state();
+void loop_app();
 
 
 /*
@@ -146,5 +157,7 @@ float height_to_volume(ExhaustibleResevoirConfig exhaustible_resevoir_config, fl
   }
 }
 */
+
+}
 
 #endif
