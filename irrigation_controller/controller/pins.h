@@ -5,6 +5,8 @@
 
 namespace pins {
 
+void init_pins();
+
 void open_source_output();
 
 void close_source_output();
@@ -16,6 +18,8 @@ void close_tank_output();
 void open_tank_drain();
 
 void close_tank_drain();
+
+float read_pressure();
 
 }
 

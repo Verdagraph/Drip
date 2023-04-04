@@ -7,31 +7,23 @@
 
 namespace net {
 
-extern PubSubClient mqtt_client;
-
 // Initialize WiFi, use an autoconnect AP to set wifi 
 // and MQTT config if no connection can be found.
 // Then initialize MQTT connection
 // And return to fallback portal on MQTT connection failure
 void init_network();
 
-// Configure WiFiManager
-void setup_wifi();
-
-// Configure MQTT PubSubClient
-void setup_mqtt();
-
-// Connect to wifi using autoconnect or on-demand fallback portal
-void connect_wifi(bool auto_connect);
-
-// Connect to MQTT server using mqtt config file
-bool connect_mqtt();
-
-// Recieve new MQTT messages
+// Recieve new MQTT messages and handle disconnect
 void loop_mqtt();
 
 // Publish message to MQTT client
-void publish(const char topic[], const char message[], size_t size, bool retain);
+void publish(const char topic[], char message[], size_t size, bool retain);
+
+// Reset the WifiManager settings to default
+void reset_wifi_settings();
+
+// Reset the MQTT client settings to default
+void reset_mqtt_settings();
 
 }
 

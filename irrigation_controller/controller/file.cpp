@@ -73,6 +73,7 @@ void file::read_mqtt_config(conf::MQTTConfig* config) {
   strlcpy(config->username, username, sizeof(config->username));
   strlcpy(config->password, password, sizeof(config->password));
 
+  SLOG.println("MQTT config read sucessfully");
   return;
 }
 
@@ -80,28 +81,30 @@ bool file::save_mqtt_config(conf::MQTTConfig* config) {
 
   SLOG.println("Saving MQTT config to file");
 
-  DynamicJsonDocument json(1024);
+  StaticJsonDocument<512> json;
 
+  // Assign config values to json document
   json["domain"] = config->domain;
   json["port"] = config->port;
   json["id"] = config->id;
   json["username"] = config->username;
   json["passsword"] = config->password;
 
+  // Open config file
   File configFile = SPIFFS.open("/mqtt_config.json", "w");
   if (!configFile) {
     SLOG.println("MQTT config file failed to open");
     return false;
   }
 
+  // Write to file
   serializeJson(json, configFile);
   configFile.close();
   SLOG.println("MQTT config written to file");
   return true;
 }
 
-/*
-bool delete_mqtt_config(){
+bool file::delete_mqtt_config(){
 
   if (!SPIFFS.remove("/mqtt_config.json")){
     SLOG.println("Failed to delete MQTT config file");
@@ -112,7 +115,6 @@ bool delete_mqtt_config(){
   return true;
 
 }
-*/
 
 void file::read_config(app::DeviceState* state) {
 
@@ -124,6 +126,7 @@ void file::read_config(app::DeviceState* state) {
     return;
   }
 
+  // Open file
   File configFile = SPIFFS.open("/device_config.json", "r");
   if (!configFile) {
     SLOG.println("Main config file failed to open. Returning to defaults");
@@ -151,11 +154,9 @@ void file::read_config(app::DeviceState* state) {
 
   // Assign config values to config structs
   state->services_config.data_resolution_l = json["services"]["res"].as<int>();
-
   if (USING_SOURCE_) {
     state->source_config.static_flow_rate = json["source"]["static_flow"].as<float>();
   }
-
   if (USING_TANK_) {
     state->tank_config.tank_timeout = json["tank"]["timeout"].as<int>();
     state->tank_config.shape_type = json["tank"]["shape"].as<int>();
@@ -163,17 +164,18 @@ void file::read_config(app::DeviceState* state) {
     state->tank_config.dimension_2 = json["tank"]["dim_2"].as<float>();
     state->tank_config.dimension_3 = json["tank"]["dim_3"].as<float>();
   }
-
   if (USING_FLOW_SENSOR_) {
     state->flow_sensor_config.pulses_per_l = json["flow"]["ppl"].as<float>();
     state->flow_sensor_config.max_flow_rate = json["flow"]["max_flow"].as<float>();
     state->flow_sensor_config.min_flow_rate = json["flow"]["min_flow"].as<float>();
   }
-
   if (USING_PRESSURE_SENSOR_) {
     state->pressure_sensor_config.use_calibration = json["pressure"]["calibration"].as<bool>();
     state->pressure_sensor_config.report_mode = json["pressure"]["mode"].as<int>();
+    state->pressure_sensor_config.atmosphere_pressure = json["pressure"]["atmosphere"].as<float>();
   }
+
+  SLOG.println("Main config read sucessfully");
 
 }
 
@@ -181,13 +183,11 @@ bool file::save_config(app::DeviceState * state) {
 
   StaticJsonDocument<512> json;
 
+  // Assign config values to json document
   json["services"]["res"] = state->services_config.data_resolution_l;
-
-
   if (USING_SOURCE_) {
     json["source"]["static_flow"] = state->source_config.static_flow_rate;
   }
-
   if (USING_TANK_) {
     json["tank"]["timeout"] = state->tank_config.tank_timeout;
     json["tank"]["shape"] = state->tank_config.shape_type;
@@ -195,24 +195,25 @@ bool file::save_config(app::DeviceState * state) {
     json["tank"]["dim_2"] = state->tank_config.dimension_2;
     json["tank"]["dim_3"] = state->tank_config.dimension_3;
   }
-
   if (USING_FLOW_SENSOR_) {
     json["flow"]["ppl"] = state->flow_sensor_config.pulses_per_l;
     json["flow"]["max_flow"] = state->flow_sensor_config.max_flow_rate;
     json["flow"]["min_flow"] = state->flow_sensor_config.min_flow_rate;
   }
-
   if (USING_PRESSURE_SENSOR_) {
     json["pressure"]["calibration"] = state->pressure_sensor_config.use_calibration;
     json["pressure"]["mode"] = state->pressure_sensor_config.report_mode;
+    json["pressure"]["atmosphere"] = state->pressure_sensor_config.atmosphere_pressure;
   }
 
+  // Open file
   File configFile = SPIFFS.open("/device_config.json", "w");
   if (!configFile) {
     SLOG.println("Config file failed to open");
     return false;
   }
 
+  // Write to file
   serializeJson(json, configFile);
   configFile.close();
   SLOG.println("MQTT config written to file");

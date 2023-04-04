@@ -18,10 +18,10 @@ WiFiManager wifi_manager;  // Initialize wifi manager for autoconnect fallback
 WiFiManagerParameter mqtt_domain("mqtt_domain", "MQTT server domain", MQTT_SERVER_DOMAIN_DEFAULT, 100);
 WiFiManagerParameter mqtt_port("mqtt_port", "MQTT server port", MQTT_SERVER_PORT_DEFAULT, 10);
 WiFiManagerParameter mqtt_id("mqtt_id", "MQTT client id", MQTT_ID_DEFAULT, 50);
-WiFiManagerParameter mqtt_username("mqtt_domain", "MQTT client username", MQTT_USERNAME_DEFAULT, 50);
+WiFiManagerParameter mqtt_username("mqtt_username", "MQTT client username", MQTT_USERNAME_DEFAULT, 50);
 WiFiManagerParameter mqtt_password("mqtt_password", "MQTT client password", MQTT_PASSWORD_DEFAULT, 50);
 
-PubSubClient net::mqtt_client;      // Initialize MQTT client
+PubSubClient mqtt_client;      // Initialize MQTT client
 conf::MQTTConfig mqtt_config;  // Initialize MQTT config
 
 // Flag and callback to save config after configuration through WiFiManager portal
@@ -31,26 +31,8 @@ void save_callback() {
   save_config_flag = true;
 }
 
-void net::init_network() {
-
-  // Assign configuration to wifi and mqtt clients
-  setup_wifi();
-  setup_mqtt();
-
-  // Try to connnect to wifi. If connection fails, WiFiManager
-  // will open up an access point for configuration
-  connect_wifi(true);
-
-  // Tryy MQTT connection
-  // If can't connect, open up the configuration access point again
-  // If the wifi is sucessfully configured, MQTT connection will try again
-  // Else, after config portal timeout ESP will deep sleep and restart
-  while (!connect_mqtt()) {
-    connect_wifi(false);
-  }
-}
-
-void net::setup_wifi() {
+// Configure WiFiManager
+void setup_wifi() {
 
   wifi_manager.setDebugOutput(DEBUG);
   wifi_manager.setSaveConfigCallback(save_callback);
@@ -63,32 +45,31 @@ void net::setup_wifi() {
   wifi_manager.addParameter(&mqtt_username);
   wifi_manager.addParameter(&mqtt_password);
 
-  //reset settings - for testing
-  //wifi_manager.resetSettings();
-
   //sets timeout until configuration portal gets turned off
   //useful to make it all retry or go to sleep
   //in seconds
   //wifi_manager.setTimeout(120);
 }
 
-void net::setup_mqtt() {
+// Configure MQTT PubSubClient
+void setup_mqtt() {
 
   mqtt_client.setClient(wifi_client);
   mqtt_client.setCallback(srvc::on_message);
+
 }
 
 // On failed configuration through access point, deep sleep
 void on_wifi_failure() {
   SLOG.println("Failed to connect to WiFi network");
-  delay(3000);
   SLOG.print("Going to sleep for ");
   SLOG.print(AP_RETRY_DELAY / (1000 * 1000 * 60));
   SLOG.println(" minutes");
   ESP.deepSleep(AP_RETRY_DELAY);
 }
 
-void net::connect_wifi(bool auto_connect) {
+// Connect to wifi using autoconnect or on-demand fallback portal
+void connect_wifi(bool auto_connect) {
 
   // Connect to the network, and deep sleep on AP timeout
   if (auto_connect) {
@@ -123,11 +104,13 @@ void net::connect_wifi(bool auto_connect) {
   }
 }
 
-bool net::connect_mqtt() {
+// Connect to MQTT server using mqtt config file
+bool connect_mqtt() {
 
   SLOG.println("Connecting to mqtt server...");
-  int count = 1;
   mqtt_client.setServer(mqtt_config.domain, (int)mqtt_config.port);
+  int count = 1;
+  // While client hasn't connected, check timeout
   while (!mqtt_client.connect(mqtt_config.id, mqtt_config.username, mqtt_config.password)) {
 
     SLOG.print("*");
@@ -140,32 +123,63 @@ bool net::connect_mqtt() {
     }
     count++;
   }
-
   SLOG.println("Successfully connected to mqtt server");
 
+  // Subscribe to topics
   mqtt_client.subscribe(DISPENSE_ACTIVATE_TOPIC_);
   mqtt_client.subscribe(DEACTIVATE_TOPIC_);
   mqtt_client.subscribe(RESTART_TOPIC_);
   mqtt_client.subscribe(CONFIG_CHANGE_TOPIC_);
   mqtt_client.subscribe(SETTINGS_RESET_TOPIC_);
-
   if (USING_DRAIN_VALVE_) {
     mqtt_client.subscribe(DRAIN_ACTIVATE_TOPIC_);
   }
 
-  char message[] = "Connected";
+  // Log success
+  const char message[] = "Connected";
   srvc::publish_log(0, message);
   srvc::publish_config();
 
   return true;
 }
 
+void net::init_network() {
+
+  // Assign configuration to wifi and mqtt clients
+  setup_wifi();
+  setup_mqtt();
+
+  // Try to connnect to wifi. If connection fails, WiFiManager
+  // will open up an access point for configuration
+  connect_wifi(true);
+
+  // Tryy MQTT connection
+  // If can't connect, open up the configuration access point again
+  // If the wifi is sucessfully configured, MQTT connection will try again
+  // Else, after config portal timeout ESP will deep sleep and restart
+  while (!connect_mqtt()) {
+    connect_wifi(false);
+  }
+}
+
 void net::loop_mqtt() {
   if (mqtt_client.connected()){
-    app::env.flag.mqtt_disconnect_flag = false;
+    app::env.flag.mqtt_connected_flag = true;
     mqtt_client.loop();
   } else {
     SLOG.println("MQTT connection lost");
-    app::env.flag.mqtt_disconnect_flag = true;
+    app::env.flag.mqtt_connected_flag = false;
   }
+}
+
+void net::publish(const char topic[], char message[], size_t size, bool retain) {
+  mqtt_client.publish(topic, (const uint8_t*) message, size, retain);
+}
+
+void net::reset_wifi_settings() {
+  wifi_manager.resetSettings();
+}
+
+void net::reset_mqtt_settings() {
+  file::delete_mqtt_config();
 }

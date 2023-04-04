@@ -13,14 +13,14 @@ struct FlagStore {
   bool drain_flag; // True if draining
   bool deactivate_flag; // True if pending deactivation
   bool resevoir_switch_flag; // True if dispensing and resevoir has been switched
-  bool mqtt_disconnect_flag; // True if no longer connected to MQTT
+  bool mqtt_connected_flag; // True if connected to MQTT
 
   FlagStore() {
     dispense_flag = false;
     drain_flag = false;
     deactivate_flag = false;
     resevoir_switch_flag = false;
-    mqtt_disconnect_flag = false;
+    mqtt_connected_flag = true;
   }
 };
 
@@ -57,13 +57,11 @@ struct SensorStore {
   volatile int pulses; // Counter of flow sensor pulses
   unsigned int last_pulses; // Previous timestamp pulses
   float pressure; // Current pressure sensor value
-  float last_pressure; // Previous timestamp pressure
 
   SensorStore() {
     pulses = 0;
     last_pulses = 0;
     pressure = 0;
-    last_pressure = 0;
   }
 };
 
@@ -77,7 +75,7 @@ struct SliceStore {
   unsigned int total_time_elapsed; // Time since process start
   float total_output_volume; // Total volume output since process begin
 
-  float current_avg_flow; // Current total flow rate between reports
+  float current_avg_flow; // Current sum total of flow rate measurments between reports
   int avg_flow_count; // Number of flow rate measurments between reports
   float current_avg_tank_pressure; // Current tank pressure between reports
   int avg_tank_count; // Number of tank pressure measurments between reports
@@ -100,12 +98,12 @@ struct SliceStore {
 struct ReportStore {
   float last_output_volume_report; // Last volume at which a slice report was sent
   float total_tank_output_volume; // Total volume output from the tank
-  size_t current_report_size; // Size in bytes of the current publish message
+  float drain_start_pressure; // The initial pressure of the drain process
 
   ReportStore() {
     last_output_volume_report = 0;
     total_tank_output_volume = 0;
-    current_report_size = 0;
+    drain_start_pressure = 0;
   }
 };
 
@@ -135,28 +133,8 @@ void init_app();
 // Run all necessary update functions for global state
 void loop_app();
 
-
-/*
-// Return the height of fluid in meters for a given pressure
-#define DENSITY_GRAVITY (9.807 * 997)
-float pressure_to_height(float pressure) {
-    return pressure / DENSITY_GRAVITY;
-}
-*/
-
-/*
-#define PI 3.1415926535897932384626433832795
-float height_to_volume(ExhaustibleResevoirConfig exhaustible_resevoir_config, float height) {
-  switch (shape_type) {
-    case 1: // Rectangular prism: length, width, height
-      return exhaustible_resevoir_config.dimension_1 * exhaustible_resevoir_config.dimension_2 * height;
-    case 2: // Cylinder: radius, height, N/A
-      return PI * exhaustible_resevoir_config.dimension_1 * exhaustible_resevoir_config.dimension_1 * height;
-    default:
-      return NULL;
-  }
-}
-*/
+// Retrieve the volume of fluid resevoir based on the pressure
+float pressure_to_volume (float pressure);
 
 }
 

@@ -18,7 +18,7 @@ void read_mqtt_config(conf::MQTTConfig *config);
 bool save_mqtt_config(conf::MQTTConfig *config);
 
 // Delete the MQTT config from the file system
-//bool delete_mqtt_config();
+bool delete_mqtt_config();
 
 // Read the config from the file system
 // into the device state

@@ -52,51 +52,159 @@ void srvc::on_message(const char topic[], byte* payload, unsigned int len) {
   }
 }
 
+// Catch errors in deserialization process
 void deserialize_json(byte* payload, unsigned int len, StaticJsonDocument<512>& json) {
   DeserializationError error = deserializeJson(json, payload, len);
   if (error) {
-    //const char error_msg[200] = error.f_str();
-    //SLOG.print("MQTT payload failed to deserialize with error: ");
-    //SLOG.println(error_msg);
-    //srvc::publish_log("error", "MQTT payload failed to deserialize with error: " + error_msg)
+    char message[150] = "MQTT payload failed to deserialize with error: ";
+    strncat(message, error.c_str(), 70);
+    SLOG.println(message);
+    srvc::publish_log(2, message);
   }
 }
 
 void srvc::dispense_activate(byte* payload, unsigned int len) {
 
-  //
+  // Stop process from being overwritten
   if (app::env.flag.dispense_flag || app::env.flag.drain_flag) {
-    //SLOG.println("Dispense request denied, dispense process already in progress. Deactivate with topic: " + DEACTIVATE_TOPIC_);
-    //srvc::publish_log("error", "Dispense request denied, process already in progress. Deactivate with topic: " + DEACTIVATE_TOPIC_);
+    char message[150] = "Dispense request denied, process already in progress. Deactivate with topic: ";
+    strncat(message, DEACTIVATE_TOPIC_, 70);
+    SLOG.println(message);
+    srvc::publish_log(2, message);
     return;
   }
 
+  // Set flags for process to start
   StaticJsonDocument<512> json;
   deserialize_json(payload, len, json);
-
   app::env.target.target_output_volume = json["target_volume"].as<int>();
   app::env.flag.dispense_flag = true;
   app::env.time.process_begin_timestamp = 0;
 
-  //char message[] = 
-  // Beginning dispensation process with target volume: 
+  char message[150];
+  snprintf(message, 150, "Beginning dispensation process with target volume: %f", app::env.target.target_output_volume);
+  SLOG.println(message);
+  publish_log(0, message);
+}
+
+void srvc::publish_dispense_slice_report(unsigned long int time, float volume, float avg_flow, float avg_pressure) {
+
+  // Catch failed connection
+  if (!app::env.flag.mqtt_connected_flag) {
+    SLOG.println("Unable to publish report. MQTT disconnected");
+    return;
+  }
+
+  StaticJsonDocument<512> json;
+  json["t"] = time;
+  json["v"] = volume;
+  json["q"] = avg_flow;
+
+  if (USING_PRESSURE_SENSOR_ && (app::env.pressure_sensor_config.report_mode == 1 || app::env.pressure_sensor_config.report_mode == 3)) {
+    json["tp"] = avg_pressure;
+  }
+  if (USING_PRESSURE_SENSOR_ && (app::env.pressure_sensor_config.report_mode == 2 || app::env.pressure_sensor_config.report_mode == 3)) {
+    json["tv"] = app::pressure_to_volume(avg_pressure);
+  }
+
+  char buffer[256];
+  size_t size = serializeJson(json, buffer);
+  net::publish(DISPENSE_REPORT_SLICE_TOPIC_, buffer, size, false);
+
+
+}
+
+void srvc::publish_dispense_summary_report(unsigned long int total_time, float total_volume, float tank_volume, unsigned long int tank_time) {
+
+  // Catch failed connection
+  if (!app::env.flag.mqtt_connected_flag) {
+    SLOG.println("Unable to publish report. MQTT disconnected");
+    return;
+  }
+
+  StaticJsonDocument<512> json;
+  json["tt"] = total_time;
+  json["vt"] = total_volume;
+
+  if(USING_TANK_) {
+    json["tv"] = tank_volume;
+    json["tts"] = tank_time;
+  }
+
+  char buffer[256];
+  size_t size = serializeJson(json, buffer);
+  net::publish(DISPENSE_REPORT_SUMMARY_TOPIC_, buffer, size, false);
+
 }
 
 void srvc::deactivate() {
 
   app::env.flag.deactivate_flag = true;
-  char message[] = "Deactivated processes";
+  char message[] = "Deactivation requested";
   SLOG.println(message);
   srvc::publish_log(0, message);
+
 }
 
 void srvc::restart() {
 
-  // Output restart notice to status
   char message[] = "System reset requested";
   SLOG.println(message);
   srvc::publish_log(0, message);
   ESP.restart();
+
+}
+
+void srvc::publish_log(int level, const char message[]) {
+  StaticJsonDocument<256> json;
+  json["message"] = message;
+  char buffer[256];
+  size_t size = serializeJson(json, buffer);
+  // Switch the correct level for logging, warning, and errors
+  switch (level) {
+    case 0:
+      net::publish(LOG_TOPIC, buffer, size, false);
+    case 1:
+      net::publish(WARNING_TOPIC, buffer, size, false);
+    case 2:
+      net::publish(ERROR_TOPIC, buffer, size, false);
+  }
+}
+
+void srvc::publish_config() {
+
+  StaticJsonDocument<512> json;
+
+  json["services"]["data_resolution_l"] = app::env.services_config.data_resolution_l;
+
+  if (USING_SOURCE_) {
+    json["source"]["static_flow_rate"] = app::env.source_config.static_flow_rate;
+  }
+
+  if (USING_TANK_) {
+    json["tank"]["timeout"] = app::env.tank_config.tank_timeout;
+    json["tank"]["shape"] = app::env.tank_config.shape_type;
+    json["tank"]["dim_1"] = app::env.tank_config.dimension_1;
+    json["tank"]["dim_2"] = app::env.tank_config.dimension_2;
+    json["tank"]["dim_3"] = app::env.tank_config.dimension_3;
+  }
+
+  if (USING_FLOW_SENSOR_) {
+    json["flow"]["pulses_per_l"] = app::env.flow_sensor_config.pulses_per_l;
+    json["flow"]["max_flow_rate"] = app::env.flow_sensor_config.max_flow_rate;
+    json["flow"]["min_flow_rate"] = app::env.flow_sensor_config.min_flow_rate;
+  }
+
+  if (USING_PRESSURE_SENSOR_) {
+    json["pressure"]["calibration"] = app::env.pressure_sensor_config.use_calibration;
+    json["pressure"]["mode"] = app::env.pressure_sensor_config.report_mode;
+    json["pressure"]["atmosphere"] = app::env.pressure_sensor_config.atmosphere_pressure;
+  }
+
+  char buffer[256];
+  size_t size = serializeJson(json, buffer);
+  net::publish(CONFIG_TOPIC_, buffer, size, true);
+
 }
 
 void srvc::config_change(byte* payload, unsigned int len) {
@@ -146,127 +254,136 @@ void srvc::config_change(byte* payload, unsigned int len) {
     }
   }
 
-  if (USING_PRESSURE_SENSOR_ && !json["flow"].isNull()) {
+  if (USING_PRESSURE_SENSOR_ && !json["pressure"].isNull()) {
     if (!json["pressure"]["calibration"].isNull()) {
       app::env.pressure_sensor_config.use_calibration = json["pressure"]["calibration"].as<bool>();
     }
-    if (!json["pressure"]["calibration"].isNull()) {
+    if (!json["pressure"]["mode"].isNull()) {
       app::env.pressure_sensor_config.report_mode = json["pressure"]["mode"].as<int>();
+    }
+    if (!json["pressure"]["atmosphere"].isNull()) {
+      app::env.pressure_sensor_config.atmosphere_pressure = json["pressure"]["atmosphere"].as<int>();
     }
   }
 
   file::save_config(&app::env);
   srvc::publish_config();
+
 }
 
 void srvc::settings_reset(byte* payload, unsigned int len) {
 
   StaticJsonDocument<512> json;
   deserialize_json(payload, len, json);
+
+  if (!json["wifi_config"].isNull() && json["wifi_config"].as<bool>()) {
+    net::reset_wifi_settings();
+    restart();
+  }
+
+  if (!json["mqtt_config"].isNull() && json["mqtt_config"].as<bool>()) {
+    net::reset_mqtt_settings();
+    restart();
+  }
+
 }
 
 void srvc::drain_activate(byte* payload, unsigned int len) {
 
+  // Stop process from being overwritten
+  if (app::env.flag.dispense_flag || app::env.flag.drain_flag) {
+    char message[150] = "Drain request denied, process already in progress. Deactivate with topic: ";
+    strncat(message, DEACTIVATE_TOPIC_, 70);
+    SLOG.println(message);
+    srvc::publish_log(2, message);
+    return;
+  }
+
   StaticJsonDocument<512> json;
   deserialize_json(payload, len, json);
 
-  if (json["target_drain_time"]) {
+  // Ensure valid input
+  if ((!json["target_drain_time"].isNull() && !json["target_drain_volume"].isNull()) || (!json["target_drain_time"].isNull() && !json["target_drain_pressure"].isNull()) || (!json["target_drain_pressure"].isNull() && !json["target_drain_volume"].isNull())) {
+    char message[150] = "Drain request denied, more than one target was sent";
+    SLOG.println(message);
+    srvc::publish_log(2, message);
+    return;
+  }
+
+  bool activated = false;
+  char message[150];
+  if (!json["target_drain_time"].isNull()) {
+
     app::env.target.target_drain_time = json["target_drain_time"].as<int>();
     app::env.target.target_drain_volume = 0;
     app::env.target.target_drain_pressure = 0;
-  } else if (json["target_drain_volume"]) {
+    activated = true;
+    snprintf(message, 150, "Beginning drain process with target time: %f", app::env.target.target_drain_time);
+
+  } else if (!json["target_drain_volume"].isNull()) {
+
     if (USING_PRESSURE_SENSOR_) {
+
       app::env.target.target_drain_time = 0;
       app::env.target.target_drain_volume = json["target_drain_volume"].as<float>();
       app::env.target.target_drain_pressure = 0;
+      activated = true;
+
     } else {
-      // Send error to status
+      char message[] = "Unable to set target drain volume as tank pressure sensor not active";
+      SLOG.println(message);
+      publish_log(2, message);
+      return;
+      snprintf(message, 150, "Beginning drain process with target volume: %f", app::env.target.target_drain_volume);
     }
-  } else if (json["target_drain_pressure"]) {
+
+  } else if (!json["target_drain_pressure"].isNull()) {
+
     if (USING_PRESSURE_SENSOR_) {
+
       app::env.target.target_drain_time = 0;
       app::env.target.target_drain_volume = 0;
       app::env.target.target_drain_pressure = json["target_drain_pressure"].as<float>();
+      activated = true;
+      snprintf(message, 150, "Beginning drain process with target pressure: %f", app::env.target.target_drain_pressure);
+
     } else {
-      // Send error to status
+      char message[] = "Unable to set target drain volume as tank pressure sensor not active";
+      SLOG.println(message);
+      publish_log(2, message);
+      return;
     }
+
   }
+
+    if (activated) {
+      app::env.flag.drain_flag = true;
+      app::env.time.process_begin_timestamp = 0;
+      SLOG.println(message);
+      publish_log(0, message);
+    }
 }
 
-void srvc::publish_config() {
+void srvc::publish_drain_summary_report(unsigned long int total_time, float start_pressure, float end_pressure, float start_volume, float end_volume) {
+
+  // Catch failed connection
+  if (!app::env.flag.mqtt_connected_flag) {
+    SLOG.println("Unable to publish report. MQTT disconnected");
+    return;
+  }
 
   StaticJsonDocument<512> json;
-
-  json["services"]["data_resolution_l"] = app::env.services_config.data_resolution_l;
-
-  if (USING_SOURCE_) {
-    json["source"]["static_flow_rate"] = app::env.source_config.static_flow_rate;
-  }
-
-  if (USING_TANK_) {
-    json["tank"]["timeout"] = app::env.tank_config.tank_timeout;
-    json["tank"]["shape"] = app::env.tank_config.shape_type;
-    json["tank"]["dim_1"] = app::env.tank_config.dimension_1;
-    json["tank"]["dim_2"] = app::env.tank_config.dimension_2;
-    json["tank"]["dim_3"] = app::env.tank_config.dimension_3;
-  }
-
-  if (USING_FLOW_SENSOR_) {
-    json["flow"]["pulses_per_l"] = app::env.flow_sensor_config.pulses_per_l;
-    json["flow"]["max_flow_rate"] = app::env.flow_sensor_config.max_flow_rate;
-    json["flow"]["min_flow_rate"] = app::env.flow_sensor_config.min_flow_rate;
-  }
+  json["tt"] = total_time;
 
   if (USING_PRESSURE_SENSOR_) {
-    json["pressure"]["calibration"] = app::env.pressure_sensor_config.use_calibration;
-    json["pressure"]["mode"] = app::env.pressure_sensor_config.report_mode;
+    json["sp"] = start_pressure;
+    json["ep"] = end_pressure;
+    json["sv"] = start_volume;
+    json["ev"] = end_volume;
   }
 
   char buffer[256];
   size_t size = serializeJson(json, buffer);
-  //net::mqtt_client.publish(CONFIG_TOPIC_, buffer, size, true);
+  net::publish(DRAIN_REPORT_SUMMARY_TOPIC_, buffer, size, false);
 
-}
-
-void srvc::publish_dispense_slice_report(bool cache, unsigned long int time, float volume, float avg_flow, float avg_pressure) {
-
-  StaticJsonDocument<512> json;
-
-  json["time"] = time;
-  json["vol"] = volume;
-  json["rate"] = avg_flow;
-
-  if (USING_PRESSURE_SENSOR_) {
-    json["pressure"] = avg_pressure;
-  }
-
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
-
-  if (cache) {
-
-
-
-  } else {
-
-  }
-
-
-}
-
-void srvc::publish_dispense_summary_report(unsigned long int total_time, float total_volume, float tank_volume, unsigned long int tank_time) {
-
-}
-
-void srvc::publish_log(int level, const char message[]) {
-  StaticJsonDocument<256> json;
-  json["message"] = message;
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
-  //switch (level) {
-    //case 0:
-      //net::publish(LOG_TOPIC, buffer, size, false);
-    //case 1:
-      //net::publish(ERROR_TOPIC, buffer, size, false);
-  //}
 }
