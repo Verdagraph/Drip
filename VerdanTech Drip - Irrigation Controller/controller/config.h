@@ -71,33 +71,6 @@ false: A pressure sensor is not being used with the tank
 #define MQTT_USERNAME_DEFAULT "username" // Default MQTT username
 #define MQTT_PASSWORD_DEFAULT "VerdanTech-Devices" // Default MQTT password
 #define MQTT_RETRY_TIMEOUT_SECONDS 300 // MQTT connection timeout in seconds before return to AP config portal
-#define MQTT_MAX_MESSAGE_SIZE 256 // Size of maximum MQTT message that can be sent
-
-// ************* MQTT topic config - Recommended to keep these short to save data ************* //
-#define BASE_TOPIC "VD1/" // Base MQTT topic to be pre-fixed to all other topics
-#define DISPENSE_ACTIVATE_TOPIC "out/on" // Topic to subscribe to dispensation commands
-#define DISPENSE_REPORT_SLICE_TOPIC "out/log/sl" // Topic to publish slice of dispensation reports
-#define DISPENSE_REPORT_SUMMARY_TOPIC "out/log/sm" // Topic to publish summary of dispensation reports
-#define DEACTIVATE_TOPIC "off" // Topic to subscribe to deactivation commands
-#define RESTART_TOPIC "restart" // Topic to restart the device
-#define LOG_TOPIC "log/info" // Topic to publish device status logs
-#define WARNING_TOPIC "log/warning" // Topic to publish device warning logs
-#define ERROR_TOPIC "log/error" // Topic to publish device error logs
-#define CONFIG_TOPIC "config" // Topic to publish current configuration values  
-#define CONFIG_CHANGE_TOPIC "config/change" // Topic to subscribe to configuration change commands
-#define SETTINGS_RESET_TOPIC "config/reset" // Topic to reset WiFi, MQTT, or config settings
-
-// The following topics are only used if using an tank with a drain
-#define DRAIN_ACTIVATE_TOPIC "drain/on" // Topic to subscribe to drain commands
-#define DRAIN_REPORT_SUMMARY_TOPIC "drain/log" // Topic to publish drain reports
-
-// The following topics are only used on configurations with a flow sensor
-// Calibration should be implemented with MQTTv5 request/response and correlation data 
-//#define CALIBRATE_FLOW_TOPIC "flow/calibrate"
-
-// The following topics are only used on configurations with a pressure sensor
-#define PRESSURE_REPORT_TOPIC "pressure/read" // Topic to publish current pressure sensor reading
-//#define CALIBRATE_PRESSURE_TOPIC "pressure/calibrate "
 
 // ************* Pin config ************* //
 
@@ -162,16 +135,44 @@ Select the output types of the pressure sensor
 // The default 
 #define ATMOSPHERIC_PRESSURE_HPA_DEFAULT 1013.25
 
+// ************* MQTT topic config - Recommended to keep these short to save data ************* //
+#define BASE_TOPIC "VD1/" // Base MQTT topic to be pre-fixed to all other topics
+#define DISPENSE_ACTIVATE_TOPIC "out/on" // Topic to subscribe to dispensation commands
+#define DISPENSE_REPORT_SLICE_TOPIC "out/log/sl" // Topic to publish slice of dispensation reports
+#define DISPENSE_REPORT_SUMMARY_TOPIC "out/log/sm" // Topic to publish summary of dispensation reports
+#define DEACTIVATE_TOPIC "off" // Topic to subscribe to deactivation commands
+#define RESTART_TOPIC "restart" // Topic to restart the device
+#define LOG_TOPIC "log/info" // Topic to publish device status logs
+#define WARNING_TOPIC "log/warning" // Topic to publish device warning logs
+#define ERROR_TOPIC "log/error" // Topic to publish device error logs
+#define CONFIG_TOPIC "config" // Topic to publish current configuration values  
+#define CONFIG_CHANGE_TOPIC "config/change" // Topic to subscribe to configuration change commands
+#define SETTINGS_RESET_TOPIC "config/reset" // Topic to reset WiFi, MQTT, or config settings
+
+// The following topics are only used if using an tank with a drain
+#define DRAIN_ACTIVATE_TOPIC "drain/on" // Topic to subscribe to drain commands
+#define DRAIN_REPORT_SUMMARY_TOPIC "drain/log" // Topic to publish drain reports
+
+// The following topics are only used on configurations with a flow sensor
+// Calibration should be implemented with MQTTv5 request/response and correlation data 
+//#define CALIBRATE_FLOW_TOPIC "flow/calibrate"
+
+// The following topics are only used on configurations with a pressure sensor
+#define PRESSURE_REPORT_TOPIC "pressure/read" // Topic to publish current pressure sensor reading
+//#define CALIBRATE_PRESSURE_TOPIC "pressure/calibrate "
+
+
 // *************
 // ************* This group of settings are automatically configured.
 // ************* Don't change unless willing to modify code!
 // *************
 
+// ************* Operating mode ************* //
 #define USING_SOURCE_ ((RESEVOIR_MODE == 1 || RESEVOIR_MODE == 3) ? true : false)
 #define USING_TANK_ ((RESEVOIR_MODE == 2 || RESEVOIR_MODE == 3) ? true : false)
-#define USING_DRAIN_VALVE_ ((USING_TANK_ && USING_DRAIN_VALVE) ? true: false)
-#define USING_FLOW_SENSOR_ ((USING_TANK_ || USING_SOURCE_FLOW) ? true: false)
-#define USING_PRESSURE_SENSOR_ ((USING_TANK_ && USING_PRESSURE_SENSOR) ? true: false)
+#define USING_DRAIN_VALVE_ ((USING_TANK_ && USING_DRAIN_VALVE) ? true : false)
+#define USING_FLOW_SENSOR_ ((USING_TANK_ || USING_SOURCE_FLOW) ? true : false)
+#define USING_PRESSURE_SENSOR_ ((USING_TANK_ && USING_PRESSURE_SENSOR) ? true : false)
 
 // ************* Pins ************* //
 // Define pins to -1 to indicate non-use based on operational mode
@@ -189,8 +190,8 @@ Select the output types of the pressure sensor
 #define DEACTIVATE_TOPIC_ (BASE_TOPIC DEACTIVATE_TOPIC)
 #define RESTART_TOPIC_ (BASE_TOPIC RESTART_TOPIC)
 #define LOG_TOPIC_ (BASE_TOPIC LOG_TOPIC)
-#define ERROR_TOPIC_ (BASE_TOPIC ERROR_TOPIC)
 #define WARNING_TOPIC_ (BASE_TOPIC WARNING_TOPIC)
+#define ERROR_TOPIC_ (BASE_TOPIC ERROR_TOPIC)
 #define CONFIG_TOPIC_ (BASE_TOPIC CONFIG_TOPIC)
 #define CONFIG_CHANGE_TOPIC_ (BASE_TOPIC CONFIG_CHANGE_TOPIC)
 #define SETTINGS_RESET_TOPIC_ (BASE_TOPIC SETTINGS_RESET_TOPIC)
