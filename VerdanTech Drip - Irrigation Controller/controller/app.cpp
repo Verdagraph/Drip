@@ -370,6 +370,73 @@ void loop_drain(){
 
 void log_state() {
 
+  if (!DEBUG) {return;}
+
+  SLOG.println("*****************");
+  SLOG.println("Device state log:");
+  SLOG.print("dispense_flag: ");
+  SLOG.print(app::env.flag.dispense_flag);
+  SLOG.print(" drain_flag: ");
+  SLOG.print(app::env.flag.drain_flag);
+  SLOG.print(" deactivate_flag: ");
+  SLOG.print(app::env.flag.deactivate_flag);
+  SLOG.print(" resevoir_switch_flag: ");
+  SLOG.print(app::env.flag.resevoir_switch_flag);
+  SLOG.print(" mqtt_connected_flag: ");
+  SLOG.println(app::env.flag.mqtt_connected_flag);
+
+  SLOG.print("process_begin_timestamp: ");
+  SLOG.print(app::env.time.process_begin_timestamp);
+  SLOG.print(" last_timestamp: ");
+  SLOG.print(app::env.time.last_timestamp);
+  SLOG.print(" resevoir_switch_timestamp: ");
+  SLOG.println(app::env.time.resevoir_switch_timestamp);
+
+  SLOG.print("target_output_volume: ");
+  SLOG.print(app::env.target.target_output_volume);
+  SLOG.print(" target_drain_time: ");
+  SLOG.print(app::env.target.target_drain_time);
+  SLOG.print(" target_drain_volume: ");
+  SLOG.print(app::env.target.target_drain_volume);
+  SLOG.print(" target_drain_pressure: ");
+  SLOG.println(app::env.target.target_drain_pressure);
+
+  SLOG.print("pulses: ");
+  SLOG.print(app::env.sensor.pulses);
+  SLOG.print(" last_pulses: ");
+  SLOG.print(app::env.sensor.last_pulses);
+  SLOG.print(" pressure: ");
+  SLOG.println(app::env.sensor.pressure);
+
+  SLOG.print("time_elapsed: ");
+  SLOG.print(app::env.slice.time_elapsed);
+  SLOG.print(" pulses_elapsed: ");
+  SLOG.print(app::env.slice.pulses_elapsed);
+  SLOG.print(" output_volume_elapsed: ");
+  SLOG.print(app::env.slice.output_volume_elapsed);
+  SLOG.print(" flow_rate: ");
+  SLOG.print(app::env.slice.flow_rate);
+  SLOG.print(" total_time_elapsed: ");
+  SLOG.print(app::env.slice.total_time_elapsed);
+  SLOG.print(" total_output_volume: ");
+  SLOG.print(app::env.slice.total_output_volume);
+  SLOG.print(" current_avg_flow: ");
+  SLOG.print(app::env.slice.current_avg_flow);
+  SLOG.print(" avg_flow_count: ");
+  SLOG.print(app::env.slice.avg_flow_count);
+  SLOG.print(" current_avg_tank_pressure: ");
+  SLOG.print(app::env.slice.current_avg_tank_pressure);
+  SLOG.print(" avg_tank_count: ");
+  SLOG.println(app::env.slice.avg_tank_count);
+  
+  SLOG.print("last_output_volume_report: ");
+  SLOG.print(app::env.report.last_output_volume_report);
+  SLOG.print(" total_tank_output_volume: ");
+  SLOG.print(app::env.report.total_tank_output_volume);
+  SLOG.print(" drain_start_pressure: ");
+  SLOG.println(app::env.report.drain_start_pressure);
+  SLOG.println("*****************");
+
 }
 
 void app::loop_app(){
@@ -389,7 +456,7 @@ void app::loop_app(){
     loop_drain();
   }
 
-  if (DEBUG) {log_state();}
+  log_state();
 
 }
 
