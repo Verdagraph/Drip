@@ -77,12 +77,12 @@ void srvc::dispense_activate(byte* payload, unsigned int len) {
   // Set flags for process to start
   StaticJsonDocument<512> json;
   deserialize_json(payload, len, json);
-  app::env.target.target_output_volume = json["target_volume"].as<int>();
+  app::env.target.target_output_volume = json["tv"].as<float>();
   app::env.flag.dispense_flag = true;
   app::env.time.process_begin_timestamp = 0;
 
   char message[150];
-  snprintf(message, 150, "Beginning dispensation process with target volume: %f", app::env.target.target_output_volume);
+  snprintf(message, 150, "Beginning dispensation process with target volume: %f liters", app::env.target.target_output_volume);
   SLOG.println(message);
   publish_log(0, message);
 }
@@ -91,7 +91,7 @@ void srvc::publish_dispense_slice_report(unsigned long int time, float volume, f
 
   // Catch failed connection
   if (!app::env.flag.mqtt_connected_flag) {
-    SLOG.println("Unable to publish report. MQTT disconnected");
+    SLOG.println("Unable to publish slice report. MQTT disconnected");
     return;
   }
 
@@ -118,8 +118,8 @@ void srvc::publish_dispense_summary_report(unsigned long int total_time, float t
 
   // Catch failed connection
   if (!app::env.flag.mqtt_connected_flag) {
-    SLOG.println("Unable to publish report. MQTT disconnected");
-    return;
+    SLOG.println("Unable to publish summary report. Trying MQTT connection one more time.");
+    if (!net::mqtt_loop()) {return;}
   }
 
   StaticJsonDocument<512> json;
@@ -128,7 +128,9 @@ void srvc::publish_dispense_summary_report(unsigned long int total_time, float t
 
   if(USING_TANK_) {
     json["tv"] = tank_volume;
-    json["tts"] = tank_time;
+    if (USING_SOURCE_){
+      json["tts"] = tank_time;
+    }
   }
 
   char buffer[256];
@@ -157,7 +159,7 @@ void srvc::restart() {
 
 void srvc::publish_log(int level, const char message[]) {
   StaticJsonDocument<256> json;
-  json["message"] = message;
+  json["m"] = message;
   char buffer[256];
   size_t size = serializeJson(json, buffer);
   // Switch the correct level for logging, warning, and errors

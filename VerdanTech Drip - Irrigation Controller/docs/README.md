@@ -4,20 +4,32 @@ The VDT Drip is an open source irrigation controller based on the ESP8266. The D
 
 To do this, the Drip employs 1-3 solenoid valve(s), 0-1 flow sensor(s), 0-1 pressure sensor(s), and communication via an MQTT broker.
 
-## Get started guide
+## Project Instructions
 
-1. Read the terminology and MQTT interface to learn the devices capabilities
-1. read the hardware sections Decide on a configuration and source materials
-2. Assemble using soldering or another technique and all the pipes connected and stuff
-3. Find some sort of MQTT broker
-4. Download and install Arduino
-5. Install required libraries
-6. Configure config according to section (include distinctions between required configs and general defaults)
-7. Upload code to ESP8266
-8. Connect to WiFi and MQTT through autoconnect portal
-9. Calibrate sensors
+1. Read the [terminology](#terminology) and [interface](#mqtt-interface) sections 
+to understand the device's capabilities and limitations.
+
+2. Read the [hardware](#hardware) section and decide on an operating mode.
+
+3. Secure the use of an MQTT broker
+
+4. Source materials
+
+5. Assemble the device
+
+6. Install the Arduino platform and required libraries
+
+7. Configure the device through the file `config.h`
+
+8. Flash the microcontroller with the software
+
+9. Connect to a WiFi network and MQTT broker through the auto-connect access point
+
+10. Calibrate sensors
 
 ## Terminology
+
+Refer to this list for explicit descriptions of some key terms used throughout the document.
 
 ### Water Supplies
 
@@ -28,62 +40,212 @@ To do this, the Drip employs 1-3 solenoid valve(s), 0-1 flow sensor(s), 0-1 pres
 
 ### Equipment
 
+For specific product examples see [equipment](#recommended-equipment).
+
 - **Valve**
-    - A solenoid valve
+    - An electronically controllable water valve, such as a solenoid valve.
 - **Flow sensor**
-    - A hall effect flow sensor
+    - A water flow sensor capable of sending a steady rate of electrical pulses per unit volume, such as a hall effect flow sensor.
 - **Pressure sensor**
-    - I2C pressure sensor
+    - A pressure sensor capable of sending an absolute pressure reading through I2C and of surviving the maximum water pressure in the **Tank**.
+- **Operational mode**
+    - A specific combination of source, tank, valves, flow sensor, and pressure sensor, as described in the [hardware](#operating-modes) section.
 
 ### Software
 
-- **Broker**
-    - An MQTT broker
-- **Topic**
-    - An MQTT topic
+- **MQTT**
+    - A network protocol used for internet-of-things (IOT) devices. See [wiki](https://en.wikipedia.org/wiki/MQTT).
+
+- **WiFi Manager**
+    - An instance of the WiFiManager class. See [library](#dependencies).
+
+- **MQTT Client**
+    - An instance of the PubSubClient class. See [library](#dependencies). 
+
+### Operation
+
+- **Dispensation**
+    - A process of attempting to output a target volume of water, first from the tank, then from the source.
 
 ## MQTT interface
 
-| Title   | Topic string  | Does the controller publish or subscribe? | Is this functionality conditional on the operating mode? |
+This section describes the functionality of the MQTT topics through which the device sends and recieves information. All communication is done via JSON.
+
+| Title   | Topic string config  | Does the controller publish or subscribe? | Is the topic enabled unconditionally? |
 | ------------- | ------------- | ------------- | ------------- |
-| Dispense activate  | `DISPENSE_ACTIVATE_TOPIC_`  | Subscribe | No |
-| Dispense slice report  | `DISPENSE_REPORT_SLICE_TOPIC_`  | Publish | No |
-| Dispense summary report  | `DISPENSE_REPORT_SUMMARY_TOPIC_`  | Publish | No |
-| Deactivate  | `DEACTIVATE_TOPIC_`  | Subscribe | No |
-| Restart  | `RESTART_TOPIC_`  | Subscribe | No |
-| Info logs  | `LOG_TOPIC_`  | Publish | No |
-| Warning logs  | `WARNING_TOPIC_`  | Publish | No |
-| Error logs  | `ERROR_TOPIC_`  | Publish | No |
-| Read config  | `CONFIG_TOPIC_`  | Publish | No |
-| Write config  | `CONFIG_CHANGE_TOPIC_`  | Subscribe | No |
-| Reset settings  | `SETTINGS_RESET_TOPIC_`  | Subscribe | No |
-| Drain activate  | `DRAIN_ACTIVATE_TOPIC_`  | Subscribe | Yes |
-| Drain summary report  | `DRAIN_REPORT_SUMMARY_TOPIC_`  | Publish | Yes |
+| [Dispense Activate](#activation)  | `DISPENSE_ACTIVATE_TOPIC_` | Subscribe | Yes |
+| [Dispense Slice Report](#slice-reporting)  | `DISPENSE_REPORT_SLICE_TOPIC_`  | Publish | Yes |
+| [Dispense Summary Report](#summary-reporting)  | `DISPENSE_REPORT_SUMMARY_TOPIC_`  | Publish | Yes |
+| [Deactivate](#deactivation)  | `DEACTIVATE_TOPIC_`  | Subscribe | Yes |
+| [Restart](#restart)  | `RESTART_TOPIC_`  | Subscribe | Yes |
+| [Info Logging](#info)  | `LOG_TOPIC_`  | Publish | Yes |
+| [Warning Logging](#warnings)  | `WARNING_TOPIC_`  | Publish | Yes |
+| [Error Logging](#errors)  | `ERROR_TOPIC_`  | Publish | Yes |
+| [Read Config](#read)  | `CONFIG_TOPIC_`  | Publish | Yes |
+| [Write Config](#write)  | `CONFIG_CHANGE_TOPIC_`  | Subscribe | Yes |
+| [Reset Settings](#reset-settings)  | `SETTINGS_RESET_TOPIC_`  | Subscribe | Yes |
+| [Drain Activate](#activation-1)  | `DRAIN_ACTIVATE_TOPIC_`  | Subscribe | No |
+| [Drain Summary Report](#reporting)  | `DRAIN_REPORT_SUMMARY_TOPIC_`  | Publish | No |
 
 ### Dispensation
 
+The main functionality of the device. The dispentation topics handle setting target volumes for the dispensation process, publishing data taken at regular intervals through the process, and publishing data at the end of the process.
+
 #### Activation
 
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| `DISPENSE_ACTIVATE_TOPIC_`  | Subscribe | Yes |
 
+This topic allows activating the dispensation process and setting the target volume. Activation will fail if a dispensation process or drain process is already in progress. The dispensation process will continue until the output volume is greater than or equal to the target volume, or a singularly connected tank produces a flow rate less than that defined by `MIN_FLOW_RATE_DEFAULT` and the total duration of the process is greater than that defined by `TANK_TIMEOUT_DEFAULT`.
 
+Inputs:
+- `["tv"]` float. Target volume of the dispensation process in liters.
 
-#### Reporting
+Sample payload:
+```
+{
+  "tv": 10.25
+}
+```
 
-##### Slices
+#### Slice Reporting
 
-##### Summaries
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- | 
+| `DISPENSE_REPORT_SLICE_TOPIC_`  | Publish | Yes |
+
+This topic is where the mid-process datapoints on the dispensation process are published between a volume interval in liters defined by `DATA_RESOLUTION_L_DEFAULT`. If the connection to the MQTT broker fails, these reports will fail to be sent and are lost, but the dispensation process will continue.
+
+Outputs:
+- `t` int. Current duration of the dispensation process in miliseconds.
+- `v` float. Current output volume of the dispensation process in liters.
+- `q` float. The average flow rate of output volume calculated either from the last slice report to the current one (or from the beginning of the process if on the first report) in liters per minute
+- `tp` (conditional) float. The average tank gauge pressure calculated from the last slice report to the current one (or from the beginning of the process if on the first report) in hectopascals. Enabled if `USING_PRESSURE_SENSOR_` and `PRESSURE_REPORT_MODE_DEFAULT` equals 1 or 3.
+- `tv` (conditional) float. The average tank volume calculated from the last slice report to the current one (or from the beginning of the process if on the first report) in liters. Enabled if `USING_PRESSURE_SENSOR_` and `PRESSURE_REPORT_MODE_DEFAULT` equals 2 or 3.
+
+Sample payload:
+```
+{
+  "t": 5000,
+  "v": 0.1,
+  "q": 13.2,
+  "tp": 68.94,
+  "tv": 85.6
+}
+```
+
+#### Summary Reporting
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| `DISPENSE_REPORT_SUMMARY_TOPIC_`  | Publish | Yes |
+
+This topic is where the post-process datapoints on the dispensation process are published. If the connection to the MQTT broker fails, the connection is retried once before the message is lost.
+
+Outputs:
+- `tt` int. Total duration of the dispensation process in miliseconds.
+- `vt` float. Total output volume of the dispensation process in liters.
+- `tv` (conditional) float. The total output volume produced by the tank in liters. Enabled if `USING_TANK_`.
+- `tts` (conditional) int. The time stamp at which the dispensation process switched from the tank to the source. Will equal `tt` if the processes ended without switching water supplies. Enabled if `USING_TANK_` and `USING_SOURCE_`.
+
+Sample payload:
+```
+{
+  "tt": 500000,
+  "vt": 10.25,
+  "tv": 5.6,
+  "tts": 250000,
+}
+```
 
 ### Deactivation
 
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| `DEACTIVATE_TOPIC_`  | Subscribe | Yes |
+
+This topic is where requests for deactivating current processes are sent. Any message recieved on this topic will trigger the deactivation regardless of payload. Upon reception, the device will close all valves, end all ongoing dispensation or drain processes, and send summary reports of any ongoing processes.
+
+Inputs: None
+
+Sample payload:
+```
+{}
+```
+
 ### Restart
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| `RESTART_TOPIC_`  | Subscribe | Yes |
+
+This topic is where requests for restarting the controller are sent. Any message recieved on this topic will trigger the restart regardless of payload. Upon reception, the device will power down and restart.
+
+Inputs: None
+
+Sample payload:
+```
+{}
+```
 
 ### Logging
 
+These topics are where the device will send status logs alongside events and changes in state.
+
 #### Info
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| `LOG_TOPIC_`  | Subscribe | Yes |
+
+This topic is where the device sends status logs that aren't warnings or errors. Once connected to the MQTT broker, most status changes are reflected here. 
+
+Outputs:
+- `m` string. The info log message.
+
+Sample payload:
+```
+{
+  "m": "Beginning dispensation process with target volume: 10.25 liters"
+}
+```
 
 #### Warnings
 
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| `WARNING_TOPIC_`  | Subscribe | Yes |
+
+This topic is where the device sends status logs about events that don't break things but may result in abnormal function.
+
+Outputs:
+- `m` string. The warning log message.
+
+Sample payload:
+```
+{
+  "m": "Flow rate exceeded maximum"
+}
+```
+
 #### Errors
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| `ERROR_TOPIC_`  | Subscribe | Yes |
+
+This topic is where the device sends status logs about events that prevent sucessful function.
+
+Outputs:
+- `m` string. The error log message.
+
+Sample payload:
+```
+{
+  "m": "Dispense request denied, process already in progress."
+}
+```
 
 ### Config
 
@@ -103,7 +265,7 @@ To do this, the Drip employs 1-3 solenoid valve(s), 0-1 flow sensor(s), 0-1 pres
 
 ## Operating Modes
 
-## Required equipment
+## Recommended Equipment
 
 ## 3D printed CAD files
 

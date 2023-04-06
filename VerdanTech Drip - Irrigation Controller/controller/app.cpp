@@ -148,7 +148,8 @@ void loop_deactivate() {
     }
 
     if (app::env.flag.drain_flag) {
-
+      close_drain_process();
+      drain_report_summary();
     }
 
     app::env.flag.dispense_flag = false;

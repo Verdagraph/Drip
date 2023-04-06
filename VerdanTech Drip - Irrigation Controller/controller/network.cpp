@@ -162,13 +162,15 @@ void net::init_network() {
   }
 }
 
-void net::loop_mqtt() {
+bool net::loop_mqtt() {
   if (mqtt_client.connected()){
     app::env.flag.mqtt_connected_flag = true;
     mqtt_client.loop();
+    return true;
   } else {
     SLOG.println("MQTT connection lost");
     app::env.flag.mqtt_connected_flag = false;
+    return false;
   }
 }
 
