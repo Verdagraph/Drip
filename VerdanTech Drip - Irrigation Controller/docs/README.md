@@ -125,8 +125,8 @@ These settings define the [operating mode](#operating-modes) of the device. Make
     - `3` Both
 
 - `USING_SOURCE_FLOW bool` If using a source, define the method of flow rate estimation. 
-    - `true` A flow sensor measures the flow rate. This is useful if the source has a variable flow, or if a tank and flow sensor is already being used.
-    - `false` A flow sensor is not 
+    - `true` A flow sensor measures the flow rate. This is useful if the source has a variable flow, or if a tank (and thus flow sensor) is already being used.
+    - `false` A flow sensor is not being used. A static flow rate for the source must be configured through `STATIC_FLOW_RATE_DEFAULT`. 
 
 -  `USING_DRAIN_VALVE bool`
     - `true`
@@ -138,7 +138,7 @@ These settings define the [operating mode](#operating-modes) of the device. Make
 
 ### WiFi Manager
 
-These settings are used to configure the WiFi Manager, an instance of the WiFiManager (see [dependencies](#dependencies)) class. This class enables the configuration of the WiFi network and MQTT broker through an access point hosted by the controller, rather than being hard coded into the software.
+These settings are used to configure the WiFi Manager, an instance of the WiFiManager class (see [dependencies](#dependencies)). This class enables the configuration of the WiFi network and MQTT broker through an access point hosted by the controller, rather than being hard coded into the software.
 
 - `AP_NAME string`
 - `AP_PASSWORD string`
@@ -149,7 +149,7 @@ These settings are used to configure the WiFi Manager, an instance of the WiFiMa
 
 ### MQTT
 
-These settings are used to configue the MQTT client, an instance of the PubSubClient (see [dependencies](#dependencies)) class. This class enables interaction with an MQTT broker. The settings marked as `DEFAULT` are able to be configured through the WiFi Manager access point.
+These settings are used to configue the MQTT client, an instance of the PubSubClient class(see [dependencies](#dependencies)). This class enables interaction with an MQTT broker. The settings marked as `DEFAULT` are able to be configured through the WiFi Manager access point.
 
 - `MQTT_SERVER_DOMAIN_DEFAULT string`
 - `MQTT_SERVER_PORT_DEFAULT string`
@@ -194,7 +194,7 @@ These settings are default settings that can be changed at runtime through the [
 
 These settings define the topic strings to use for the MQTT interface. See the [MQTT interface](#mqtt-interface) for details.
 
-You can leave these unchanged with no problem, but you might want to customize them. If you do, just keep in mind that the topic strings are sent with every message, and that the MQTT client has a maximum message size of 256 bytes (including header). Try to keep them small, especially for topics with a high message frequency (like `DISPENSE_REPORT_SLICE_TOPIC_`.)
+You can leave these unchanged with no problem, but you might want to customize them. If you do, just keep in mind that the topic strings are sent with every message, and that the MQTT client has a maximum message size of 256 bytes (including header). Try to keep them small, especially for topics with a high message frequency (like `DISPENSE_REPORT_SLICE_TOPIC_`), or a large payload (like 'CONFIG_TOPIC'). 
 
 - `BASE_TOPIC string` The base topic used to pre-pend all other topics through the [auto-config](#auto-config).
 - `DISPENSE_ACTIVATE_TOPIC string`
@@ -256,6 +256,8 @@ These settings are configured automatically and shouldn't be altered unless you'
 ### Explanation of the purposes of different files
 
 ### Explanation of app state 
+
+### Explanation of future plans for interface through verdantech web
 
 
 # Bug reporting and contributing
