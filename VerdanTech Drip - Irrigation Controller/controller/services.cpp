@@ -74,6 +74,14 @@ void srvc::dispense_activate(byte* payload, unsigned int len) {
     return;
   }
 
+  // Validate input 
+  if (json["tv"].isNull()) {
+    char message[] = "Dispense requested without a target volume";
+    SLOG.println(message);
+    srvc::publish_log(2, message);
+    return;
+  }
+
   // Set flags for process to start
   StaticJsonDocument<512> json;
   deserialize_json(payload, len, json);
@@ -96,7 +104,7 @@ void srvc::publish_dispense_slice_report(unsigned long int time, float volume, f
   }
 
   StaticJsonDocument<512> json;
-  json["t"] = time;
+  json["t"] = (float)(time / 1000);
   json["v"] = volume;
   json["q"] = avg_flow;
 
@@ -118,12 +126,12 @@ void srvc::publish_dispense_summary_report(unsigned long int total_time, float t
 
   // Catch failed connection
   if (!app::env.flag.mqtt_connected_flag) {
-    SLOG.println("Unable to publish summary report. Trying MQTT connection one more time.");
+    SLOG.println("Unable to publish dispense summary report. Trying MQTT connection one more time.");
     if (!net::mqtt_loop()) {return;}
   }
 
   StaticJsonDocument<512> json;
-  json["tt"] = total_time;
+  json["tt"] = (float)(total_time / 1000);
   json["vt"] = total_volume;
 
   if(USING_TANK_) {
@@ -177,30 +185,29 @@ void srvc::publish_config() {
 
   StaticJsonDocument<512> json;
 
-  json["services"]["data_resolution_l"] = app::env.services_config.data_resolution_l;
+  json["srvc"]["res"] = app::env.services_config.data_resolution_l;
 
   if (USING_SOURCE_) {
-    json["source"]["static_flow_rate"] = app::env.source_config.static_flow_rate;
+    json["src"]["rate"] = app::env.source_config.static_flow_rate;
   }
 
   if (USING_TANK_) {
-    json["tank"]["timeout"] = app::env.tank_config.tank_timeout;
-    json["tank"]["shape"] = app::env.tank_config.shape_type;
-    json["tank"]["dim_1"] = app::env.tank_config.dimension_1;
-    json["tank"]["dim_2"] = app::env.tank_config.dimension_2;
-    json["tank"]["dim_3"] = app::env.tank_config.dimension_3;
+    json["tnk"]["time"] = app::env.tank_config.tank_timeout;
+    json["tnk"]["shape"] = app::env.tank_config.shape_type;
+    json["tnk"]["dim1"] = app::env.tank_config.dimension_1;
+    json["tnk"]["dim2"] = app::env.tank_config.dimension_2;
+    json["tnk"]["dim3"] = app::env.tank_config.dimension_3;
   }
 
   if (USING_FLOW_SENSOR_) {
-    json["flow"]["pulses_per_l"] = app::env.flow_sensor_config.pulses_per_l;
-    json["flow"]["max_flow_rate"] = app::env.flow_sensor_config.max_flow_rate;
-    json["flow"]["min_flow_rate"] = app::env.flow_sensor_config.min_flow_rate;
+    json["flow"]["ppl"] = app::env.flow_sensor_config.pulses_per_l;
+    json["flow"]["max"] = app::env.flow_sensor_config.max_flow_rate;
+    json["flow"]["min"] = app::env.flow_sensor_config.min_flow_rate;
   }
 
   if (USING_PRESSURE_SENSOR_) {
-    json["pressure"]["calibration"] = app::env.pressure_sensor_config.use_calibration;
-    json["pressure"]["mode"] = app::env.pressure_sensor_config.report_mode;
-    json["pressure"]["atmosphere"] = app::env.pressure_sensor_config.atmosphere_pressure;
+    json["prssr"]["mode"] = app::env.pressure_sensor_config.report_mode;
+    json["prssr"]["atmo"] = app::env.pressure_sensor_config.atmosphere_pressure;
   }
 
   char buffer[256];
@@ -214,57 +221,54 @@ void srvc::config_change(byte* payload, unsigned int len) {
   StaticJsonDocument<512> json;
   deserialize_json(payload, len, json);
 
-  if (!json["services"].isNull()) {
-    if (!json["services"]["data_resolution_l"].isNull()) {
-      app::env.services_config.data_resolution_l = json["services"]["data_resolution_l"].as<int>();
+  if (!json["srvc"].isNull()) {
+    if (!json["srvc"]["res"].isNull()) {
+      app::env.services_config.data_resolution_l = json["srvc"]["res"].as<int>();
     }
   }
 
-  if (USING_SOURCE_ && !json["source"].isNull()) {
-    if (!json["source"]["static_flow_rate"].isNull()) {
-      app::env.source_config.static_flow_rate = json["source"]["static_flow_rate"].as<float>();
+  if (USING_SOURCE_ && !json["src"].isNull()) {
+    if (!json["src"]["rate"].isNull()) {
+      app::env.source_config.static_flow_rate = json["src"]["rate"].as<float>();
     }
   }
 
-  if (USING_TANK_ && !json["tank"].isNull()) {
-    if (!json["tank"]["timeout"].isNull()) {
-      app::env.tank_config.tank_timeout = json["tank"]["timeout"].as<int>();
+  if (USING_TANK_ && !json["tnk"].isNull()) {
+    if (!json["tnk"]["time"].isNull()) {
+      app::env.tank_config.tank_timeout = json["tnk"]["time"].as<int>();
     }
-    if (!json["tank"]["shape"].isNull()) {
-      app::env.tank_config.shape_type = json["tank"]["shape"].as<float>();
+    if (!json["tnk"]["shape"].isNull()) {
+      app::env.tank_config.shape_type = json["tnk"]["shape"].as<float>();
     }
-    if (!json["tank"]["dim_1"].isNull()) {
-      app::env.tank_config.dimension_1 = json["tank"]["dim_1"].as<int>();
+    if (!json["tnk"]["dim1"].isNull()) {
+      app::env.tank_config.dimension_1 = json["tnk"]["dim1"].as<int>();
     }
-    if (!json["tank"]["dim_2"].isNull()) {
-      app::env.tank_config.dimension_2 = json["tank"]["dim_2"].as<float>();
+    if (!json["tnk"]["dim2"].isNull()) {
+      app::env.tank_config.dimension_2 = json["tnk"]["dim2"].as<float>();
     }
-    if (!json["tank"]["dim_3"].isNull()) {
-      app::env.tank_config.dimension_3 = json["tank"]["dim_3"].as<float>();
+    if (!json["tnk"]["dim3"].isNull()) {
+      app::env.tank_config.dimension_3 = json["tnk"]["dim3"].as<float>();
     }
   }
 
   if (USING_FLOW_SENSOR_ && !json["flow"].isNull()) {
-    if (!json["flow"]["pulses_per_l"].isNull()) {
-      app::env.flow_sensor_config.pulses_per_l = json["flow"]["pulses_per_l"].as<float>();
+    if (!json["flow"]["ppl"].isNull()) {
+      app::env.flow_sensor_config.pulses_per_l = json["flow"]["ppl"].as<float>();
     }
-    if (!json["flow"]["max_flow_rate"].isNull()) {
-      app::env.flow_sensor_config.max_flow_rate = json["flow"]["max_flow_rate"].as<float>();
+    if (!json["flow"]["max"].isNull()) {
+      app::env.flow_sensor_config.max_flow_rate = json["flow"]["max"].as<float>();
     }
-    if (!json["flow"]["min_flow_rate"].isNull()) {
-      app::env.flow_sensor_config.min_flow_rate = json["flow"]["min_flow_rate"].as<float>();
+    if (!json["flow"]["min"].isNull()) {
+      app::env.flow_sensor_config.min_flow_rate = json["flow"]["min"].as<float>();
     }
   }
 
-  if (USING_PRESSURE_SENSOR_ && !json["pressure"].isNull()) {
-    if (!json["pressure"]["calibration"].isNull()) {
-      app::env.pressure_sensor_config.use_calibration = json["pressure"]["calibration"].as<bool>();
+  if (USING_PRESSURE_SENSOR_ && !json["prssr"].isNull()) {
+    if (!json["prssr"]["mode"].isNull()) {
+      app::env.pressure_sensor_config.report_mode = json["prssr"]["mode"].as<int>();
     }
-    if (!json["pressure"]["mode"].isNull()) {
-      app::env.pressure_sensor_config.report_mode = json["pressure"]["mode"].as<int>();
-    }
-    if (!json["pressure"]["atmosphere"].isNull()) {
-      app::env.pressure_sensor_config.atmosphere_pressure = json["pressure"]["atmosphere"].as<int>();
+    if (!json["prssr"]["atmo"].isNull()) {
+      app::env.pressure_sensor_config.atmosphere_pressure = json["prssr"]["atmo"].as<int>();
     }
   }
 
@@ -278,12 +282,12 @@ void srvc::settings_reset(byte* payload, unsigned int len) {
   StaticJsonDocument<512> json;
   deserialize_json(payload, len, json);
 
-  if (!json["wifi_config"].isNull() && json["wifi_config"].as<bool>()) {
+  if (!json["wifi"].isNull() && json["wifi"].as<bool>()) {
     net::reset_wifi_settings();
     restart();
   }
 
-  if (!json["mqtt_config"].isNull() && json["mqtt_config"].as<bool>()) {
+  if (!json["mqtt"].isNull() && json["mqtt"].as<bool>()) {
     net::reset_mqtt_settings();
     restart();
   }
@@ -305,8 +309,14 @@ void srvc::drain_activate(byte* payload, unsigned int len) {
   deserialize_json(payload, len, json);
 
   // Ensure valid input
-  if ((!json["target_drain_time"].isNull() && !json["target_drain_volume"].isNull()) || (!json["target_drain_time"].isNull() && !json["target_drain_pressure"].isNull()) || (!json["target_drain_pressure"].isNull() && !json["target_drain_volume"].isNull())) {
+  if ((!json["tt"].isNull() && !json["tv"].isNull()) || (!json["tt"].isNull() && !json["tp"].isNull()) || (!json["tp"].isNull() && !json["tv"].isNull())) {
     char message[150] = "Drain request denied, more than one target was sent";
+    SLOG.println(message);
+    srvc::publish_log(2, message);
+    return;
+  }
+  if (!json["tt"].isNull() && !json["tv"].isNull() && !json["tp"].isNull()) {
+    char message[] = "Drain requested without any target time, pressure, or volume";
     SLOG.println(message);
     srvc::publish_log(2, message);
     return;
@@ -314,20 +324,21 @@ void srvc::drain_activate(byte* payload, unsigned int len) {
 
   bool activated = false;
   char message[150];
-  if (!json["target_drain_time"].isNull()) {
+  if (!json["tt"].isNull()) {
 
-    app::env.target.target_drain_time = json["target_drain_time"].as<int>();
+    int target_time_seconds = json["tt"].as<int>();
+    app::env.target.target_drain_time = target_time_seconds / 1000;
     app::env.target.target_drain_volume = 0;
     app::env.target.target_drain_pressure = 0;
     activated = true;
     snprintf(message, 150, "Beginning drain process with target time: %f", app::env.target.target_drain_time);
 
-  } else if (!json["target_drain_volume"].isNull()) {
+  } else if (!json["tv"].isNull()) {
 
     if (USING_PRESSURE_SENSOR_) {
 
       app::env.target.target_drain_time = 0;
-      app::env.target.target_drain_volume = json["target_drain_volume"].as<float>();
+      app::env.target.target_drain_volume = json["tv"].as<float>();
       app::env.target.target_drain_pressure = 0;
       activated = true;
 
@@ -336,16 +347,15 @@ void srvc::drain_activate(byte* payload, unsigned int len) {
       SLOG.println(message);
       publish_log(2, message);
       return;
-      snprintf(message, 150, "Beginning drain process with target volume: %f", app::env.target.target_drain_volume);
     }
 
-  } else if (!json["target_drain_pressure"].isNull()) {
+  } else if (!json["tp"].isNull()) {
 
     if (USING_PRESSURE_SENSOR_) {
 
       app::env.target.target_drain_time = 0;
       app::env.target.target_drain_volume = 0;
-      app::env.target.target_drain_pressure = json["target_drain_pressure"].as<float>();
+      app::env.target.target_drain_pressure = json["tp"].as<float>();
       activated = true;
       snprintf(message, 150, "Beginning drain process with target pressure: %f", app::env.target.target_drain_pressure);
 
@@ -370,18 +380,21 @@ void srvc::publish_drain_summary_report(unsigned long int total_time, float star
 
   // Catch failed connection
   if (!app::env.flag.mqtt_connected_flag) {
-    SLOG.println("Unable to publish report. MQTT disconnected");
-    return;
+    SLOG.println("Unable to publish drain summary report. Trying MQTT connection one more time.");
+    if (!net::mqtt_loop()) {return;}
   }
 
   StaticJsonDocument<512> json;
-  json["tt"] = total_time;
 
-  if (USING_PRESSURE_SENSOR_) {
+  json["tt"] = (float)(total_time / 1000);
+
+  if (USING_PRESSURE_SENSOR_ && (app::env.pressure_sensor_config.report_mode == 1 || app::env.pressure_sensor_config.report_mode == 3)) {
     json["sp"] = start_pressure;
-    json["ep"] = end_pressure;
+    json["fp"] = end_pressure;
+  }
+  if (USING_PRESSURE_SENSOR_ && (app::env.pressure_sensor_config.report_mode == 2 || app::env.pressure_sensor_config.report_mode == 3)) {
     json["sv"] = start_volume;
-    json["ev"] = end_volume;
+    json["fv"] = end_volume;
   }
 
   char buffer[256];

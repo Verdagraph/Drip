@@ -37,6 +37,7 @@ void setup_wifi() {
   wifi_manager.setDebugOutput(DEBUG);
   wifi_manager.setSaveConfigCallback(save_callback);
   wifi_manager.setClass("invert");  // Dark theme
+  wifi_manager.setTimeout(AP_TIMEOUT);
   wifi_manager.setSTAStaticIPConfig(AP_IP, AP_GATEWAY, AP_SUBNET);
 
   wifi_manager.addParameter(&mqtt_domain);
@@ -45,10 +46,6 @@ void setup_wifi() {
   wifi_manager.addParameter(&mqtt_username);
   wifi_manager.addParameter(&mqtt_password);
 
-  //sets timeout until configuration portal gets turned off
-  //useful to make it all retry or go to sleep
-  //in seconds
-  //wifi_manager.setTimeout(120);
 }
 
 // Configure MQTT PubSubClient
@@ -63,9 +60,14 @@ void setup_mqtt() {
 void on_wifi_failure() {
   SLOG.println("Failed to connect to WiFi network");
   SLOG.print("Going to sleep for ");
-  SLOG.print(AP_RETRY_DELAY / (1000 * 1000 * 60));
+  SLOG.print(AP_RETRY_DELAY / (60));
   SLOG.println(" minutes");
-  ESP.deepSleep(AP_RETRY_DELAY);
+  if(AP_RETRY_DEEP_SLEEP) {
+    ESP.deepSleep(AP_RETRY_DELAY * 1000 * 1000);
+  } else {
+    delay(AP_RETRY_DELAY);
+    ESP.restart();
+  }
 }
 
 // Connect to wifi using autoconnect or on-demand fallback portal
@@ -109,13 +111,13 @@ bool connect_mqtt() {
 
   SLOG.println("Connecting to mqtt server...");
   mqtt_client.setServer(mqtt_config.domain, (int)mqtt_config.port);
-  int count = 1;
+  int count = 0;
   // While client hasn't connected, check timeout
   while (!mqtt_client.connect(mqtt_config.id, mqtt_config.username, mqtt_config.password)) {
 
     SLOG.print("*");
     delay(1000);
-    if (count == MQTT_RETRY_TIMEOUT_SECONDS) {
+    if (count == MQTT_RETRY_TIMEOUT) {
       SLOG.println();
       SLOG.println("MQTT connection timed out");
 
@@ -180,8 +182,10 @@ void net::publish(const char topic[], char message[], size_t size, bool retain) 
 
 void net::reset_wifi_settings() {
   wifi_manager.resetSettings();
+  ESP.restart();
 }
 
 void net::reset_mqtt_settings() {
   file::delete_mqtt_config();
+  ESP.restart();
 }

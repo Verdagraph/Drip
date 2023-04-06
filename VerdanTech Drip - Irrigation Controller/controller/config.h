@@ -58,10 +58,12 @@ false: A pressure sensor is not being used with the tank
 
 #define AP_NAME "irrigation_controller" // Autoconnect access point name
 #define AP_PASSWORD "verdantech" // Autoconnect access point password
-#define AP_RETRY_DELAY 300000000 // Deep sleep delay between access point timeout and next try in microseconds
 #define AP_IP IPAddress(192, 168, 0, 0) // Autoconnect access point IP
 #define AP_GATEWAY IPAddress(192, 168, 0, 1) // Autoconnect access point gateway
 #define AP_SUBNET IPAddress(255, 255, 255, 0) // Autoconnect access point subnet
+#define AP_TIMEOUT // The amount of minutes to keep the autoconnect access point open before retry
+#define AP_RETRY_DELAY 360 // Deep sleep delay between access point timeout and next try in seconds
+#define AP_RETRY_DEEP_SLEEP true // Whether to use the ESP.deepSleep() function for low power or just delay()
 
 // ************* MQTT network config ************* //
 
@@ -70,7 +72,7 @@ false: A pressure sensor is not being used with the tank
 #define MQTT_ID_DEFAULT "irrigation_controller1" // Default MQTT client ID
 #define MQTT_USERNAME_DEFAULT "username" // Default MQTT username
 #define MQTT_PASSWORD_DEFAULT "VerdanTech-Devices" // Default MQTT password
-#define MQTT_RETRY_TIMEOUT_SECONDS 300 // MQTT connection timeout in seconds before return to AP config portal
+#define MQTT_RETRY_TIMEOUT 300 // MQTT connection timeout in seconds before return to AP config portal
 
 // ************* Pin config ************* //
 
@@ -78,7 +80,6 @@ false: A pressure sensor is not being used with the tank
 #define TANK_OUTPUT_VALVE_PIN 12 // Pin controlling the tank supply valve
 #define TANK_DRAIN_VALVE_PIN 14 // Pin controlling the tank drain valve
 #define FLOW_SENSOR_PIN 5 // Pin reading the flow sensor data output
-#define PRESSURE_SENSOR_PIN 1 // Pin connected to pressure sensor I2C interface
 
 // *************
 // ************* The following configs are defaults 
@@ -180,7 +181,6 @@ Select the output types of the pressure sensor
 #define TANK_OUTPUT_VALVE_PIN_ (USING_TANK_ ? TANK_OUTPUT_VALVE_PIN : -1)
 #define TANK_DRAIN_VALVE_PIN_ (USING_DRAIN_VALVE_ ? TANK_DRAIN_VALVE_PIN : -1)
 #define FLOW_SENSOR_PIN_ (USING_FLOW_SENSOR_ ? FLOW_SENSOR_PIN : -1)
-#define PRESSURE_SENSOR_PIN_ (USING_PRESSURE_SENSOR_ ? PRESSURE_SENSOR_PIN : -1)
 
 // ************* MQTT topics ************* //
 // Define topics to NULL to indicate non-use based on operational mode
@@ -207,7 +207,7 @@ Select the output types of the pressure sensor
 
 namespace conf {
 
-// Struct to hold and assign defaults for the MQTT connection
+// ************* Config structs ************* //
 struct MQTTConfig {
   char domain[100];
   char port[10];
@@ -271,12 +271,10 @@ struct FlowSensorConfig {
 };
 
 struct PressureSensorConfig {
-  bool use_calibration;
   int report_mode;
   float atmosphere_pressure;
 
   PressureSensorConfig() {
-    use_calibration = false;
     report_mode = PRESSURE_REPORT_MODE_DEFAULT;
     atmosphere_pressure = ATMOSPHERIC_PRESSURE_HPA_DEFAULT;
   }

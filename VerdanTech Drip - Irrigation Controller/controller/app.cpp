@@ -344,7 +344,7 @@ void loop_drain(){
   // Check end condition
   if (app::env.target.target_drain_time > 0) {
 
-    if (app::env.slice.total_time_elapsed > app::env.target.target_drain_time) {
+    if (app::env.slice.total_time_elapsed >= app::env.target.target_drain_time) {
       close_drain_process();
       drain_report_summary();
     }

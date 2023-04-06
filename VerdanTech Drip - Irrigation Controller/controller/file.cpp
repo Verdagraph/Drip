@@ -153,26 +153,25 @@ void file::read_config(app::DeviceState* state) {
   SLOG.println("Main config serialized");
 
   // Assign config values to config structs
-  state->services_config.data_resolution_l = json["services"]["res"].as<int>();
+  state->services_config.data_resolution_l = json["srvc"]["res"].as<int>();
   if (USING_SOURCE_) {
-    state->source_config.static_flow_rate = json["source"]["static_flow"].as<float>();
+    state->source_config.static_flow_rate = json["src"]["rate"].as<float>();
   }
   if (USING_TANK_) {
-    state->tank_config.tank_timeout = json["tank"]["timeout"].as<int>();
-    state->tank_config.shape_type = json["tank"]["shape"].as<int>();
-    state->tank_config.dimension_1 = json["tank"]["dim_1"].as<float>();
-    state->tank_config.dimension_2 = json["tank"]["dim_2"].as<float>();
-    state->tank_config.dimension_3 = json["tank"]["dim_3"].as<float>();
+    state->tank_config.tank_timeout = json["tnk"]["time"].as<int>();
+    state->tank_config.shape_type = json["tnk"]["shape"].as<int>();
+    state->tank_config.dimension_1 = json["tnk"]["dim1"].as<float>();
+    state->tank_config.dimension_2 = json["tnk"]["dim2"].as<float>();
+    state->tank_config.dimension_3 = json["tnk"]["dim3"].as<float>();
   }
   if (USING_FLOW_SENSOR_) {
     state->flow_sensor_config.pulses_per_l = json["flow"]["ppl"].as<float>();
-    state->flow_sensor_config.max_flow_rate = json["flow"]["max_flow"].as<float>();
-    state->flow_sensor_config.min_flow_rate = json["flow"]["min_flow"].as<float>();
+    state->flow_sensor_config.max_flow_rate = json["flow"]["max"].as<float>();
+    state->flow_sensor_config.min_flow_rate = json["flow"]["min"].as<float>();
   }
   if (USING_PRESSURE_SENSOR_) {
-    state->pressure_sensor_config.use_calibration = json["pressure"]["calibration"].as<bool>();
-    state->pressure_sensor_config.report_mode = json["pressure"]["mode"].as<int>();
-    state->pressure_sensor_config.atmosphere_pressure = json["pressure"]["atmosphere"].as<float>();
+    state->pressure_sensor_config.report_mode = json["prssr"]["mode"].as<int>();
+    state->pressure_sensor_config.atmosphere_pressure = json["prssr"]["atmo"].as<float>();
   }
 
   SLOG.println("Main config read sucessfully");
@@ -184,26 +183,25 @@ bool file::save_config(app::DeviceState * state) {
   StaticJsonDocument<512> json;
 
   // Assign config values to json document
-  json["services"]["res"] = state->services_config.data_resolution_l;
+  json["srvc"]["res"] = state->services_config.data_resolution_l;
   if (USING_SOURCE_) {
-    json["source"]["static_flow"] = state->source_config.static_flow_rate;
+    json["src"]["rate"] = state->source_config.static_flow_rate;
   }
   if (USING_TANK_) {
-    json["tank"]["timeout"] = state->tank_config.tank_timeout;
-    json["tank"]["shape"] = state->tank_config.shape_type;
-    json["tank"]["dim_1"] = state->tank_config.dimension_1;
-    json["tank"]["dim_2"] = state->tank_config.dimension_2;
-    json["tank"]["dim_3"] = state->tank_config.dimension_3;
+    json["tnk"]["time"] = state->tank_config.tank_timeout;
+    json["tnk"]["shape"] = state->tank_config.shape_type;
+    json["tnk"]["dim1"] = state->tank_config.dimension_1;
+    json["tnk"]["dim2"] = state->tank_config.dimension_2;
+    json["tnk"]["dim3"] = state->tank_config.dimension_3;
   }
   if (USING_FLOW_SENSOR_) {
     json["flow"]["ppl"] = state->flow_sensor_config.pulses_per_l;
-    json["flow"]["max_flow"] = state->flow_sensor_config.max_flow_rate;
-    json["flow"]["min_flow"] = state->flow_sensor_config.min_flow_rate;
+    json["flow"]["max"] = state->flow_sensor_config.max_flow_rate;
+    json["flow"]["min"] = state->flow_sensor_config.min_flow_rate;
   }
   if (USING_PRESSURE_SENSOR_) {
-    json["pressure"]["calibration"] = state->pressure_sensor_config.use_calibration;
-    json["pressure"]["mode"] = state->pressure_sensor_config.report_mode;
-    json["pressure"]["atmosphere"] = state->pressure_sensor_config.atmosphere_pressure;
+    json["prssr"]["mode"] = state->pressure_sensor_config.report_mode;
+    json["prssr"]["atmo"] = state->pressure_sensor_config.atmosphere_pressure;
   }
 
   // Open file
