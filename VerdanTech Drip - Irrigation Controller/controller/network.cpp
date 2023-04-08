@@ -176,6 +176,12 @@ bool net::loop_mqtt() {
   }
 }
 
+void net::loop_reconnect() {
+  if (mqtt_client.connected()) {return;}
+
+  connect_mqtt();
+}
+
 void net::publish(const char topic[], char message[], size_t size, bool retain) {
   mqtt_client.publish(topic, (const uint8_t*) message, size, retain);
 }

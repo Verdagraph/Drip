@@ -246,7 +246,7 @@ void loop_dispensation(){
   }
 
   // Tank timeout
-  if (USING_TANK_ && (app::env.slice.flow_rate < app::env.flow_sensor_config.min_flow_rate) && (app::env.slice.total_time_elapsed > app::env.tank_config.tank_timeout)) {
+  if (USING_TANK_ && (app::env.slice.flow_rate < app::env.flow_sensor_config.min_flow_rate) && (app::env.slice.total_time_elapsed > (app::env.tank_config.tank_timeout * 1000))) {
     if (USING_SOURCE_) {
 
       app::env.flag.resevoir_switch_flag = true;
@@ -452,6 +452,11 @@ void app::loop_app(){
   loop_deactivate();
   loop_dispensation();
 
+  // Try to reconnect to the MQTT broker if there isn't any process going on
+  if ((!app::env.flag.dispense_flag || !app::env.flag.drain_flag) && !app::env.flag.mqtt_connected_flag) {
+    net::loop_reconnect();
+  }
+
   if (USING_DRAIN_VALVE_) {
     loop_drain();
   }
@@ -460,6 +465,7 @@ void app::loop_app(){
 
 }
 
+// Returns the volume of fluid in the tank given its pressure and geometry
 float pressure_to_volume (float pressure) {
   // Meters = (hPa / 10) / (kg/m^3 * m/s^2) = (kPa) / (kg/s^2*m^2) = (kPa) / (kPa / m)
   float height = (pressure / 10) / DENSITY_GRAVITY;
@@ -467,8 +473,21 @@ float pressure_to_volume (float pressure) {
   switch (app::env.tank_config.shape_type) {
     case 1: // Rectangular prism: length, width, height
       return app::env.tank_config.dimension_1 * app::env.tank_config.dimension_2 * height;
-    case 2: // Cylinder: radius, height, N/A
-      return PI * app::env.tank_config.dimension_1 * app::env.tank_config.dimension_1 * height;
+    case 2: // Cylinder: diameter, height, N/A
+      return PI * (app::env.tank_config.dimension_1 / 2) * (app::env.tank_config.dimension_1 / 2) * height;
+    default:
+      return -1;
+  }
+}
+
+// Returns the total volume of the tank given its geometry
+float total_tank_volume () {
+
+  switch (app::env.tank_config.shape_type) {
+    case 1: // Rectangular prism: length, width, height
+      return app::env.tank_config.dimension_1 * app::env.tank_config.dimension_2 * app::env.tank_config.dimension_3;
+    case 2: // Cylinder: diameter, height, N/A
+      return PI * (app::env.tank_config.dimension_1 / 2) * (app::env.tank_config.dimension_1 / 2) * app::env.tank_config.dimension_2;
     default:
       return -1;
   }

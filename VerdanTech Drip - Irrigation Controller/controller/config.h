@@ -4,9 +4,14 @@
 
 #include <cstring>
 
-#define DEBUG true  //set to true for debug output, false for no debug output
-#define SLOG if(DEBUG)Serial
+// *************
+// ************* See the documentation for detailed
+// ************* descriptions about what each of the 
+// ************* config settings does!
+// *************
 
+
+// ************* Core ************* //
 // *************
 // ************* This group of settings are key configs that describe specific
 // ************* physical and electrical assumptions about the device.
@@ -14,155 +19,85 @@
 // ************* Read the documentation before setting these!
 // *************
 
-/*
-Define what resevoirs the controller is connected to
+#define DEBUG true
+#define SLOG if(DEBUG)Serial
 
-1: Source (Inexhaustible, constant or variable pressure water source) 
-2: Tank (Exhaustible, variable pressure water tank)
-3: Both
-*/
 #define RESEVOIR_MODE 1
-
-/*
-If using a source, define the flow rate measurment method for the resevoir
-
-true: Flow sensor
-false: Static, pre-set flow rate
-*/
-#define USING_SOURCE_FLOW false
-
-/*
-If using a tank, define whether a drain valve is connected
-
-true: A drain valve is connected to the tank
-false: A drain valve is not connected to the tank
-*/
+#define USING_SOURCE_FLOW fals
 #define USING_DRAIN_VALVE true
-
-/*
-If using a tank, define whether a pressure sensor is being used
-
-true: A pressure sensor is being used with a the tank
-false: A pressure sensor is not being used with the tank
-*/
 #define USING_PRESSURE_SENSOR true
 
-// *************
-// ************* These settings are static and hard-coded
-// ************* physical and electrical assumptions about the device.
-// ************* They enable/disable functions (mqtt topics, services)
-// ************* Read the documentation before setting these!
-// *************
 
 // ************* WiFiManager AutoConnect config ************* //
 
-#define AP_NAME "irrigation_controller" // Autoconnect access point name
-#define AP_PASSWORD "verdantech" // Autoconnect access point password
-#define AP_IP IPAddress(192, 168, 0, 0) // Autoconnect access point IP
-#define AP_GATEWAY IPAddress(192, 168, 0, 1) // Autoconnect access point gateway
-#define AP_SUBNET IPAddress(255, 255, 255, 0) // Autoconnect access point subnet
-#define AP_TIMEOUT // The amount of minutes to keep the autoconnect access point open before retry
-#define AP_RETRY_DELAY 360 // Deep sleep delay between access point timeout and next try in seconds
-#define AP_RETRY_DEEP_SLEEP true // Whether to use the ESP.deepSleep() function for low power or just delay()
+#define AP_NAME "irrigation_controller
+#define AP_PASSWORD "verdantech
+#define AP_IP IPAddress(192, 168, 0, 0)
+#define AP_GATEWAY IPAddress(192, 168, 0, 1)
+#define AP_SUBNET IPAddress(255, 255, 255, 0)
+#define AP_TIMEOUT
+#define AP_RETRY_DELAY 360s
+#define AP_RETRY_DEEP_SLEEP true
+
 
 // ************* MQTT network config ************* //
 
-#define MQTT_SERVER_DOMAIN_DEFAULT "192.168.0.195" // Default MQTT server/broker URL
-#define MQTT_SERVER_PORT_DEFAULT "1883" // Default MQTT server/broker port
-#define MQTT_ID_DEFAULT "irrigation_controller1" // Default MQTT client ID
-#define MQTT_USERNAME_DEFAULT "username" // Default MQTT username
-#define MQTT_PASSWORD_DEFAULT "VerdanTech-Devices" // Default MQTT password
-#define MQTT_RETRY_TIMEOUT 300 // MQTT connection timeout in seconds before return to AP config portal
+#define MQTT_SERVER_DOMAIN_DEFAULT "192.168.0.195"
+#define MQTT_SERVER_PORT_DEFAULT "1883"
+#define MQTT_ID_DEFAULT "irrigation_controller1"
+#define MQTT_USERNAME_DEFAULT "username"
+#define MQTT_PASSWORD_DEFAULT "VerdanTech-Devices"
+#define MQTT_RETRY_TIMEOUT 300
+
 
 // ************* Pin config ************* //
 
-#define SOURCE_OUTPUT_VALVE_PIN 13 // Pin to control the source supply valve
-#define TANK_OUTPUT_VALVE_PIN 12 // Pin controlling the tank supply valve
-#define TANK_DRAIN_VALVE_PIN 14 // Pin controlling the tank drain valve
-#define FLOW_SENSOR_PIN 5 // Pin reading the flow sensor data output
+#define SOURCE_OUTPUT_VALVE_PIN 13
+#define TANK_OUTPUT_VALVE_PIN 12
+#define TANK_DRAIN_VALVE_PIN 14
+#define FLOW_SENSOR_PIN 5
 
+
+// ************* Defaults ************* //
 // *************
 // ************* The following configs are defaults 
 // ************* and can be changed during runtime 
 // ************* through an MQTT topic
 // *************
 
-// The resolution of data in mililiters 
-// returned after water dispensation
 #define DATA_RESOLUTION_L_DEFAULT 0.2
-
-// Define the static flow rate for the 
-// source in liters/min
 #define STATIC_FLOW_RATE_DEFAULT 12.45
-
-// The amount of pulses per liter 
-// returned by the flow sensor
 #define PULSES_PER_L_DEFAULT 1265.289
-
-// The max flow rate capable of being sensed
-// by the flow sensor in liters/min
 #define MAX_FLOW_RATE_DEFAULT 30
-
-// The min flow rate capable of being sensed
-// by the flow sensor in liters/min
-// Resevoirs will switch at flow rates below this
 #define MIN_FLOW_RATE_DEFAULT 0.2
-
-// The amount of miliseconds to wait for the 
-// flow sensor to sense flow before switching
-// from the tank to the source
-#define TANK_TIMEOUT_DEFAULT 5000
-
-/*
-Shape to use for tank height->volume calculations 
-
-1: Rectangular prism (length, width, height)
-2: Cylinder (radius, height, N/A)
-*/
+#define TANK_TIMEOUT_DEFAULT 10
 #define TANK_SHAPE_DEFAULT 2
 #define TANK_DIMENSION_1_DEFAULT 0.4
 #define TANK_DIMENSION_2_DEFAULT 1.2
 #define TANK_DIMENSION_3_DEFAULT 0
-
-/*
-Select the output types of the pressure sensor
-
-1: Pressure
-2: Volume (requires exhaustible resevoir shape config or calibration)
-3: Both
-*/
 #define PRESSURE_REPORT_MODE_DEFAULT 3
-
-// The default 
 #define ATMOSPHERIC_PRESSURE_HPA_DEFAULT 1013.25
 
-// ************* MQTT topic config - Recommended to keep these short to save data ************* //
-#define BASE_TOPIC "VD1/" // Base MQTT topic to be pre-fixed to all other topics
-#define DISPENSE_ACTIVATE_TOPIC "out/on" // Topic to subscribe to dispensation commands
-#define DISPENSE_REPORT_SLICE_TOPIC "out/log/sl" // Topic to publish slice of dispensation reports
-#define DISPENSE_REPORT_SUMMARY_TOPIC "out/log/sm" // Topic to publish summary of dispensation reports
-#define DEACTIVATE_TOPIC "off" // Topic to subscribe to deactivation commands
-#define RESTART_TOPIC "restart" // Topic to restart the device
-#define LOG_TOPIC "log/info" // Topic to publish device status logs
-#define WARNING_TOPIC "log/warning" // Topic to publish device warning logs
-#define ERROR_TOPIC "log/error" // Topic to publish device error logs
-#define CONFIG_TOPIC "config" // Topic to publish current configuration values  
-#define CONFIG_CHANGE_TOPIC "config/change" // Topic to subscribe to configuration change commands
-#define SETTINGS_RESET_TOPIC "config/reset" // Topic to reset WiFi, MQTT, or config settings
 
-// The following topics are only used if using an tank with a drain
-#define DRAIN_ACTIVATE_TOPIC "drain/on" // Topic to subscribe to drain commands
-#define DRAIN_REPORT_SUMMARY_TOPIC "drain/log" // Topic to publish drain reports
+// ************* MQTT topic config ************* //
 
-// The following topics are only used on configurations with a flow sensor
-// Calibration should be implemented with MQTTv5 request/response and correlation data 
-//#define CALIBRATE_FLOW_TOPIC "flow/calibrate"
-
-// The following topics are only used on configurations with a pressure sensor
-#define PRESSURE_REPORT_TOPIC "pressure/read" // Topic to publish current pressure sensor reading
-//#define CALIBRATE_PRESSURE_TOPIC "pressure/calibrate "
+#define BASE_TOPIC "VD1/"
+#define DISPENSE_ACTIVATE_TOPIC "out/on"
+#define DISPENSE_REPORT_SLICE_TOPIC "out/log/sl"
+#define DISPENSE_REPORT_SUMMARY_TOPIC "out/log/sm"
+#define DEACTIVATE_TOPIC "off"
+#define RESTART_TOPIC "restart
+#define LOG_TOPIC "log/info"
+#define WARNING_TOPIC "log/warning"
+#define ERROR_TOPIC "log/error"
+#define CONFIG_TOPIC "config"
+#define CONFIG_CHANGE_TOPIC "config/change"
+#define SETTINGS_RESET_TOPIC "config/reset"
+#define DRAIN_ACTIVATE_TOPIC "drain/on"
+#define DRAIN_REPORT_SUMMARY_TOPIC "drain/log"
 
 
+// ************* Auto-config ************* //
 // *************
 // ************* This group of settings are automatically configured.
 // ************* Don't change unless willing to modify code!
@@ -207,7 +142,7 @@ Select the output types of the pressure sensor
 
 namespace conf {
 
-// ************* Config structs ************* //
+// ************* Runtime config structs ************* //
 struct MQTTConfig {
   char domain[100];
   char port[10];

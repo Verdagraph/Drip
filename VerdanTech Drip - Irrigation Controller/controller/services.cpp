@@ -104,7 +104,7 @@ void srvc::publish_dispense_slice_report(unsigned long int time, float volume, f
   }
 
   StaticJsonDocument<512> json;
-  json["t"] = (float)(time / 1000);
+  json["t"] = (float)time / 1000;
   json["v"] = volume;
   json["q"] = avg_flow;
 
@@ -122,7 +122,7 @@ void srvc::publish_dispense_slice_report(unsigned long int time, float volume, f
 
 }
 
-void srvc::publish_dispense_summary_report(unsigned long int total_time, float total_volume, float tank_volume, unsigned long int tank_time) {
+void srvc::publish_dispense_summary_report(unsigned long int total_time, float total_volume, float tank_volume, int tank_time) {
 
   // Catch failed connection
   if (!app::env.flag.mqtt_connected_flag) {
@@ -131,7 +131,7 @@ void srvc::publish_dispense_summary_report(unsigned long int total_time, float t
   }
 
   StaticJsonDocument<512> json;
-  json["tt"] = (float)(total_time / 1000);
+  json["tt"] = (float)total_time / 1000;
   json["vt"] = total_volume;
 
   if(USING_TANK_) {
@@ -386,7 +386,7 @@ void srvc::publish_drain_summary_report(unsigned long int total_time, float star
 
   StaticJsonDocument<512> json;
 
-  json["tt"] = (float)(total_time / 1000);
+  json["tt"] = (float)total_time / 1000;
 
   if (USING_PRESSURE_SENSOR_ && (app::env.pressure_sensor_config.report_mode == 1 || app::env.pressure_sensor_config.report_mode == 3)) {
     json["sp"] = start_pressure;

@@ -17,7 +17,7 @@ to understand the device's capabilities and limitations.
 
 5. Assemble the device
 
-6. Install the Arduino platform and required libraries
+6. Install the Arduino platform, required libraries, and board drivers
 
 7. Configure the device through the file `config.h`
 
@@ -67,7 +67,7 @@ For specific product examples see the [equipment](#equipment) section.
 
 ## MQTT interface
 
-This section describes the functionality of the MQTT topics through which the device sends and recieves information. All communication is done via JSON. For topics which are subscribed to by the controller, a list of inputs is described for each topic, and for topics which are published by the controller, a list of outputs are described for each topic. Inputs are marked (optional) if the intended function will still be carried out if they aren't included rather than throw an error. Inputs are marked (conditional) if they only have effect based on [configuration settings](#configuration), and outputs are marked (conditional) if their inclusion in the payload is dependent on [configuration settings](#configuration).
+This section describes the functionality of the MQTT topics through which the device sends and recieves information. All communication is done via JSON. For topics which are subscribed to by the controller, a list of inputs is described for each topic, and for topics which are published by the controller, a list of outputs are described for each topic. Inputs are marked (optional) if the  function will still be carried out if they aren't included rather than throw an error. Inputs are marked (conditional) if they only have effect based on [configuration settings](#configuration), and outputs are marked (conditional) if their inclusion in the payload is dependent on [configuration settings](#configuration).
 
 | Title   | Topic string config  | Does the controller publish or subscribe? | Is the topic enabled unconditionally? |
 | ------------- | ------------- | ------------- | ------------- |
@@ -95,7 +95,7 @@ The main functionality of the device. The dispentation topics handle setting tar
 | ------------- | ------------- | ------------- |
 | [`DISPENSE_ACTIVATE_TOPIC_`](#auto-config)  | Subscribe | Yes |
 
-This topic allows activating the dispensation process and setting the target volume. Activation will fail if a dispensation process or drain process is already in progress. The dispensation process will continue until the output volume is greater than or equal to the target volume, or a singularly connected tank produces a flow rate less than that defined by [`FlowSensorConfig.min_flow_rate`](#runtime-config) and the total duration of the process is greater than that defined by [`TankConfig.tank_timeout`](#runtime-config).
+This topic allows activating the dispensation process and setting the target volume. Activation will fail if a dispensation process or drain process is already in progress. The dispensation process will continue until the output volume is greater than or equal to the target volume, or a singularly connected tank produces a flow rate less than that defined by [`FlowSensorConfig.min_flow_rate`](#runtime-config) and the current duration of the process is greater than that defined by [`TankConfig.tank_timeout`](#runtime-config). If the tank is connected with a source, then the dispensation will switch to the source until the target volume is reached.
 
 Inputs:
 - `["tv"]` float. Target volume of the dispensation process in liters.
@@ -113,7 +113,7 @@ Sample payload:
 | ------------- | ------------- | ------------- | 
 | [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)  | Publish | Yes |
 
-This topic is where the mid-process datapoints on the dispensation process are published at a volume interval in liters defined by [`ServicesConfig.data_resolution_l`](#runtime-config). If the connection to the MQTT broker fails, these reports will fail to be sent and are lost, but the dispensation process will continue.
+This topic is where the mid-process datapoints on the dispensation process are published at a volume interval in liters defined by [`ServicesConfig.data_resolution_l`](#runtime-config). If the connection to the MQTT broker fails, these reports will fail to be sent and are lost, but the dispensation process will continue. Unfortunately, the [MQTT client](#dependencies) class is only able to send messages at a quality-of-service of 0. 
 
 Outputs:
 - `["t"]` float. Current duration of the dispensation process in seconds.
@@ -139,7 +139,7 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`DISPENSE_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | Yes |
 
-This topic is where the post-process datapoints on the dispensation process are published. If the connection to the MQTT broker fails, the connection is retried once before the message is lost.
+This topic is where the post-process datapoints on the dispensation process are published. If the connection to the MQTT broker fails, the connection is re-tried once before the message is lost.  Unfortunately, the [MQTT client](#dependencies) class is only able to send messages at a quality-of-service of 0.
 
 Outputs:
 - `["tt"]` float. Total duration of the dispensation process in seconds.
@@ -150,7 +150,7 @@ Outputs:
 Sample payload:
 ```
 {
-  "tt": 500000,
+  "tt": 50,
   "vt": 10.25,
   "tv": 5.6,
   "tts": 250000,
@@ -327,7 +327,7 @@ The drain topics handle setting target times, pressures, or volumes for the drai
 | ------------- | ------------- | ------------- |
 | [`DRAIN_ACTIVATE_TOPIC_`](#auto-config)  | Subscribe | No |
 
-This topic allows activating the drain process and setting eithr the target time, pressure, or volume. Activation will fail if a drain process or dispensation process is already in progress. While inputs are listed as optional, the process will only start if exactly one target is sent. The drain process will continue until the duration of the process is greater than or equal to the target time, the tank gauge pressure is less than or equal to the target pressure, or the tank volume is less than or equal to the target volume, depending on which target was sent.
+This topic allows activating the drain process and setting either the target time, pressure, or volume. Activation will fail if a drain process or dispensation process is already in progress. While inputs are listed as optional, the process will only start if exactly one target is sent. The drain process will continue until the duration of the process is greater than or equal to the target time, the tank gauge pressure is less than or equal to the target pressure, or the tank volume is less than or equal to the target volume, depending on which target was sent.
 
 Inputs:
 - `["tt"]` (optional) int. Target time of the drain process in seconds.
@@ -344,7 +344,7 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`DRAIN_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | No |
 
-This topic is where the post-process datapoints on the drain process are published. If the connection to the MQTT broker fails, the connection is retried once before the message is lost.
+This topic is where the post-process datapoints on the drain process are published. If the connection to the MQTT broker fails, the connection is re-tried once before the message is lost. Unfortunately, the [MQTT client](#dependencies) class is only able to send messages at a quality-of-service of 0.
 
 Outputs:
 - `["tt"]` float. Total duration of the drain process in seconds.
@@ -398,6 +398,8 @@ All configuration settings can be found in the file `config.h`.
 
 These settings define the [operating mode](#operating-modes) of the device. Make sure you have the correct hardware connected before you enable any related settings here.
 
+- `DEBUG bool` Defines whether to output debugging info to the serial log.
+
 - `RESEVOIR_MODE int` Defines which [types of water supplies](#water-supplies) the controller is connected to.
     - `1` Source
     - `2` Tank
@@ -420,12 +422,19 @@ These settings define the [operating mode](#operating-modes) of the device. Make
 These settings are used to configure the WiFi Manager, an instance of the WiFiManager class (see [dependencies](#dependencies)). This class enables the configuration of the WiFi network and MQTT broker through an access point hosted by the controller, rather than being hard coded into the software.
 
 - `AP_NAME string` The SSID of the auto-connect access point.
+
 - `AP_PASSWORD string` The password of the auto-connect access point.
+
 - `AP_IP IPAddress()` The IP address of the auto-connect access point. You should ensure this doesn't conflict with another device on your network.
+
 - `AP_GATEWAY IPAddress()` The gateway of the auto-connect access point.
+
 - `AP_SUBNET IPAddress()` The subnet of the auto-connect access point.
+
 - `AP_TIMEOUT int` The duration of time the auto-connect access point is kept open in seconds.
+
 - `AP_RETRY_DELAY int` The duration of time to wait between auto-connect access point timeout and next try in seconds.
+
 - `AP_RETRY_DEEP_SLEEP bool` Define the method used to wait for `AP_RETRY_DELAY`.
     - `true` The ESP8266 function `ESP.deepSleep()` will be used to reduce power consumption. See the [electrical assembly](#electrical) section for the required electrical wiring.
     - `false` The Arduino function `delay()` followed by `ESP.restart()` will be used.
@@ -435,10 +444,15 @@ These settings are used to configure the WiFi Manager, an instance of the WiFiMa
 These settings are used to configue the MQTT client, an instance of the PubSubClient class(see [dependencies](#dependencies)). This class enables interaction with an MQTT broker. The settings marked as `DEFAULT` are able to be configured through the WiFi Manager access point.
 
 - `MQTT_SERVER_DOMAIN_DEFAULT string` The domain, or URL, of the MQTT broker to connect to.
+
 - `MQTT_SERVER_PORT_DEFAULT string` The port on the MQTT broker to connect to.
+
 - `MQTT_ID_DEFAULT string` The ID of the client.
+
 - `MQTT_USERNAME_DEFAULT string` The username of the client.
+
 - `MQTT_PASSWORD_DEFAULT string` The password of the client.
+
 - `MQTT_RETRY_TIMEOUT int` The duration of time to continually attempt connection to the MQTT broker before returning to the auto-connect access point, in seconds.
 
 ### Pins
@@ -446,69 +460,107 @@ These settings are used to configue the MQTT client, an instance of the PubSubCl
 These settings define the pins used to interact with the equipment connected to the controller. Don't worry about changing the settings that don't apply to your use case - unused pins are automatically set to -1 in the [auto-config](#auto-config). 
 
 - `SOURCE_OUTPUT_VALVE_PIN int` The output pin connected to the source output valve. High signals should open the valve.
+
 - `TANK_OUTPUT_VALVE_PIN int` The output pin connected to the tank output valve. High signals should open the valve.
+
 - `TANK_DRAIN_VALVE_PIN int` The output pin connected to the tank drain valve. High signals should open the valve.
+
 - `FLOW_SENSOR_PIN int` The input pin connected to the flow sensor data wire. See the [equipment](#flow-sensor) section to ensure compatible logic levels and interrupt-capability.
 
 ### Defaults
 
 These settings are default settings that can be changed at runtime through the [config change topic](#write), where they are written to a file on the controller's file system memory and stored in [config structs](#runtime-config). Sensible defaults should still be set here to avoid having to manually update each setting.  
 
-- `DATA_RESOLUTION_L_DEFAULT float` 
-- `STATIC_FLOW_RATE_DEFAULT float`
-- `PULSES_PER_L_DEFAULT float`
-- `MAX_FLOW_RATE_DEFAULT float`
-- `MIN_FLOW_RATE_DEFAULT float`
-- `TANK_TIMEOUT_DEFAULT int`
-- `TANK_SHAPE_DEFAULT int`
-- `TANK_DIMENSION_1_DEFAULT float`
-- `TANK_DIMENSION_2_DEFAULT float`
-- `TANK_DIMENSION_3_DEFAULT float`
-- `PRESSURE_REPORT_MODE_DEFAULT int`
-- `ATMOSPHERIC_PRESSURE_HPA_DEFAULT float`
+- `DATA_RESOLUTION_L_DEFAULT float` The default value of [`ServicesConfig.data_resolution_l`](#runtime-config).
+
+- `STATIC_FLOW_RATE_DEFAULT float` The default value of [`SourceConfig.static_flow_rate`](#runtime-config).
+
+- `TANK_TIMEOUT_DEFAULT int` The default value of [`TankConfig.tank_timeout`](#runtime-config).
+
+- `TANK_SHAPE_DEFAULT int` The default value of [`TankConfig.shape_type`](#runtime-config).
+
+- `TANK_DIMENSION_1_DEFAULT float` The default value of [`TankConfig.dimension_1`](#runtime-config).
+
+- `TANK_DIMENSION_2_DEFAULT float` The default value of [`TankConfig.dimension_2`](#runtime-config).
+
+- `TANK_DIMENSION_3_DEFAULT float` The default value of [`TankConfig.dimension_3`](#runtime-config).
+
+- `PULSES_PER_L_DEFAULT float` The default value of [`FlowSensorConfig.pulses_per_l`](#runtime-config).
+
+- `MAX_FLOW_RATE_DEFAULT float` The default value of [`FlowSensorConfig.max_flow_rate`](#runtime-config).
+
+- `MIN_FLOW_RATE_DEFAULT float` The default value of [`FlowSensorConfig.min_flow_rate`](#runtime-config).
+
+- `PRESSURE_REPORT_MODE_DEFAULT int` The default value of [`PressureSensorConfig.report_mode`](#runtime-config).
+
+- `ATMOSPHERIC_PRESSURE_HPA_DEFAULT float` The default value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config).
 
 ### Runtime Config
 
 These settings are initialized at runtime, first reading a configuration file from the file system, then using and writing to the file the [default values](#defaults) if the file doesn't exist. The file can be update at runtime through the [config write](#write) topic. 
 
-- `ServicesConfig.data_resolution_l = float` Defines the volume interval at which slice reports are sent according to the [dispense activation](#slice-reporting) topic during the dispensation process, in liters. 
-- `SourceConfig.static_flow_rate = float` Defines the static flow rate to use for the source output volume in liters. Enabled if [`USING_SOURCE_FLOW`](#core) is false.
-- `TankConfig.tank_timeout = int`
-- `TankConfig.shape_type = int`
-    - `1`
-    - `2`
-- `TankConfig.dimension_1 = float`
-- `TankConfig.dimension_2 = float`
-- `TankConfig.dimension_3 = float`
-- `FlowSensorConfig.pulses_per_l = float`
-- `FlowSensorConfig.max_flow_rate = float`
-- `FlowSensorConfig.min_flow_rate = float`
-- `PressureSensorConfig.report_mode = int`
-    - `1`
-    - `2`
-    - `3`
-- `PressureSensorConfig.atmosphere_pressure = float`
+- `ServicesConfig.data_resolution_l = float` The volume interval at which slice reports are sent to the [dispense slice report](#slice-reporting) topic during the dispensation process, in liters. 
+
+- `SourceConfig.static_flow_rate = float` The static flow rate to use for the source output volume in liters. Enabled if [`USING_SOURCE_FLOW`](#core) is false.
+
+- `TankConfig.tank_timeout = int` The delay in seconds between the start of a dispense process and the first moment a flow rate lower than `FlowSensorConfig.min_flow_rate` can result in either the dispense process ending or switching to the source, depending on the value of [`USING_SOURCE_`](#auto-config).
+
+- `TankConfig.shape_type = int` The geometric shape of the tank, used in the conversion from tank pressure to volume. This conversion is done with a function called `pressure_to_volume()` in the file `app.cpp`.
+    - `1` The tank is a rectangular prism. `TankConfig.dimension_1` describes length, `TankConfig.dimension_2` describes width, and `TankConfig.dimension_3` describes height.
+    - `2` The tank is a cylinder. `TankConfig.dimension_1` describes diameter, `TankConfig.dimension_2` describes height, and `TankConfig.dimension_3` is unused.
+
+- `TankConfig.dimension_1 = float` The first dimension of the tank's geometry, depending on `TankConfig.shape_type`.
+
+- `TankConfig.dimension_2 = float` The second dimension of the tank's geometry, depending on `TankConfig.shape_type`.
+
+- `TankConfig.dimension_3 = float` The third dimension of the tank's geometry, depending on `TankConfig.shape_type`.
+
+- `FlowSensorConfig.pulses_per_l = float` Defines the amount of pulses returned by the flow sensor per liter.
+
+- `FlowSensorConfig.max_flow_rate = float` Defines the maximum rated flow rate of the flow sensor in liters per minute. When the dispensation flow rate surpasses this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config).
+
+- `FlowSensorConfig.min_flow_rate = float` Defines the minimum rated flow rate of the flow sensor in liters per minute. When the dispensation flow rate goes below this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config). If the active water supply is the tank, a flow rate below this value, combined with a current dispense duration greater than `TankConfig.tank_timeout`, will result in the dispensation either shutting off or switching to the source, depending on [`USING_SOURCE_`](#auto-config).
+
+- `PressureSensorConfig.report_mode = int` When reporting values related the pressure in the tank, define which values to report.
+    - `1` Pressure in hectopascals.
+    - `2` Volume in liters. Requires the tank geometry is correctly configured.
+    - `3` Both.
+
+- `PressureSensorConfig.atmosphere_pressure = float` The pressure in hectopascals to be subtracted from the absolute pressure returned by the pressure sensor, in order to find the gauge pressure in the tank.
 
 ### Topics
 
 These settings define the topic strings to use for the MQTT interface. See the [MQTT interface](#mqtt-interface) for details.
 
-You can leave these unchanged with no problem, but you might want to customize them. If you do, just keep in mind that the topic strings are sent with every message, and that the MQTT client has a maximum message size of 256 bytes (including header). Try to keep them small, especially for topics with a high message frequency (like [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)), or a large payload (like ['CONFIG_TOPIC_'](#auto-config)). 
+You can leave these unchanged with no problem, but you might want to customize them. If you do, just keep in mind that the topic strings are sent with every message, and that the MQTT client has a maximum message size of 256 bytes (including header). Try to keep them small, especially for topics with a high message frequency (like [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)), or a large payload (like [`CONFIG_TOPIC_`](#auto-config)). 
 
 - `BASE_TOPIC string` The base topic used to pre-pend all other topics through the [auto-config](#auto-config).
-- `DISPENSE_ACTIVATE_TOPIC string`
-- `DISPENSE_REPORT_SLICE_TOPIC string`
-- `DISPENSE_REPORT_SUMMARY_TOPIC string`
-- `DEACTIVATE_TOPIC string`
-- `RESTART_TOPIC string`
-- `LOG_TOPIC string`
-- `WARNING_TOPIC string`
-- `ERROR_TOPIC string`
-- `CONFIG_TOPIC string`
-- `CONFIG_CHANGE_TOPIC string`
-- `SETTINGS_RESET_TOPIC string`
-- `DRAIN_ACTIVATE_TOPIC string`
-- `DRAIN_REPORT_SUMMARY_TOPIC string`
+
+- `DISPENSE_ACTIVATE_TOPIC string` The topic used to recieve [dispense activation](#activation) requests.
+
+- `DISPENSE_REPORT_SLICE_TOPIC string` The topic used to send [dispense slice reports](#slice-reporting).
+
+- `DISPENSE_REPORT_SUMMARY_TOPIC string` The topic used to send [dispense summary reports](#summary-reporting).
+
+- `DEACTIVATE_TOPIC string` The topic used to recieve [deactivation requests](#deactivation).
+
+- `RESTART_TOPIC string` The topic used to recieve [restart requests](#restart).
+
+- `LOG_TOPIC string` The topic used to send [info logs](#info).
+
+- `WARNING_TOPIC string` The topic used to send [warning logs](#warnings).
+
+- `ERROR_TOPIC string` The topic used to send [error logs](#errors).
+
+- `CONFIG_TOPIC string` The topic used to send current [config values](#read).
+
+- `CONFIG_CHANGE_TOPIC string` The topic used to recieve [config change requests](#write).
+
+- `SETTINGS_RESET_TOPIC string` The topic used to recieve [settings reset requsets](#reset-settings).
+
+- `DRAIN_ACTIVATE_TOPIC string` The topic used to recieve [drain activation](#activation-1) requests.
+
+- `DRAIN_REPORT_SUMMARY_TOPIC string` The topic used to send [drain summary reports](#summary-reporting-1).
 
 ### Auto-Config
 
