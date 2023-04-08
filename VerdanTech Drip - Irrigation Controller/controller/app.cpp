@@ -453,8 +453,8 @@ void app::loop_app(){
   loop_dispensation();
 
   // Try to reconnect to the MQTT broker if there isn't any process going on
-  if ((!app::env.flag.dispense_flag || !app::env.flag.drain_flag) && !app::env.flag.mqtt_connected_flag) {
-    net::loop_reconnect();
+  if (!app::env.flag.dispense_flag && !app::env.flag.drain_flag && !app::env.flag.mqtt_connected_flag) {
+    net::reconnect_mqtt();
   }
 
   if (USING_DRAIN_VALVE_) {

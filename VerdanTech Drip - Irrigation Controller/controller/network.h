@@ -17,7 +17,7 @@ void init_network();
 void loop_mqtt();
 
 // Handle reconnection
-void loop_reconnect();
+void reconnect_mqtt();
 
 // Publish message to MQTT client
 void publish(const char topic[], char message[], size_t size, bool retain);

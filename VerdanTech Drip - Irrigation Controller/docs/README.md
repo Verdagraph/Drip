@@ -600,6 +600,14 @@ These settings are configured automatically and shouldn't be altered unless you'
 
 ## Dependencies
 
+WiFi manager: https://github.com/tzapu/WiFiManager Version: 2.0.15-rc.1
+https://pubsubclient.knolleary.net/ Version: 2.8.0
+https://arduinojson.org/ Version: 6.21.0
+
+https://github.com/adafruit/Adafruit_Sensor Version 1.1.8 (For MPRLS library)
+https://github.com/adafruit/Adafruit_BusIO Version 1.14.0 (For MPRLS library)
+https://github.com/adafruit/Adafruit_MPRLS Version 1.1.0 (For pressure sensor)
+
 ## For Contributors
 
 ### Explanation of the purposes of different files
@@ -610,6 +618,3 @@ These settings are configured automatically and shouldn't be altered unless you'
 
 
 # Bug reporting and contributing
-
-Required libraries: 
-WiFi manager: https://github.com/tzapu/WiFiManager Version: 2.0.15-rc.1

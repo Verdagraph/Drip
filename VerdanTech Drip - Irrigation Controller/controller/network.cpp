@@ -176,9 +176,8 @@ bool net::loop_mqtt() {
   }
 }
 
-void net::loop_reconnect() {
+void net::reconnect_mqtt() {
   if (mqtt_client.connected()) {return;}
-
   connect_mqtt();
 }
 
