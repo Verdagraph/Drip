@@ -55,15 +55,13 @@ For specific product examples see the [equipment](#equipment) section.
 
 - **MQTT**
     - A network protocol used for internet-of-things (IOT) devices. See [wiki](https://en.wikipedia.org/wiki/MQTT).
-- **WiFi Manager**
-    - An instance of the WiFiManager class. See [library](#dependencies).
-- **MQTT Client**
-    - An instance of the PubSubClient class. See [library](#dependencies). 
 
 ### Operation
 
 - **Dispensation**
     - A process of attempting to output a target volume of water, first from the tank, then from the source.
+- **Drain**
+    - A process of attempting to release water from the tank without it going to the usual intended output, to prevent overflow, or to get rid of stale water.
 
 ## MQTT interface
 
@@ -363,19 +361,97 @@ Sample payload:
 
 ## Equipment
 
-### ESP8266
+| Item | Quantity | Where to source | Product Link |
+| -------------  | ------------- | ------------- | ------------- |
+| Name of the item  | Will vary depending on other equipment | Where I sourced it | The exact product I used |
 
-### Solenoid Valves
+### Core
 
-### Flow Sensor
+| Item | Quantity | Where to source | Product Link |
+| -------------  | ------------- | ------------- | ------------- |
+| [Microcontroller](#microcontroller)  | 1 | Hobby shop | [Adafruit](https://www.adafruit.com/product/2471) |
+| [Solenoid valve](#solenoid-valve) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/12v-solenoid-valve-34/) |
+| [Solenoid valve (no minimum pressure)](#solenoid-valve-no-minimum-pressure) | 0-2 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/12v-solenoid-valve-no-minimum-pressure-34/) |
+| [Flow sensor](#flow-sensor)  | 0-1 | Hobby shop | [Digiten](https://www.digiten.shop/products/digiten-g3-8-water-flow-hall-sensor-switch-flow-meter-0-3-10l-min) |
+| [Pressure sensor](#pressure-sensor) | 0-1 | Hobby shop | [Adafruit](https://www.adafruit.com/product/3965) |
 
-### Pressure Sensor 
+#### Microcontroller
+#### Solenoid Valve
+#### Solenoid Valve (No Minimum Pressure)
+#### Relay
+#### Flow Sensor
+#### Pressure Sensor
 
-### Misc. Electrical
+### Cases
 
-### 3D Printed Objects
+| Item | Quantity | Where to source | Product Link |
+| -------------  | ------------- | ------------- | ------------- |
+| [Controller case](#controller-case) | 1 | 3D Print | CAD folder |
+| [Valve case](#valve-case) | 0-3 | 3D Print | CAD folder |
+| [Flow sensor case](#flow-sensor-case) | 0-1 | 3D Print | CAD folder |
+| [pressure sensor case](#pressure-sensor-case) | 0-1 | 3D Print | CAD folder |
 
-### Irrigation Supplies
+#### Controller Case
+#### Valve Case
+#### Flow Sensor Case
+#### Pressure Sensor Case
+
+### Electrical
+
+This section assumes you already has a soldering setup, solder, and wires
+
+| Item | Quantity | Where to source | Product Link |
+| -------------  | ------------- | ------------- | ------------- |
+| [Relay](#relay) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/4-channel-relay-breakout-12v/) |
+| [Power supply](#power-supply) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/12v-3a-power-supply-2-5mm/) |
+| [Power supply adapter](#power-supply-adapter) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/dc-barrel-jack-to-2-pin-terminal-block-adapter/) |
+| [Voltage regulator](#voltage-regulator) | 1 | Hobby shop | [RobotShop](https://ca.robotshop.com/products/5v-25a-step-down-voltage-regulator-d24v25f5) |
+| [Diode](#diode) | 1-3 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/diode-rectifier-1a-50v/) |
+| [Logic level converter](#logic-level-converter) | 0-1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/4-channel-logic-level-converter-bi-directional/) |
+| [Board](#board) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/?product_cat=&s=proto+board&post_type=product) |
+| [2-wire waterproof connector](#2-wire-waterproof-connector) | 0-3 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/waterproof-dc-power-cable-set/) |
+| [4-wire waterproof connector](#4-wire-waterproof-connector) | 0-2 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/waterproof-polarized-4-wire-cable-set/) |
+
+#### Relay
+#### Power Supply
+#### Power Supply Adapter
+#### Voltage Regulator
+#### Diode
+#### Logic Level Converter
+#### Board
+#### 2-Wire Waterproof Connector
+#### 4-Wire Waterproof Connector
+
+### Fluids
+
+#### 1/2 Poly
+https://www.irrigationdirect.ca/DD-DH700-100-1-2-x-100-.700-OD-Poly-Tubing-100-Roll-DD-DH700-100
+#### 1/4 Poly
+https://www.irrigationdirect.ca/DD-DH250-100-1-4-x-100-Poly-Micro-Tubing-100-Roll-DD-DH250-100
+#### Pressure Regulator
+https://www.irrigationdirect.ca/dd-hpr10-drip-irrigation-pressure-regulator-10-psi-hose-threaded-3-4-c2c1-fht-x-3-4-mht.
+#### Backflow Preventer
+https://www.irrigationdirect.ca/dd-hvb-vacuum-breaker-3-4-hose-thread-anti-siphon-backflow-preventer-for-drip-irrigation.-c2c76.html
+#### Vacuum Relief Valve
+https://www.irrigationdirect.ca/dt-arv75-3-4-mpt-air-vacuum-relief-valve-c2f2.html
+#### Filter
+https://www.irrigationdirect.ca/Irritec-A4-HTF155-Drip-Irrigation-Y-Filter-3-4-Female-Hose-Swivel-x-Male-Hose-150-Stainless-Steel-Mesh-Screen.html
+
+### Fittings
+1/2 tube to pipe thread connector male
+1/2 tube to pipe thread connector female
+1/2 tube 3-way connector
+1/2 tube 90 degree connector
+Barrel bulkhead
+Hose washers
+Barrel bulkhead to 3/4 thread
+Barrel bulkhead to 1/4 tube
+
+### Irrigation System
+
+I'm not going to describe what my system is but hehre's the drip tape I used
+https://www.irrigationdirect.ca/p1-1508-500-irritec-p1-drip-tape-15mil-x-8-spacing-.25-gpm-100ft.html
+
 
 ## Assembly
 
