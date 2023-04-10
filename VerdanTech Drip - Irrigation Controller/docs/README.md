@@ -25,7 +25,7 @@ to understand the device's capabilities and limitations.
 
 9. Connect to a WiFi network and MQTT broker through the auto-connect access point
 
-10. Calibrate sensors
+10. Calibrate flow sensor
 
 ## Terminology
 
@@ -361,11 +361,19 @@ Sample payload:
 
 ## Equipment
 
+In this section, I'll list all the equipment I used for this project. This isn't an exhaustive list of all parts that could be used: it's just a list of parts I used, and I build a controller with a source, tank, flow sensor, pressure sensor, and drain. The substitution of some parts, like the type of tubes and fittings, are simple, but other parts, like the microcontroller and sensors, will require significant modifications to the software.
+
+Several of the items are 3D printed. You can find the 3D mesh (.stl) and the Fusion360 (.f3d) files in the CAD folder of the project directory. Unless you're using the exact same products as I am, the 3D models likely won't work for you, and you may find them inadequate in other aspects. Unfortunately, at the time I created these models, I didn't have knowledge of best practices for Fusion360, and so you may have a hard time modifying them for your purposes. Hopefully for those who start from scratch, my models will help, and please let me know if you create any so we can add them to the repo.
+
+Each section will have a table in this format for summary:
+
 | Item | Quantity | Where to source | Product Link |
 | -------------  | ------------- | ------------- | ------------- |
-| Name of the item  | Will vary depending on other equipment | Where I sourced it | The exact product I used |
+| Name of the item  | Will vary depending on other equipment and the scale of the irrigation network | Where I sourced it | The exact product I used |
 
 ### Core
+
+These items form the core functionality of the device.
 
 | Item | Quantity | Where to source | Product Link |
 | -------------  | ------------- | ------------- | ------------- |
@@ -376,13 +384,40 @@ Sample payload:
 | [Pressure sensor](#pressure-sensor) | 0-1 | Hobby shop | [Adafruit](https://www.adafruit.com/product/3965) |
 
 #### Microcontroller
+
+The brains of the controller. **Required for every project.** I used the ESP8266 because of its price, availability, ease of programming, and most importantly: built-in WiFi. If you're using a different microcontroller, you will need to modify the software. The controller has some pin requirements you'll need to keep in mind if you're not using the Adafruit ESP I used:
+
+- Enough pins for each of the valve(s).
+- Interrupt capable pin (if [`USING_FLOW_SENSOR_`](#auto-config)).
+- I2C pins (if [`USING_PRESSURE_SENSOR`](#auto-config)).
+- Deep sleep capability (if using [`AP_RETRY_DEEP_SLEEP`](#wifi-manager)).
+
 #### Solenoid Valve
+
+The main mechanical function of the device. **Required if [`USING_SOURCE_`](#auto-config).** These valves, which have a minimum pressure requirement to open/close, are suitable for use with a source, but not a tank, because a source is assumed to have a high enough pressure at all times. I used a 12V solenoid valve because I had a 12V power supply and it seemed a suitable choice. Keep in mind that for every valve you will need a [diode](#diode) to prevent EMF feedback, and that you will need a [relay](#relay) with a rated voltage that matches the valve's voltage, with at least as many modules as valves. 
+
 #### Solenoid Valve (No Minimum Pressure)
+
+The main mechanical function of the device. **Required if [`USING_TANK_`](#auto-config).** These valves, which do not have a minimum pressure requirement to open/close, are suitable for use with a tank and a source, because a tank is assumed to possibly have zero pressure. I used a 12V solenoid valve because I had a 12V power supply and it seemed a suitable choice. Keep in mind that for every valve you will need a [diode](#diode) to prevent EMF feedback, and that you will need a [relay](#relay) with a rated voltage that matches the valve's voltage, with at least as many modules as valves. 
+
 #### Relay
+
+Used for switching the high voltage valves with the low voltage of the microcontroller. **Required for every project**. You will need a relay with a rated voltage that matches the valve's voltage, with at least as many modules as valves. The product I linked is a 4-module relay, because I'm using 3 valves and I couldn't find a 3-module relay. Make sure to test that your relay modules work, as I've had some bad luck in the past with recieving dead relays.
+
 #### Flow Sensor
+
+Used for sensing the rate of water flow through the tank's output, or the tank and source's output. **Required if [`USING_TANK_`](#auto-config) or if [`USING_SOURCE_`](#auto-config) and [`USING_SOURCE_FLOW`](#core-1).** The flow sensor I used is a hall effect flow sensor, which uses a magnetic field to send voltages pulses into a data wire. 
+I used the sensor I did because the flow rate range (0.6-10L/min) seemed like it would capture what would be coming out of my water supplies, and because the 3/8 inch thread was convienent to make [adapters](#38-thread-to-34-thread) for.
+
+The sensor uses an interrupt pin to update the controller's memory, specifically a `volatile int.`
+
+Make sure to configure [`MAX_FLOW_RATE_DEFAULT`](#defaults) and [`MIN_FLOW_RATE_DEFAULT`](#defaults) for the sensor you choose.
+
 #### Pressure Sensor
 
 ### Cases
+
+These items are protective cases around the other items. Most are optional.
 
 | Item | Quantity | Where to source | Product Link |
 | -------------  | ------------- | ------------- | ------------- |
@@ -397,6 +432,8 @@ Sample payload:
 #### Pressure Sensor Case
 
 ### Electrical
+
+These items are electrical components needed to build the control circuit.
 
 This section assumes you already has a soldering setup, solder, and wires
 
@@ -424,37 +461,79 @@ This section assumes you already has a soldering setup, solder, and wires
 
 ### Fluids
 
+These items are needed to handle the water from the water supplies.
+
+| Item | Quantity | Where to source | Product Link |
+| -------------  | ------------- | ------------- | ------------- |
+| [1/2 poly](#12-poly) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DD-DH700-100-1-2-x-100-.700-OD-Poly-Tubing-100-Roll-DD-DH700-100) |
+| [1/4 poly](#14-poly) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DD-DH250-100-1-4-x-100-Poly-Micro-Tubing-100-Roll-DD-DH250-100) |
+| [Pressure regulator](#pressure-regulator) | 0-1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dd-hpr10-drip-irrigation-pressure-regulator-10-psi-hose-threaded-3-4-c2c1-fht-x-3-4-mht.) |
+| [Backflow preventer](#backflow-preventer) | 0-1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dd-hvb-vacuum-breaker-3-4-hose-thread-anti-siphon-backflow-preventer-for-drip-irrigation.-c2c76) |
+| [Vacuum relief valve](#vacuum-relief-valve) | 1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dt-arv75-3-4-mpt-air-vacuum-relief-valve-c2f2) |
+| [Filter](#filter) | 1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/Irritec-A4-HTF155-Drip-Irrigation-Y-Filter-3-4-Female-Hose-Swivel-x-Male-Hose-150-Stainless-Steel-Mesh-Screen) |
+
 #### 1/2 Poly
-https://www.irrigationdirect.ca/DD-DH700-100-1-2-x-100-.700-OD-Poly-Tubing-100-Roll-DD-DH700-100
 #### 1/4 Poly
-https://www.irrigationdirect.ca/DD-DH250-100-1-4-x-100-Poly-Micro-Tubing-100-Roll-DD-DH250-100
 #### Pressure Regulator
-https://www.irrigationdirect.ca/dd-hpr10-drip-irrigation-pressure-regulator-10-psi-hose-threaded-3-4-c2c1-fht-x-3-4-mht.
 #### Backflow Preventer
-https://www.irrigationdirect.ca/dd-hvb-vacuum-breaker-3-4-hose-thread-anti-siphon-backflow-preventer-for-drip-irrigation.-c2c76.html
 #### Vacuum Relief Valve
-https://www.irrigationdirect.ca/dt-arv75-3-4-mpt-air-vacuum-relief-valve-c2f2.html
 #### Filter
-https://www.irrigationdirect.ca/Irritec-A4-HTF155-Drip-Irrigation-Y-Filter-3-4-Female-Hose-Swivel-x-Male-Hose-150-Stainless-Steel-Mesh-Screen.html
 
 ### Fittings
-1/2 tube to pipe thread connector male
-1/2 tube to pipe thread connector female
-1/2 tube 3-way connector
-1/2 tube 90 degree connector
-Barrel bulkhead
-Hose washers
-Barrel bulkhead to 3/4 thread
-Barrel bulkhead to 1/4 tube
+
+These items are needed to fit together the fluids supplies.
+
+| Item | Quantity | Where to source | Product Link |
+| -------------  | ------------- | ------------- | ------------- |
+| [1/2 poly to 3/4 MHT](#12-poly-to-34-mht) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dl-mh600-drip-irrigation-direct-loc-male-hose-end-.600-id-el-x-3-4-mht-700-or-710-tubing-b1b5) |
+| [1/2 poly to 3/4 FHT](#12-poly-to-34-fht) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DL-FHS600-Direct-Loc-Swivel-Adapter-.600-ID-DL-x-3-4-FHT-Swivel-700-or-710-Tubing.-DL-FHS600) |
+| [1/2 poly to poly tee join](#12-poly-tee-join) | 0+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DL-T600-Direct-Loc-Tee-.600-ID-700-or-710-Tubing.-DL-T600) |
+| [1/2 poly elbow join](#12-poly-elbow-join) | 0+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DL-L600-Direct-Loc-Elbow-.600-ID-DL-x-DL-700-or-710-Tubing.-DL-L600) |
+| [Tank bulkhead](#tank-bulkhead) | 0-3 | 3D print | CAD folder |
+| [Hose washer](#hose-washer) | 0-10 | Hardware store | [Home Depot](https://www.homedepot.ca/product/orbit-hose-washer-combo-12-pack-/1000474848) |
+| [Tank bulkhead to 3/4 thread](#tank-bulkhead-to-34-thread) | 0-2 | 3D print | CAD folder |
+| [Tank bulkhead to 1/4 poly](#tank-bulkhead-to-14-poly) | 0-1 | 3D print | CAD folder |
+| [3/8 thread to 3/4 thread](#38-thread-to-34-thread) | 0-2 | 3D print | CAD folder |
+
+#### 1/2 Poly to 3/4 MHT
+#### 1/2 Poly to 3/4 FHT
+#### 1/2 Poly Tee Join
+#### 1/2 Poly Elbow Join
+#### Tank Bulkhead
+#### Hose Washer
+#### Tank Bulkhead to 3/4 Thread
+#### Tank Bulkhead to 1/4 Poly
+#### 3/8 Thread to 3/4 Thread
+
 
 ### Irrigation System
 
-I'm not going to describe what my system is but hehre's the drip tape I used
-https://www.irrigationdirect.ca/p1-1508-500-irritec-p1-drip-tape-15mil-x-8-spacing-.25-gpm-100ft.html
+These items are what I used to build out the rest of the irrigation system, after the section controlled by the irrigation controller. These items are going to be highly variable on the space the irrigation system is covering, and can be considered seperate from the system of the controller. I've just listed the items I used for reference.  
+
+| Item | Quantity | Where to source | Product Link |
+| -------------  | ------------- | ------------- | ------------- |
+| [Inline valve](#inline-valve) | 0+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DL-FCV600-Pema-Loc-1-2-Flow-Control-Valve-DL-x-DL.-DL-FCV600) |
+| [Tube cutter](#tube-cutter) | 1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/tl-tc100-3/4-tubing-cutter-b2e8) |
+| [1/2 poly end](#12-poly-end) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dd-f8-figure-8-end-of-line-plug.-b1c6) |
+| [1/2 poly mount](#12-poly-mount) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dd-mc700b-1-2-tubing-mounting-clamp-with-nail-black.-b2d2) |
+| [Drip tape](#drip-tape) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/p1-1508-500-irritec-p1-drip-tape-15mil-x-8-spacing-.25-gpm-100ft) |
+| [Drip tape barb](#drip-tape-barb) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DT-TO250-Drip-Tape-5-8-Loc-x-1-4-Barb-DT-TO250) |
+| [Drip tape hole punch](#drip-tape-hole-punch) | 1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dd-hp250-dg-hole-punch-for-1-4-barbed-fittings-and-drippers-b2e3) |
+| [Drip tape sleeve end](#drip-tape-sleeve-end) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DT-TSE-Drip-Tape-5-8-Sleeve-End-DT-TS) |
+| [Drip tape stake](#drip-tape-stake) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/TLS6-Netafim-Drip-Tubing-Hold-Down-6-Wire-Stake-Staple-Style-fits-1-8-to-3-4-tubing-DD-S6.html) |
+
+#### Inline Valve
+#### Tube Cutter
+#### 1/2 Poly End
+#### 1/2 Poly mount
+#### Drip Tape
+#### Drip Tape Barb
+#### Drip Tape Hole Punch
+#### Drip Tape Sleeve End
+#### Drip Tape Stake
 
 
 ## Assembly
-
 
 ### Water Supplies
 
@@ -468,7 +547,7 @@ deep sleep
 
 ## Configuration
 
-All configuration settings can be found in the file `config.h`.
+All configuration settings can be found in the file `config.h`. **Assume that all settings require your attention unless otherwise stated.**
 
 ### Core
 
@@ -501,15 +580,15 @@ These settings are used to configure the WiFi Manager, an instance of the WiFiMa
 
 - `AP_PASSWORD string` The password of the auto-connect access point.
 
-- `AP_IP IPAddress()` The IP address of the auto-connect access point. You should ensure this doesn't conflict with another device on your network.
+- `AP_IP IPAddress()` The IP address of the auto-connect access point. **You should ensure this doesn't conflict with another device on your network, but otherwise doesn't need to be changed.**
 
-- `AP_GATEWAY IPAddress()` The gateway of the auto-connect access point.
+- `AP_GATEWAY IPAddress()` The gateway of the auto-connect access point. **This likely does not need to be changed.**
 
-- `AP_SUBNET IPAddress()` The subnet of the auto-connect access point.
+- `AP_SUBNET IPAddress()` The subnet of the auto-connect access point. **This likely does not need to be changed.**
 
-- `AP_TIMEOUT int` The duration of time the auto-connect access point is kept open in seconds.
+- `AP_TIMEOUT int` The duration of time the auto-connect access point is kept open in seconds. **This likely does not need to be changed.**
 
-- `AP_RETRY_DELAY int` The duration of time to wait between auto-connect access point timeout and next try in seconds.
+- `AP_RETRY_DELAY int` The duration of time to wait between auto-connect access point timeout and next try in seconds. **This likely does not need to be changed.**
 
 - `AP_RETRY_DEEP_SLEEP bool` Define the method used to wait for `AP_RETRY_DELAY`.
     - `true` The ESP8266 function `ESP.deepSleep()` will be used to reduce power consumption. See the [electrical assembly](#electrical) section for the required electrical wiring.
@@ -529,7 +608,7 @@ These settings are used to configue the MQTT client, an instance of the PubSubCl
 
 - `MQTT_PASSWORD_DEFAULT string` The password of the client.
 
-- `MQTT_RETRY_TIMEOUT int` The duration of time to continually attempt connection to the MQTT broker before returning to the auto-connect access point, in seconds.
+- `MQTT_RETRY_TIMEOUT int` The duration of time to continually attempt connection to the MQTT broker before returning to the auto-connect access point, in seconds. **This likely does not need to be changed.**
 
 ### Pins
 
@@ -547,11 +626,11 @@ These settings define the pins used to interact with the equipment connected to 
 
 These settings are default settings that can be changed at runtime through the [config change topic](#write), where they are written to a file on the controller's file system memory and stored in [config structs](#runtime-config). Sensible defaults should still be set here to avoid having to manually update each setting.  
 
-- `DATA_RESOLUTION_L_DEFAULT float` The default value of [`ServicesConfig.data_resolution_l`](#runtime-config).
+- `DATA_RESOLUTION_L_DEFAULT float` The default value of [`ServicesConfig.data_resolution_l`](#runtime-config). **This likely does not need to be changed.**
 
 - `STATIC_FLOW_RATE_DEFAULT float` The default value of [`SourceConfig.static_flow_rate`](#runtime-config).
 
-- `TANK_TIMEOUT_DEFAULT int` The default value of [`TankConfig.tank_timeout`](#runtime-config).
+- `TANK_TIMEOUT_DEFAULT int` The default value of [`TankConfig.tank_timeout`](#runtime-config). **This does not need to be changed.**
 
 - `TANK_SHAPE_DEFAULT int` The default value of [`TankConfig.shape_type`](#runtime-config).
 
@@ -567,9 +646,9 @@ These settings are default settings that can be changed at runtime through the [
 
 - `MIN_FLOW_RATE_DEFAULT float` The default value of [`FlowSensorConfig.min_flow_rate`](#runtime-config).
 
-- `PRESSURE_REPORT_MODE_DEFAULT int` The default value of [`PressureSensorConfig.report_mode`](#runtime-config).
+- `PRESSURE_REPORT_MODE_DEFAULT int` The default value of [`PressureSensorConfig.report_mode`](#runtime-config). **This does not need to be changed.**
 
-- `ATMOSPHERIC_PRESSURE_HPA_DEFAULT float` The default value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config).
+- `ATMOSPHERIC_PRESSURE_HPA_DEFAULT float` The default value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config). **This does not need to be changed. Unless you live on Mount Everest.**
 
 ### Runtime Config
 
@@ -608,7 +687,7 @@ These settings are initialized at runtime, first reading a configuration file fr
 
 These settings define the topic strings to use for the MQTT interface. See the [MQTT interface](#mqtt-interface) for details.
 
-You can leave these unchanged with no problem, but you might want to customize them. If you do, just keep in mind that the topic strings are sent with every message, and that the MQTT client has a maximum message size of 256 bytes (including header). Try to keep them small, especially for topics with a high message frequency (like [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)), or a large payload (like [`CONFIG_TOPIC_`](#auto-config)). 
+**You can leave these unchanged with no problem,** but you might want to customize them. If you do, just keep in mind that the topic strings are sent with every message, and that the MQTT client has a maximum message size of 256 bytes (including header). Try to keep them small, especially for topics with a high message frequency (like [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)), or a large payload (like [`CONFIG_TOPIC_`](#auto-config)). 
 
 - `BASE_TOPIC string` The base topic used to pre-pend all other topics through the [auto-config](#auto-config).
 
