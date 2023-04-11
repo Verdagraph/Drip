@@ -69,19 +69,24 @@ This section describes the functionality of the MQTT topics through which the de
 
 | Title   | Topic string config  | Does the controller publish or subscribe? | Is the topic enabled unconditionally? |
 | ------------- | ------------- | ------------- | ------------- |
-| [Dispense Activate](#activation)  | [`DISPENSE_ACTIVATE_TOPIC_`](#auto-config) | Subscribe | Yes |
-| [Dispense Slice Report](#slice-reporting)  | [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)  | Publish | Yes |
-| [Dispense Summary Report](#summary-reporting)  | [`DISPENSE_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Dispense activate](#activation)  | [`DISPENSE_ACTIVATE_TOPIC_`](#auto-config) | Subscribe | Yes |
+| [Dispense slice report](#slice-reporting)  | [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Dispense summary report](#summary-reporting)  | [`DISPENSE_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | Yes |
 | [Deactivate](#deactivation)  | [`DEACTIVATE_TOPIC_`](#auto-config)  | Subscribe | Yes |
 | [Restart](#restart)  | [`RESTART_TOPIC_`](#auto-config)  | Subscribe | Yes |
-| [Info Logging](#info)  | [`LOG_TOPIC_`](#auto-config)  | Publish | Yes |
-| [Warning Logging](#warnings)  | [`WARNING_TOPIC_`](#auto-config)  | Publish | Yes |
-| [Error Logging](#errors)  | [`ERROR_TOPIC_`](#auto-config)  | Publish | Yes |
-| [Read Config](#read)  | [`CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
-| [Write Config](#write)  | [`CONFIG_CHANGE_TOPIC_`](#auto-config)  | Subscribe | Yes |
-| [Reset Settings](#reset-settings)  | [`SETTINGS_RESET_TOPIC_`](#auto-config)  | Subscribe | Yes |
-| [Drain Activate](#activation-1)  | [`DRAIN_ACTIVATE_TOPIC_`](#auto-config)  | Subscribe | No |
-| [Drain Summary Report](#reporting)  | [`DRAIN_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | No |
+| [Info logging](#info)  | [`LOG_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Warning logging](#warnings)  | [`WARNING_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Error logging](#errors)  | [`ERROR_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Read config](#read)  | [`CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Write config](#write)  | [`CONFIG_CHANGE_TOPIC_`](#auto-config)  | Subscribe | Yes |
+| [Reset settings](#reset-settings)  | [`SETTINGS_RESET_TOPIC_`](#auto-config)  | Subscribe | Yes |
+| [Flow sensor calibrate]()  | the controller listens on this topic and when it gets a message it begins a flow calibration sequence, saving an id that was sent on the message.    | Subscribe | No |
+| [Flow sensor calibrate listen]()  | the controller listens on this topic and when it gets a message with the correct id it outputs a set volume of water (set in the config), taking note of the amount of pulses    | Subscribe | No |
+| [Flow sensor calibrate set]()  | the controller listens on this topic and when it gets a message right after an output request, it uses the measured volume to calculate the average of the process all the status changes are reflected in info log    | Subscribe | No |
+| [Drain activate](#activation-1)  | [`DRAIN_ACTIVATE_TOPIC_`](#auto-config)  | Subscribe | No |
+| [Drain summary report](#reporting)  | [`DRAIN_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | No |
+| [Pressure report request](#request)  |  | Subscribe | No |
+| [Pressure report](#report) |  | Subscribe | No |
 
 ### Dispensation
 
@@ -355,9 +360,25 @@ Sample payload:
 ```
 ```
 
+### Pressure
+
+#### Request
+#### Report
+
 # Hardware
 
 ## Operating Modes
+
+source
+tank
+source + tank with using_source_flow as false
+source + tank with using_source_flow as true
+
+tank with drain valve
+tank with pressure sensor 
+tank with overflow 
+
+fluid system components
 
 ## Equipment
 
@@ -400,6 +421,8 @@ The main mechanical function of the device. **Required if [`USING_SOURCE_`](#aut
 
 The main mechanical function of the device. **Required if [`USING_TANK_`](#auto-config).** These valves, which do not have a minimum pressure requirement to open/close, are suitable for use with a tank and a source, because a tank is assumed to possibly have zero pressure. I used a 12V solenoid valve because I had a 12V power supply and it seemed a suitable choice. Keep in mind that for every valve you will need a [diode](#diode) to prevent EMF feedback, and that you will need a [relay](#relay) with a rated voltage that matches the valve's voltage, with at least as many modules as valves. 
 
+If you want to be able to drain fluid from your tank without having it go into your irrigation system, you'll need two of these valves: one output valve, and one drain valve. The output valve is of course necessary for all setups with a tank, but the drain valve may not be necessary depending on your requirements. I chose to use one because, from what I understand, you're not supposed to let water sit stale in a rain barrel for more than 10 days or so, and I didn't want to have to manually clear my tank. I also combined the tank drain with a simple overflow tube running out of the top of the barrel, to ensure that it doesn't overflow even if the controller didn't have power to open the drain valve. More details in the [operating modes](#operating-modes) section and the [assembly](#assembly) section. 
+
 #### Relay
 
 Used for switching the high voltage valves with the low voltage of the microcontroller. **Required for every project**. You will need a relay with a rated voltage that matches the valve's voltage, with at least as many modules as valves. The product I linked is a 4-module relay, because I'm using 3 valves and I couldn't find a 3-module relay. Make sure to test that your relay modules work, as I've had some bad luck in the past with recieving dead relays.
@@ -409,11 +432,15 @@ Used for switching the high voltage valves with the low voltage of the microcont
 Used for sensing the rate of water flow through the tank's output, or the tank and source's output. **Required if [`USING_TANK_`](#auto-config) or if [`USING_SOURCE_`](#auto-config) and [`USING_SOURCE_FLOW`](#core-1).** The flow sensor I used is a hall effect flow sensor, which uses a magnetic field to send voltages pulses into a data wire. 
 I used the sensor I did because the flow rate range (0.6-10L/min) seemed like it would capture what would be coming out of my water supplies, and because the 3/8 inch thread was convienent to make [adapters](#38-thread-to-34-thread) for.
 
-The sensor uses an interrupt pin to update the controller's memory, specifically a `volatile int.`
+The sensor uses an interrupt pin to update the controller's memory, specifically a `volatile int.` The sensor that I used runs on a logic level of 5V, which was too high for the 3.3V level of the ESP8266. Make sure you either find a flow sensor with a logic level that matches the microcontroller, or use a [logic level shifter](#logic-level-converter) or some alternative. 
 
 Make sure to configure [`MAX_FLOW_RATE_DEFAULT`](#defaults) and [`MIN_FLOW_RATE_DEFAULT`](#defaults) for the sensor you choose.
 
 #### Pressure Sensor
+
+Used for sensing the absolute pressure in the tank. **Not required.** By subtracting the atmospheric pressure, defined by [`PressureSensorConfig.atmosphere_pressure`](#runtime-config), from the absolute pressure returned by the pressure sensor, we can get the gauge pressure in the tank. By configuring the [tank geometry](#runtime-config), we can estimate the volume of water in the tank. This is useful for a few reasons. First, we can keep track of how much water we have in the tank through the [pressure report topic](#report). If we're not using a source, this will tell us whether our irrigation controller can even output any water at all, and if we need to top up the tank or water the garden ourselves. Second, knowing the amount of water in our tank will allow us to know how long water has been sitting in it - allowing us to drain the tank, either with a [drain valve](#solenoid-valve-no-minimum-pressure), or manually - to prevent the growth of harmful organisms in the water.
+
+When it comes down to it, the pressure sensor's only function is to tell us how much water there is in the tank. I chose the sensor I did because it was the only pressure sensor I could find on the website I ordered my other parts from, and while it doesn't explicitly say it's compatible with water pressure, I figured it would work because it uses a port which can be sealed. You may find it better to use another sensor specifically designed for water, which will require modifications to the software, as currently it assumes the use of a pressure sensor that returns the absolute pressure at the bottom of the tank in hectopacals through I2C. If you do use the sensor I did, keep in mind that it'll require some sort of [case](#pressure-sensor-case) to be able to connect to the tank. 
 
 ### Cases
 
@@ -424,12 +451,17 @@ These items are protective cases around the other items. Most are optional.
 | [Controller case](#controller-case) | 1 | 3D Print | CAD folder |
 | [Valve case](#valve-case) | 0-3 | 3D Print | CAD folder |
 | [Flow sensor case](#flow-sensor-case) | 0-1 | 3D Print | CAD folder |
-| [pressure sensor case](#pressure-sensor-case) | 0-1 | 3D Print | CAD folder |
+| [Pressure sensor case](#pressure-sensor-case) | 0-1 | 3D Print | CAD folder |
+| [M3 screws](#m3-screws) | 0-1 | 3D Print | CAD folder |
 
 #### Controller Case
+
+This case holds the proto-board circuit ([microcontroller](#microcontroller), [voltage regulator](#voltage-regulator), and [logic level converter](#logic-level-converter)) along with the relay. **Required for every project**. The included model screws in using 8 [M3 screws](#m3-screws), and has a hole for [power supply adapter](#power-supply-adapter) and
+
 #### Valve Case
 #### Flow Sensor Case
 #### Pressure Sensor Case
+#### M3 screws
 
 ### Electrical
 
@@ -445,7 +477,7 @@ This section assumes you already has a soldering setup, solder, and wires
 | [Voltage regulator](#voltage-regulator) | 1 | Hobby shop | [RobotShop](https://ca.robotshop.com/products/5v-25a-step-down-voltage-regulator-d24v25f5) |
 | [Diode](#diode) | 1-3 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/diode-rectifier-1a-50v/) |
 | [Logic level converter](#logic-level-converter) | 0-1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/4-channel-logic-level-converter-bi-directional/) |
-| [Board](#board) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/?product_cat=&s=proto+board&post_type=product) |
+| [Proto Board](#proto-board) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/?product_cat=&s=proto+board&post_type=product) |
 | [2-wire waterproof connector](#2-wire-waterproof-connector) | 0-3 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/waterproof-dc-power-cable-set/) |
 | [4-wire waterproof connector](#4-wire-waterproof-connector) | 0-2 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/waterproof-polarized-4-wire-cable-set/) |
 
@@ -455,9 +487,12 @@ This section assumes you already has a soldering setup, solder, and wires
 #### Voltage Regulator
 #### Diode
 #### Logic Level Converter
-#### Board
+#### Proto Board
 #### 2-Wire Waterproof Connector
 #### 4-Wire Waterproof Connector
+
+https://leeselectronic.com/en/product/6125-fitting-water-proof-pg-9-black
+https://leeselectronic.com/en/product/61272-fitting-water-proof-pg-11-black
 
 ### Fluids
 
@@ -537,11 +572,59 @@ These items are what I used to build out the rest of the irrigation system, afte
 
 ### Water Supplies
 
-### Electrical
+1. If [`USING_SOURCE_`](#auto-config), secure the use of a 3/4 inch threaded connection to a inexhaustible water supply, like a utility connection
+2. If [`USING_TANK_`](#auto-config), secure a barrel or water storage container of some sort at a reasonably high location to generate water pressure for the whole system
 
-deep sleep
+### Devices
+
+1. Solder a diode across each valve
+2. Solder a connector to each valve
+3. Screw each valve into a case
+4. Solder a connector to the flow sensor
+5. Screw flow sensor into case 
+6. Solder a connector to the pressure sensor
+7. Coat pressure sensor in water proof coating
+8. Tightly insert pressure sensor port into case with some material like plumbers tape. Screw case closed
 
 ### Fluids
+
+1. Attach a hose breaker to the source. Add a hose filter. Add a 3/4 thread to 1/2 poly adapter. Poly tube to the tank. 
+2. Add 1/2 tube to 3/4 thread adapter, solenoid valve, and 3/4 thread adapter to 1/2 poly tube
+3. Drill holes in the barrels x size. Insert the tank bulkheads into them with one hose washer on each side. Screw tightly
+4. To the output hole, add a tank bulkhead to 3/4 thread adapter, then a no minimum pressure solenoid valve, a 3/4 thread to 1/2 poly adapter
+5. Add whatever turns you need to get the source valve and tank valve to meet. Then join them with a tee
+6. Add the filter, then the vacuum relief valve. then the flow sensor. Then extend the line to a point of entry into the system
+7. To the drain hole, add a tank bulkhead to 3/4 thread adapter, then a no minimum pressure solenoid valve, a 3/4 thread to 1/2 poly adapter.
+8. To the overflow hole, add a tank bulkhead to 3/4 thread adapter, then a poly section that connects with the drain valve and goes to the bypass storm drain
+9. Screw on the 1/4 poly to tank bulkhead attachment, and extend a support section out to wherever the pressure hole is. Screw on the pressure sensor at the right angle to minimize the amount of tube used. Join with 1/4 poly
+
+### Electrical
+
+0. Flash ESP
+1. Solder pins onto esp8266, voltage regulator, and logic level converter
+2. Solder components onto board
+3. Add wires onto power supply adapter and solder them into voltage regulator as wel as connected into relaty. Add adapter into case
+4. Connect regulator to power line and those to all other components
+5. Connect esp to relay
+6. Pre-solder connections for all other pins
+7. Screw board and relay into case.
+8. Place the controller case where it will be relative to the devices
+9. Size wire length to each device. Cut wires and solder on connectors
+10. Insert wires into controller case and connect to the board and relay
+11. Cut out plastic insulators for the top of the controller case and screw on.
+
+### Calibration
+
+1. Send a message to the calibration start topic
+2. Prepare a fluid measuring device and send amount of time to the calibration listed topic
+3. Send the measured amount of fluid to the calibration set topic
+4. Repeat until enough samples and send a message to the calibration start topic again with the id to stop the process
+
+### Irrigation System
+
+1. To the rain water input hole, add a tank bulkhead to 3/4 thread and a 3/4 thread to 1/2 poly
+2. Connect the input to the rain somehow
+3. Build up rest of irrigation system with chosen materials
 
 # Software configuration
 
