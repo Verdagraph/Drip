@@ -168,6 +168,8 @@ void file::read_config(app::DeviceState* state) {
     state->flow_sensor_config.pulses_per_l = json["flow"]["ppl"].as<float>();
     state->flow_sensor_config.max_flow_rate = json["flow"]["max"].as<float>();
     state->flow_sensor_config.min_flow_rate = json["flow"]["min"].as<float>();
+    state->flow_sensor_config.calibration_timeout = json["flow"]["ctime"].as<int>();
+    state->flow_sensor_config.calibration_max_volume = json["flow"]["cmax"].as<float>();
   }
   if (USING_PRESSURE_SENSOR_) {
     state->pressure_sensor_config.report_mode = json["prssr"]["mode"].as<int>();
@@ -198,6 +200,8 @@ bool file::save_config(app::DeviceState * state) {
     json["flow"]["ppl"] = state->flow_sensor_config.pulses_per_l;
     json["flow"]["max"] = state->flow_sensor_config.max_flow_rate;
     json["flow"]["min"] = state->flow_sensor_config.min_flow_rate;
+    json["flow"]["ctime"] = state->flow_sensor_config.calibration_timeout;
+    json["flow"]["cmax"] = state->flow_sensor_config.calibration_max_volume;
   }
   if (USING_PRESSURE_SENSOR_) {
     json["prssr"]["mode"] = state->pressure_sensor_config.report_mode;

@@ -80,13 +80,13 @@ This section describes the functionality of the MQTT topics through which the de
 | [Read config](#read)  | [`CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
 | [Write config](#write)  | [`CONFIG_CHANGE_TOPIC_`](#auto-config)  | Subscribe | Yes |
 | [Reset settings](#reset-settings)  | [`SETTINGS_RESET_TOPIC_`](#auto-config)  | Subscribe | Yes |
-| [Flow sensor calibrate]()  | the controller listens on this topic and when it gets a message it begins a flow calibration sequence, saving an id that was sent on the message.    | Subscribe | No |
-| [Flow sensor calibrate listen]()  | the controller listens on this topic and when it gets a message with the correct id it outputs a set volume of water (set in the config), taking note of the amount of pulses    | Subscribe | No |
-| [Flow sensor calibrate set]()  | the controller listens on this topic and when it gets a message right after an output request, it uses the measured volume to calculate the average of the process all the status changes are reflected in info log    | Subscribe | No |
+| [Flow sensor calibrate begin](#begin) | [`FLOW_SENSOR_CALIBRATE_BEGIN`](#auto-config) | Subscribe | No |
+| [Flow sensor calibrate dispense](#dispense) | [`FLOW_SENSOR_CALIBRATE_DISPENSE`](#auto-config) | Subscribe | No |
+| [Flow sensor calibrate measure](#measure) | [`FLOW_SENSOR_CALIBRATE_MEASURE`](#auto-config) | Subscribe | No |
 | [Drain activate](#activation-1)  | [`DRAIN_ACTIVATE_TOPIC_`](#auto-config)  | Subscribe | No |
 | [Drain summary report](#reporting)  | [`DRAIN_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | No |
-| [Pressure report request](#request)  |  | Subscribe | No |
-| [Pressure report](#report) |  | Subscribe | No |
+| [Pressure report request](#request)  | [`PRESSURE_REQUEST_TOPIC_`](#auto-config) | Subscribe | No |
+| [Pressure report](#report) | [`PRESSURE_REPORT_TOPIC_`](#auto-config) | Publish | No |
 
 ### Dispensation
 
@@ -148,7 +148,7 @@ Outputs:
 - `["tt"]` float. Total duration of the dispensation process in seconds.
 - `["vt"]` float. Total output volume of the dispensation process in liters.
 - `["tv"]` (conditional) float. The total output volume produced by the tank in liters. Enabled if [`USING_TANK_`](#auto-config).
-- `["tts"]` (conditional) int. The time stamp at which the dispensation process switched from the tank to the source. Will equal `tt` if the processes ended without switching water supplies. Enabled if [`USING_TANK_`](#auto-config) and [`USING_SOURCE_`](#auto-config).
+- `["tts"]` (conditional) int. The time stamp at which the dispensation process switched from the tank to the source. Will equal `["tt"]` if the processes ended without switching water supplies. Enabled if [`USING_TANK_`](#auto-config) and [`USING_SOURCE_`](#auto-config).
 
 Sample payload:
 ```
@@ -166,9 +166,9 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`DEACTIVATE_TOPIC_`](#auto-config)  | Subscribe | Yes |
 
-This topic is where requests for deactivating current processes are sent. Any message recieved on this topic will trigger the deactivation regardless of payload. Upon reception, the device will close all valves, end all ongoing dispensation or drain processes, and send summary reports of any ongoing processes.
+This topic is where commands for deactivating current processes are sent. Any message recieved on this topic will trigger the deactivation regardless of payload. Upon reception, the device will close all valves, end all ongoing dispensation or drain processes, and send summary reports of any ongoing processes.
 
-Inputs: None
+Inputs: None.
 
 Sample payload:
 ```
@@ -181,9 +181,9 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`RESTART_TOPIC_`](#auto-config)  | Subscribe | Yes |
 
-This topic is where requests for restarting the controller are sent. Any message recieved on this topic will trigger the restart regardless of payload. Upon reception, the device will power down and restart.
+This topic is where requests for restarting the controller are sent. Any message recieved on this topic will trigger the restart regardless of payload. Upon reception, the device will power down and restart, right after sending the reports for any processes in progress.
 
-Inputs: None
+Inputs: None.
 
 Sample payload:
 ```
@@ -271,6 +271,8 @@ Outputs:
 - `["flow"]["ppl"]` (conditional) float. The value of [`FlowSensorConfig.pulses_per_l`](#runtime-config). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
 - `["flow"]["max"]` (conditional) float. The value of [`FlowSensorConfig.max_flow_rate`](#runtime-config). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
 - `["flow"]["min"]` (conditional) float. The value of [`FlowSensorConfig.min_flow_rate`](#runtime-config). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
+- `["flow"]["time"]` (conditional) float. The value of [`FlowSensorConfig.calibration_timeout`](#runtime-config). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
+- `["flow"]["cmax"]` (conditional) float. The value of [`FlowSensorConfig.calibration_max_volume`](#runtime-config). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
 - `["prssr"]["mode"]` (conditional) int. The value of [`PressureSensorConfig.report_mode`](#runtime-config). Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config).
 - `["prssr"]["atmo"]` (conditional) float. The value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config). Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config).
 
@@ -297,8 +299,61 @@ Inputs:
 - `["flow"]["ppl"]` (optional, conditional) float. The value of [`FlowSensorConfig.pulses_per_l`](#runtime-config) to be set.
 - `["flow"]["max"]` (optional, conditional) float. The value of [`FlowSensorConfig.max_flow_rate`](#runtime-config) to be set.
 - `["flow"]["min"]` (optional, conditional) float. The value of [`FlowSensorConfig.min_flow_rate`](#runtime-config) to be set.
+- `["flow"]["ctime"]` (optional, conditional) int. The value of [`FlowSensorConfig.calibration_timeout`](#runtime-config) to be set.
+- `["flow"]["cmax"]` (optional, conditional) float. The value of [`FlowSensorConfig.calibration_max_volume`](#runtime-config) to be set.
 - `["prssr"]["mode"]` (optional, conditional) int. The value of [`PressureSensorConfig.use_calibration`](#runtime-config) to be set.
 - `["prssr"]["atmo"]` (optional, conditional) float. The value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config) to be set.
+
+Sample payload:
+```
+```
+
+### Flow Sensor Calibration
+
+The flow sensor calibration topics allow taking volume measurments to calibrate the setting [`FlowSensorConfig.pulses_per_l`](#runtime-config). It's recommended that the output volume is captured as close as possible to the end of the flow sensor, to minimize the amount of fluid that is captured by the flow sensor but not the manual measurments. These topics only take inputs: reports on the status of the process use the [logging topics](#logging).
+
+#### Begin
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| [`FLOW_SENSOR_CALIBRATE_BEGIN`](#auto-config) | Subscribe | No |
+
+This topic allows starting and ending the flow calibration process. If no process is currently running, the controller will begin the process with the ID sent with the payload. The process will continue until it times out according to [`FlowSensorConfig.calibration_timeout`](), or until another message is recieved on this topic containing the same ID. The process will terminate without saving the calibrated value of [`FlowSensorConfig.pulses_per_l`](#runtime-config) if the process is stopped with the [deactivation topic](#deactivation).
+
+Inputs:
+- `["id"]` int. The id of the calibration process.
+
+Sample payload:
+```
+```
+
+#### Dispense
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| [`FLOW_SENSOR_CALIBRATE_DISPENSE`](#auto-config) | Subscribe | No |
+
+This topic allows dispensing a given amount of fluid similarily to the usual dispensation process. Unlike the usual dispensation process, there is no switch from tank to source if both are being used: the source will be used the entire time. Once dispensed, the controller will wait until the measured volume is sent to the [measurment topic](#measure) before being able to start another dispensation.
+
+Inputs:
+- `["id"]` int. The id of the calibration process. If the ID is incorrect or absent, no dispensation will occur.
+- `["tv"]` float. The target volume in liters. If this volume is greater than [`FlowSensorConfig.calibration_max_volume`](), no dispensation will occur.
+
+Sample payload:
+```
+```
+
+#### Measure
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| [`FLOW_SENSOR_CALIBRATE_MEASURE`](#auto-config) | Subscribe | No |
+
+This topic allows sending measurements to the calibration process. A rolling average amount of pulses per liter is maintained until the calibration process is ended, where it is then used to update the value of [`FlowSensorConfig.pulses_per_l`](#runtime-config).
+
+Inputs:
+- `["id"]` int. The id of the calibration process. If the ID is incorrect or absent, no measurment will be recorded.
+- `["mv"]` float. The measured volume in liters. 
 
 Sample payload:
 ```
@@ -362,8 +417,38 @@ Sample payload:
 
 ### Pressure
 
+These topics allow publishing values for tank pressure and volume, as well as requesting these values be sent. Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config).
+
 #### Request
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| [Pressure report request](#request)  | [`PRESSURE_REQUEST_TOPIC_`](#auto-config) | Subscribe | No |
+
+This topic is where pressure reports can be requested. Any message on this topic will cause the controller to publish the tank pressure, volume, or both, to the [pressure report topic](#report), depending on the value of [`PressureSensorConfig.report_mode`](#runtime-config).
+
+Inputs: None.
+
+Sample payload:
+```
+{}
+```
+
 #### Report
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| [Pressure report](#report) | [`PRESSURE_REPORT_TOPIC_`](#auto-config) | Publish | No |
+
+This topic is where pressure reports are published. Pressure reports are published on device startup, before and after all dispense and drain processes, and when a message is recieved on the [pressure report request topic](#request).
+
+Outputs:
+- `["tp"]` (conditional) float. Gauge pressure in the tank in hectopascals. Enabled if [`PressureSensorConfig.report_mode`](#runtime-config) equals 1 or 3.
+- `["tv"]` (conditional) float. Volume of water in the tank in liters. Enabled if [`PressureSensorConfig.report_mode`](#runtime-config) equals 2 or 3. Ensure that the [tank geometry](#runtime-config) is properly configured.
+
+Sample payload:
+```
+```
 
 # Hardware
 
@@ -491,8 +576,7 @@ This section assumes you already has a soldering setup, solder, and wires
 #### 2-Wire Waterproof Connector
 #### 4-Wire Waterproof Connector
 
-https://leeselectronic.com/en/product/6125-fitting-water-proof-pg-9-black
-https://leeselectronic.com/en/product/61272-fitting-water-proof-pg-11-black
+https://bc-robotics.com/shop/cable-gland-pg-9/
 
 ### Fluids
 
@@ -713,6 +797,16 @@ These settings are default settings that can be changed at runtime through the [
 
 - `STATIC_FLOW_RATE_DEFAULT float` The default value of [`SourceConfig.static_flow_rate`](#runtime-config).
 
+- `PULSES_PER_L_DEFAULT float` The default value of [`FlowSensorConfig.pulses_per_l`](#runtime-config).
+
+- `MAX_FLOW_RATE_DEFAULT float` The default value of [`FlowSensorConfig.max_flow_rate`](#runtime-config).
+
+- `MIN_FLOW_RATE_DEFAULT float` The default value of [`FlowSensorConfig.min_flow_rate`](#runtime-config).
+
+- `FLOW_CALIBRATION_TIMEOUT int` The default value of [`FlowSensorConfig.calibration_timeout`](#runtime-config). **This does not need to be changed.**
+
+- `FLOW_CALIBRATION_MAX_VOLUME float` The default value of [`FlowSensorConfig.calibration_max_volume`](#runtime-config). **This does not need to be changed.**
+
 - `TANK_TIMEOUT_DEFAULT int` The default value of [`TankConfig.tank_timeout`](#runtime-config). **This does not need to be changed.**
 
 - `TANK_SHAPE_DEFAULT int` The default value of [`TankConfig.shape_type`](#runtime-config).
@@ -723,15 +817,10 @@ These settings are default settings that can be changed at runtime through the [
 
 - `TANK_DIMENSION_3_DEFAULT float` The default value of [`TankConfig.dimension_3`](#runtime-config).
 
-- `PULSES_PER_L_DEFAULT float` The default value of [`FlowSensorConfig.pulses_per_l`](#runtime-config).
-
-- `MAX_FLOW_RATE_DEFAULT float` The default value of [`FlowSensorConfig.max_flow_rate`](#runtime-config).
-
-- `MIN_FLOW_RATE_DEFAULT float` The default value of [`FlowSensorConfig.min_flow_rate`](#runtime-config).
 
 - `PRESSURE_REPORT_MODE_DEFAULT int` The default value of [`PressureSensorConfig.report_mode`](#runtime-config). **This does not need to be changed.**
 
-- `ATMOSPHERIC_PRESSURE_HPA_DEFAULT float` The default value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config). **This does not need to be changed. Unless you live on Mount Everest.**
+- `ATMOSPHERIC_PRESSURE_HPA_DEFAULT float` The default value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config). **This does not need to be changed. Unless you live on Mount Everest, or Mars or something like that.**
 
 ### Runtime Config
 
@@ -758,6 +847,10 @@ These settings are initialized at runtime, first reading a configuration file fr
 - `FlowSensorConfig.max_flow_rate = float` Defines the maximum rated flow rate of the flow sensor in liters per minute. When the dispensation flow rate surpasses this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config).
 
 - `FlowSensorConfig.min_flow_rate = float` Defines the minimum rated flow rate of the flow sensor in liters per minute. When the dispensation flow rate goes below this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config). If the active water supply is the tank, a flow rate below this value, combined with a current dispense duration greater than `TankConfig.tank_timeout`, will result in the dispensation either shutting off or switching to the source, depending on [`USING_SOURCE_`](#auto-config).
+
+- `FlowSensorConfig.calibration_timeout = int` Defines the duration of time, in seconds, after which the flow sensor calibration process will be ended if no dispensation requests or measurments are made.
+
+- `FlowSensorConfig.calibration_max_volume = float` Defines the maximum volume, in liters, to allow to be dispensed at a time during the flow sensor calibration process. 
 
 - `PressureSensorConfig.report_mode = int` When reporting values related the pressure in the tank, define which values to report.
     - `1` Pressure in hectopascals.
@@ -794,11 +887,21 @@ These settings define the topic strings to use for the MQTT interface. See the [
 
 - `CONFIG_CHANGE_TOPIC string` The topic used to recieve [config change requests](#write).
 
-- `SETTINGS_RESET_TOPIC string` The topic used to recieve [settings reset requsets](#reset-settings).
+- `SETTINGS_RESET_TOPIC string` The topic used to recieve [settings reset requests](#reset-settings).
+
+- `FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC string` The topic used to [begin flow sensor calibration](#flow-sensor-calibration) requests.
+
+- `FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC string` The topic used to recieve [flow sensor calibration dispensation](#dispense) requests.
+
+- `FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC string` The topic used to recieve [flow sensor calibration measurments](#measure).
 
 - `DRAIN_ACTIVATE_TOPIC string` The topic used to recieve [drain activation](#activation-1) requests.
 
 - `DRAIN_REPORT_SUMMARY_TOPIC string` The topic used to send [drain summary reports](#summary-reporting-1).
+
+- `PRESSURE_REQUEST_TOPIC string` The topic used to [request pressure reports](#request).
+
+- `PRESSURE_REPORT_TOPIC string` The topic used to [send pressure reports](#report).
 
 ### Auto-Config
 
@@ -808,9 +911,9 @@ These settings are configured automatically and shouldn't be altered unless you'
 // ************* Operating mode ************* //
 #define USING_SOURCE_ ((RESEVOIR_MODE == 1 || RESEVOIR_MODE == 3) ? true : false)
 #define USING_TANK_ ((RESEVOIR_MODE == 2 || RESEVOIR_MODE == 3) ? true : false)
-#define USING_DRAIN_VALVE_ ((USING_TANK_ && USING_DRAIN_VALVE) ? true: false)
-#define USING_FLOW_SENSOR_ ((USING_TANK_ || USING_SOURCE_FLOW) ? true: false)
-#define USING_PRESSURE_SENSOR_ ((USING_TANK_ && USING_PRESSURE_SENSOR) ? true: false)
+#define USING_DRAIN_VALVE_ ((USING_TANK_ && USING_DRAIN_VALVE) ? true : false)
+#define USING_FLOW_SENSOR_ ((USING_TANK_ || USING_SOURCE_FLOW) ? true : false)
+#define USING_PRESSURE_SENSOR_ ((USING_TANK_ && USING_PRESSURE_SENSOR) ? true : false)
 
 // ************* Pins ************* //
 // Define pins to -1 to indicate non-use based on operational mode
@@ -827,13 +930,18 @@ These settings are configured automatically and shouldn't be altered unless you'
 #define DEACTIVATE_TOPIC_ (BASE_TOPIC DEACTIVATE_TOPIC)
 #define RESTART_TOPIC_ (BASE_TOPIC RESTART_TOPIC)
 #define LOG_TOPIC_ (BASE_TOPIC LOG_TOPIC)
-#define ERROR_TOPIC_ (BASE_TOPIC ERROR_TOPIC)
 #define WARNING_TOPIC_ (BASE_TOPIC WARNING_TOPIC)
+#define ERROR_TOPIC_ (BASE_TOPIC ERROR_TOPIC)
 #define CONFIG_TOPIC_ (BASE_TOPIC CONFIG_TOPIC)
 #define CONFIG_CHANGE_TOPIC_ (BASE_TOPIC CONFIG_CHANGE_TOPIC)
 #define SETTINGS_RESET_TOPIC_ (BASE_TOPIC SETTINGS_RESET_TOPIC)
+#define FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC) : NULL)
+#define FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC) : NULL)
+#define FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC) : NULL)
 #define DRAIN_ACTIVATE_TOPIC_ (USING_DRAIN_VALVE_ ? (BASE_TOPIC DRAIN_ACTIVATE_TOPIC) : NULL)
 #define DRAIN_REPORT_SUMMARY_TOPIC_ (USING_DRAIN_VALVE_ ? (BASE_TOPIC DRAIN_REPORT_SUMMARY_TOPIC) : NULL)
+#define PRESSURE_REQUEST_TOPIC_ (USING_PRESSURE_SENSOR_ ? (BASE_TOPIC PRESSURE_REQUEST_TOPIC) : NULL)
+#define PRESSURE_REPORT_TOPIC_ (USING_PRESSURE_SENSOR_ ? (BASE_TOPIC PRESSURE_REPORT_TOPIC) : NULL)
 ```
 
 ## Dependencies

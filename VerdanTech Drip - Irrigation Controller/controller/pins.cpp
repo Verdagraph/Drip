@@ -55,6 +55,7 @@ void pins::init_pins() {
       ESP.restart();
     }
     SLOG.println("Pressure sensor initialized");
+    srvc::publish_pressure_report();
   }
 
 

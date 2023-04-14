@@ -23,20 +23,20 @@
 #define SLOG if(DEBUG)Serial
 
 #define RESEVOIR_MODE 1
-#define USING_SOURCE_FLOW fals
+#define USING_SOURCE_FLOW false
 #define USING_DRAIN_VALVE true
 #define USING_PRESSURE_SENSOR true
 
 
 // ************* WiFiManager AutoConnect config ************* //
 
-#define AP_NAME "irrigation_controller
-#define AP_PASSWORD "verdantech
+#define AP_NAME "irrigation_controller"
+#define AP_PASSWORD "verdantech"
 #define AP_IP IPAddress(192, 168, 0, 0)
 #define AP_GATEWAY IPAddress(192, 168, 0, 1)
 #define AP_SUBNET IPAddress(255, 255, 255, 0)
-#define AP_TIMEOUT
-#define AP_RETRY_DELAY 360s
+#define AP_TIMEOUT 120
+#define AP_RETRY_DELAY 360
 #define AP_RETRY_DEEP_SLEEP true
 
 
@@ -70,6 +70,8 @@
 #define PULSES_PER_L_DEFAULT 1265.289
 #define MAX_FLOW_RATE_DEFAULT 30
 #define MIN_FLOW_RATE_DEFAULT 0.2
+#define FLOW_CALIBRATION_TIMEOUT 30
+#define FLOW_CALIBRATION_MAX_VOLUME 0.5
 #define TANK_TIMEOUT_DEFAULT 10
 #define TANK_SHAPE_DEFAULT 2
 #define TANK_DIMENSION_1_DEFAULT 0.4
@@ -86,15 +88,20 @@
 #define DISPENSE_REPORT_SLICE_TOPIC "out/log/sl"
 #define DISPENSE_REPORT_SUMMARY_TOPIC "out/log/sm"
 #define DEACTIVATE_TOPIC "off"
-#define RESTART_TOPIC "restart
+#define RESTART_TOPIC "restart"
 #define LOG_TOPIC "log/info"
 #define WARNING_TOPIC "log/warning"
 #define ERROR_TOPIC "log/error"
 #define CONFIG_TOPIC "config"
 #define CONFIG_CHANGE_TOPIC "config/change"
 #define SETTINGS_RESET_TOPIC "config/reset"
+#define FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC "flow/calibrate"
+#define FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC "flow/dispense"
+#define FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC "flow/measure"
 #define DRAIN_ACTIVATE_TOPIC "drain/on"
 #define DRAIN_REPORT_SUMMARY_TOPIC "drain/log"
+#define PRESSURE_REQUEST_TOPIC "pressure/request"
+#define PRESSURE_REPORT_TOPIC "pressure/report"
 
 
 // ************* Auto-config ************* //
@@ -130,11 +137,13 @@
 #define CONFIG_TOPIC_ (BASE_TOPIC CONFIG_TOPIC)
 #define CONFIG_CHANGE_TOPIC_ (BASE_TOPIC CONFIG_CHANGE_TOPIC)
 #define SETTINGS_RESET_TOPIC_ (BASE_TOPIC SETTINGS_RESET_TOPIC)
+#define FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC) : NULL)
+#define FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC) : NULL)
+#define FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC) : NULL)
 #define DRAIN_ACTIVATE_TOPIC_ (USING_DRAIN_VALVE_ ? (BASE_TOPIC DRAIN_ACTIVATE_TOPIC) : NULL)
 #define DRAIN_REPORT_SUMMARY_TOPIC_ (USING_DRAIN_VALVE_ ? (BASE_TOPIC DRAIN_REPORT_SUMMARY_TOPIC) : NULL)
-//#define CALIBRATE_FLOW_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC CALIBRATE_FLOW_TOPIC) : NULL)
+#define PRESSURE_REQUEST_TOPIC_ (USING_PRESSURE_SENSOR_ ? (BASE_TOPIC PRESSURE_REQUEST_TOPIC) : NULL)
 #define PRESSURE_REPORT_TOPIC_ (USING_PRESSURE_SENSOR_ ? (BASE_TOPIC PRESSURE_REPORT_TOPIC) : NULL)
-//#define CALIBRATE_PRESSURE_TOPIC_ (USING_PRESSURE_SENSOR_ ? (BASE_TOPIC CALIBRATE_PRESSURE_TOPIC) : NULL)
 
 // ************* Useful constants ************* //
 #define DENSITY_GRAVITY (9.80665 * 997.0474)
@@ -197,11 +206,15 @@ struct FlowSensorConfig {
   float pulses_per_l;
   float max_flow_rate;
   float min_flow_rate;
+  int calibration_timeout;
+  float calibration_max_volume;
 
   FlowSensorConfig() {
     pulses_per_l = PULSES_PER_L_DEFAULT;
     max_flow_rate = MAX_FLOW_RATE_DEFAULT;
     min_flow_rate = MIN_FLOW_RATE_DEFAULT;
+    calibration_timeout = FLOW_CALIBRATION_TIMEOUT;
+    calibration_max_volume = FLOW_CALIBRATION_MAX_VOLUME;
   }
 };
 

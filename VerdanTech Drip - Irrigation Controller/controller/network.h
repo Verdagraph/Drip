@@ -14,7 +14,7 @@ namespace net {
 void init_network();
 
 // Recieve new MQTT messages and handle disconnect
-void loop_mqtt();
+bool loop_mqtt();
 
 // Handle reconnection
 void reconnect_mqtt();

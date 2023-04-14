@@ -37,6 +37,15 @@ void config_change(byte* payload, unsigned int len);
 // Topic to reset WiFi, MQTT, or config settings
 void settings_reset(byte* payload, unsigned int len);
 
+// Begin the flow calibration process
+void flow_calibration_begin(byte* payload, unsigned int len);
+
+// Request the flow calibration process dispense some volume
+void flow_calibration_dispense(byte* payload, unsigned int len);
+
+// Send the volume measurement to the calibration process
+void flow_calibration_measure(byte* payload, unsigned int len);
+
 // Activate the device to drain water from the exhaustible resevoir
 void drain_activate(byte* payload, unsigned int len);
 
@@ -44,7 +53,7 @@ void drain_activate(byte* payload, unsigned int len);
 void publish_drain_summary_report(unsigned long int total_time, float start_pressure, float end_pressure, float start_volume, float end_volume);
 
 // Publish
-void publish_pressure_report(float pressure, float volume);
+void publish_pressure_report();
 
 
 }
