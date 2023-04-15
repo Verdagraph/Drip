@@ -491,6 +491,8 @@ These items form the core functionality of the device.
 
 #### Microcontroller
 
+![The ESP8266 microcontroller](/images/equipment/microcontroller.jpg)
+
 The brains of the controller. **Required for every project.** I used the ESP8266 because of its price, availability, ease of programming, and most importantly: built-in WiFi. If you're using a different microcontroller, you will need to modify the software. The controller has some pin requirements you'll need to keep in mind if you're not using the Adafruit ESP I used:
 
 - Enough pins for each of the valve(s).
