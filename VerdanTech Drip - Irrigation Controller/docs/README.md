@@ -349,7 +349,7 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`FLOW_SENSOR_CALIBRATE_MEASURE`](#auto-config) | Subscribe | No |
 
-This topic allows sending measurements to the calibration process. A rolling average amount of pulses per liter is maintained until the calibration process is ended, where it is then used to update the value of [`FlowSensorConfig.pulses_per_l`](#runtime-config).
+This topic allows sending measurements to the calibration process. A total amount of pulses per liter and a count of pulses per liter measurments is maintained until the calibration process is ended, where it is then averaged and used to update the value of [`FlowSensorConfig.pulses_per_l`](#runtime-config).
 
 Inputs:
 - `["id"]` int. The id of the calibration process. If the ID is incorrect or absent, no measurment will be recorded.
@@ -491,30 +491,32 @@ These items form the core functionality of the device.
 
 #### Microcontroller
 
-![The ESP8266 microcontroller](/images/equipment/microcontroller.jpg)
+![The ESP8266 microcontroller](images/equipment/microcontroller.jpg)
 
 The brains of the controller. **Required for every project.** I used the ESP8266 because of its price, availability, ease of programming, and most importantly: built-in WiFi. If you're using a different microcontroller, you will need to modify the software. The controller has some pin requirements you'll need to keep in mind if you're not using the Adafruit ESP I used:
 
 - Enough pins for each of the valve(s).
 - Interrupt capable pin (if [`USING_FLOW_SENSOR_`](#auto-config)).
-- I2C pins (if [`USING_PRESSURE_SENSOR`](#auto-config)).
+- I2C pins (if [`USING_PRESSURE_SENSOR_`](#auto-config)).
 - Deep sleep capability (if using [`AP_RETRY_DEEP_SLEEP`](#wifi-manager)).
 
 #### Solenoid Valve
+
+![A 12V solenoid valve](images/equipment/valve.jpg)
 
 The main mechanical function of the device. **Required if [`USING_SOURCE_`](#auto-config).** These valves, which have a minimum pressure requirement to open/close, are suitable for use with a source, but not a tank, because a source is assumed to have a high enough pressure at all times. I used a 12V solenoid valve because I had a 12V power supply and it seemed a suitable choice. Keep in mind that for every valve you will need a [diode](#diode) to prevent EMF feedback, and that you will need a [relay](#relay) with a rated voltage that matches the valve's voltage, with at least as many modules as valves. 
 
 #### Solenoid Valve (No Minimum Pressure)
 
+![A 12V solenoid valve with no minimum pressure](images/equipment/valve-no-min-pressure.jpg)
+
 The main mechanical function of the device. **Required if [`USING_TANK_`](#auto-config).** These valves, which do not have a minimum pressure requirement to open/close, are suitable for use with a tank and a source, because a tank is assumed to possibly have zero pressure. I used a 12V solenoid valve because I had a 12V power supply and it seemed a suitable choice. Keep in mind that for every valve you will need a [diode](#diode) to prevent EMF feedback, and that you will need a [relay](#relay) with a rated voltage that matches the valve's voltage, with at least as many modules as valves. 
 
 If you want to be able to drain fluid from your tank without having it go into your irrigation system, you'll need two of these valves: one output valve, and one drain valve. The output valve is of course necessary for all setups with a tank, but the drain valve may not be necessary depending on your requirements. I chose to use one because, from what I understand, you're not supposed to let water sit stale in a rain barrel for more than 10 days or so, and I didn't want to have to manually clear my tank. I also combined the tank drain with a simple overflow tube running out of the top of the barrel, to ensure that it doesn't overflow even if the controller didn't have power to open the drain valve. More details in the [operating modes](#operating-modes) section and the [assembly](#assembly) section. 
 
-#### Relay
-
-Used for switching the high voltage valves with the low voltage of the microcontroller. **Required for every project**. You will need a relay with a rated voltage that matches the valve's voltage, with at least as many modules as valves. The product I linked is a 4-module relay, because I'm using 3 valves and I couldn't find a 3-module relay. Make sure to test that your relay modules work, as I've had some bad luck in the past with recieving dead relays.
-
 #### Flow Sensor
+
+![A hall effect flow sensor](images/equipment/flow_sensor.jpg)
 
 Used for sensing the rate of water flow through the tank's output, or the tank and source's output. **Required if [`USING_TANK_`](#auto-config) or if [`USING_SOURCE_`](#auto-config) and [`USING_SOURCE_FLOW`](#core-1).** The flow sensor I used is a hall effect flow sensor, which uses a magnetic field to send voltages pulses into a data wire. 
 I used the sensor I did because the flow rate range (0.6-10L/min) seemed like it would capture what would be coming out of my water supplies, and because the 3/8 inch thread was convienent to make [adapters](#38-thread-to-34-thread) for.
@@ -525,9 +527,11 @@ Make sure to configure [`MAX_FLOW_RATE_DEFAULT`](#defaults) and [`MIN_FLOW_RATE_
 
 #### Pressure Sensor
 
+![A ported pressure sensor](images/equipment/pressure_sensor.jpg)
+
 Used for sensing the absolute pressure in the tank. **Not required.** By subtracting the atmospheric pressure, defined by [`PressureSensorConfig.atmosphere_pressure`](#runtime-config), from the absolute pressure returned by the pressure sensor, we can get the gauge pressure in the tank. By configuring the [tank geometry](#runtime-config), we can estimate the volume of water in the tank. This is useful for a few reasons. First, we can keep track of how much water we have in the tank through the [pressure report topic](#report). If we're not using a source, this will tell us whether our irrigation controller can even output any water at all, and if we need to top up the tank or water the garden ourselves. Second, knowing the amount of water in our tank will allow us to know how long water has been sitting in it - allowing us to drain the tank, either with a [drain valve](#solenoid-valve-no-minimum-pressure), or manually - to prevent the growth of harmful organisms in the water.
 
-When it comes down to it, the pressure sensor's only function is to tell us how much water there is in the tank. I chose the sensor I did because it was the only pressure sensor I could find on the website I ordered my other parts from, and while it doesn't explicitly say it's compatible with water pressure, I figured it would work because it uses a port which can be sealed. You may find it better to use another sensor specifically designed for water, which will require modifications to the software, as currently it assumes the use of a pressure sensor that returns the absolute pressure at the bottom of the tank in hectopacals through I2C. If you do use the sensor I did, keep in mind that it'll require some sort of [case](#pressure-sensor-case) to be able to connect to the tank. 
+When it comes down to it, the pressure sensor's only function is to tell us how much water there is in the tank. I chose the sensor I did because it was the only pressure sensor I could find on the website I ordered my other parts from, and while it doesn't explicitly say it's compatible with water pressure, I figured it would work because it uses a port which can be sealed and a silicon gel coating over the sensor pad. You may find it better to use another sensor specifically designed for water, which will require modifications to the software, as currently it assumes the use of a pressure sensor that returns the absolute pressure at the bottom of the tank in hectopacals through I2C. If you do use the sensor I did, keep in mind that it'll require some sort of [case](#pressure-sensor-case) to be able to connect to the tank. 
 
 ### Cases
 
@@ -539,7 +543,7 @@ These items are protective cases around the other items. Most are optional.
 | [Valve case](#valve-case) | 0-3 | 3D Print | CAD folder |
 | [Flow sensor case](#flow-sensor-case) | 0-1 | 3D Print | CAD folder |
 | [Pressure sensor case](#pressure-sensor-case) | 0-1 | 3D Print | CAD folder |
-| [M3 screws](#m3-screws) | 0-1 | 3D Print | CAD folder |
+| [M3 screws](#m3-screws) | 0-1 | Hardware store | [Amazon](https://www.amazon.ca/gp/product/B01J7NM9JA/ref=ppx_yo_dt_b_asin_title_o07_s02?ie=UTF8&psc=1) |
 
 #### Controller Case
 
@@ -549,6 +553,8 @@ This case holds the proto-board circuit ([microcontroller](#microcontroller), [v
 #### Flow Sensor Case
 #### Pressure Sensor Case
 #### M3 screws
+
+![M3 screws](images/equipment/m3-screws.jpg)
 
 ### Electrical
 
@@ -561,24 +567,55 @@ This section assumes you already has a soldering setup, solder, and wires
 | [Relay](#relay) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/4-channel-relay-breakout-12v/) |
 | [Power supply](#power-supply) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/12v-3a-power-supply-2-5mm/) |
 | [Power supply adapter](#power-supply-adapter) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/dc-barrel-jack-to-2-pin-terminal-block-adapter/) |
-| [Voltage regulator](#voltage-regulator) | 1 | Hobby shop | [RobotShop](https://ca.robotshop.com/products/5v-25a-step-down-voltage-regulator-d24v25f5) |
+| [Voltage regulator](#voltage-regulator) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/6v-2-5a-step-down-voltage-regulator/) |
 | [Diode](#diode) | 1-3 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/diode-rectifier-1a-50v/) |
 | [Logic level converter](#logic-level-converter) | 0-1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/4-channel-logic-level-converter-bi-directional/) |
-| [Proto Board](#proto-board) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/?product_cat=&s=proto+board&post_type=product) |
+| [Proto Board](#proto-board) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/1591l-proto-board/) |
 | [2-wire waterproof connector](#2-wire-waterproof-connector) | 0-3 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/waterproof-dc-power-cable-set/) |
 | [4-wire waterproof connector](#4-wire-waterproof-connector) | 0-2 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/waterproof-polarized-4-wire-cable-set/) |
+| [Cable gland](#cable-gland) | 0-1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/cable-gland-pg-9/) |
 
 #### Relay
+
+![12V relay](images/equipment/relay.jpg)
+
+Used for switching the high voltage valves with the low voltage of the microcontroller. **Required for every project**. You will need a relay with a rated voltage that matches the valve's voltage, with at least as many modules as valves. The product I linked is a 4-module relay, because I'm using 3 valves and I couldn't find a 3-module relay. Make sure to test that your relay modules work, as I've had some bad luck in the past with recieving dead relays.
+
 #### Power Supply
+
+![12V power supply](images/equipment/power-supply.jpg)
+
 #### Power Supply Adapter
+
+![Power supply adapter](images/equipment/power-supply-adapter.jpg)
+
 #### Voltage Regulator
+
+![5V voltage regulator](images/equipment/voltage-regulator.jpg)
+
 #### Diode
+
+![Diode](images/equipment/diode.jpg)
+
 #### Logic Level Converter
+
+![Logic level converter](images/equipment/logic-level-converter.jpg)
+
 #### Proto Board
+
+![Proto-board](images/equipment/proto-board.jpg)
+
 #### 2-Wire Waterproof Connector
+
+![2-wire waterproof connector](images/equipment/2-wire-waterproof-connector.jpg)
+
 #### 4-Wire Waterproof Connector
 
-https://bc-robotics.com/shop/cable-gland-pg-9/
+![4-wire waterproof connector](images/equipment/4-wire-waterproof-connector.jpg)
+
+#### Cable Gland
+
+![Cable gland](images/equipment/cable-gland.jpg)
 
 ### Fluids
 
@@ -594,11 +631,28 @@ These items are needed to handle the water from the water supplies.
 | [Filter](#filter) | 1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/Irritec-A4-HTF155-Drip-Irrigation-Y-Filter-3-4-Female-Hose-Swivel-x-Male-Hose-150-Stainless-Steel-Mesh-Screen) |
 
 #### 1/2 Poly
+
+![1/2 poly tubing](images/equipment/1-2-poly.jpeg)
+
 #### 1/4 Poly
+
+![1/4 poly tubing](images/equipment/1-4-poly.jpeg)
+
 #### Pressure Regulator
+
+![10PSI pressure regulator](images/equipment/pressure-regulator.jpeg)
+
 #### Backflow Preventer
+
+![Backflow preventer](images/equipment/backflow-preventer.jpeg)
+
 #### Vacuum Relief Valve
+
+![Vacuum relief valve](images/equipment/vacuum-relief-valve.jpg)
+
 #### Filter
+
+![Filter](images/equipment/filter.jpg)
 
 ### Fittings
 
@@ -617,11 +671,26 @@ These items are needed to fit together the fluids supplies.
 | [3/8 thread to 3/4 thread](#38-thread-to-34-thread) | 0-2 | 3D print | CAD folder |
 
 #### 1/2 Poly to 3/4 MHT
+
+![1/2 poly tubing to 3/4 male hose thread](images/equipment/1-2-poly-to-3-4-mht.jpeg)
+
 #### 1/2 Poly to 3/4 FHT
+
+![1/2 poly tubing to 3/4 female hose thread](images/equipment/1-2-poly-to-3-4-fht.jpeg)
+
 #### 1/2 Poly Tee Join
+
+![1/2 poly tubing 3-way tee join](images/equipment/1-2-poly-to-poly-tee-join.jpeg)
+
 #### 1/2 Poly Elbow Join
+
+![1/2 poly tubing elbow join](images/equipment/1-2-poly-elbow-join.jpeg)
+
 #### Tank Bulkhead
 #### Hose Washer
+
+![Hose washer](images/equipment/hose-washer.jpg)
+
 #### Tank Bulkhead to 3/4 Thread
 #### Tank Bulkhead to 1/4 Poly
 #### 3/8 Thread to 3/4 Thread
@@ -640,18 +709,44 @@ These items are what I used to build out the rest of the irrigation system, afte
 | [Drip tape](#drip-tape) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/p1-1508-500-irritec-p1-drip-tape-15mil-x-8-spacing-.25-gpm-100ft) |
 | [Drip tape barb](#drip-tape-barb) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DT-TO250-Drip-Tape-5-8-Loc-x-1-4-Barb-DT-TO250) |
 | [Drip tape hole punch](#drip-tape-hole-punch) | 1 | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/dd-hp250-dg-hole-punch-for-1-4-barbed-fittings-and-drippers-b2e3) |
-| [Drip tape sleeve end](#drip-tape-sleeve-end) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DT-TSE-Drip-Tape-5-8-Sleeve-End-DT-TS) |
+| [Drip tape sleeve end](#drip-tape-sleeve-end) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/DT-TSE-Drip-Tape-5-8-Sleeve-End-DT-TSE.html) |
 | [Drip tape stake](#drip-tape-stake) | 1+ | Irrigation supplier | [Irrigation Direct](https://www.irrigationdirect.ca/TLS6-Netafim-Drip-Tubing-Hold-Down-6-Wire-Stake-Staple-Style-fits-1-8-to-3-4-tubing-DD-S6.html) |
 
 #### Inline Valve
+
+![Inline valve](images/equipment/inline-valve.jpeg)
+
 #### Tube Cutter
+
+![Tube cutter](images/equipment/tube-cutter.JPG)
+
 #### 1/2 Poly End
+
+![1/2 poly end](images/equipment/1-2-poly-end.jpeg)
+
 #### 1/2 Poly mount
+
+![1/2 poly mount](images/equipment/1-2-poly-mount.jpeg)
+
 #### Drip Tape
+
+![5/8 Drip tape](images/equipment/drip-tape.jpeg)
+
 #### Drip Tape Barb
+
+![Drip tape barb](images/equipment/drip-tape-barb.jpeg)
+
 #### Drip Tape Hole Punch
+
+![Drip tape hole punch](images/equipment/drip-tape-hole-punch.png)
+
 #### Drip Tape Sleeve End
+
+![Drip tape sleeve end](images/equipment/drip-tape-sleeve-end.jpeg)
+
 #### Drip Tape Stake
+
+![Drip tape stake](images/equipment/drip-tape-stake.jpeg)
 
 
 ## Assembly

@@ -167,7 +167,7 @@ void begin_calibration_dispense(float target_volume);
 void take_calibration_measurement(float measured_volume);
 
 // Begin a drain process
-void open_drain_process();
+void open_drain_process(int target_time, float target_pressure, float target_volume);
 
 // Retrieve the volume of fluid resevoir based on the pressure
 float pressure_to_volume (float pressure);

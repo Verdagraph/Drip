@@ -10,6 +10,11 @@ namespace srvc {
 // Callback for when MQTT message is received
 void on_message(const char topic[], byte* payload, unsigned int len);
 
+// Wrap the functionality for printing messages to serial and MQTT
+void info(char message[]);
+void warning(char message[]);
+void error(char message[]);
+
 // Activate the device to dispense water
 void dispense_activate(byte* payload, unsigned int len);
 
@@ -34,7 +39,7 @@ void publish_config();
 // Update config file
 void config_change(byte* payload, unsigned int len);
 
-// Topic to reset WiFi, MQTT, or config settings
+// Topic to reset WiFi, or MQTT settings
 void settings_reset(byte* payload, unsigned int len);
 
 // Begin the flow calibration process

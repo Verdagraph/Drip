@@ -341,9 +341,13 @@ void loop_flow_calibration_process() {
 
 }
 
-void app::open_drain_process() {
-  app::env.flag.drain_flag = true;
+void app::open_drain_process(int target_time, float target_pressure, float target_volume) {
 
+  app::env.target.target_drain_time = target_time;
+  app::env.target.target_drain_volume = target_pressure;
+  app::env.target.target_drain_pressure = target_volume;
+
+  app::env.flag.drain_flag = true;
   app::env.flag.dispense_flag = false;
   app::env.flag.calibration_flag = false;
 
