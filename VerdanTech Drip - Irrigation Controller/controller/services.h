@@ -36,6 +36,12 @@ void publish_log(int level, const char message[]);
 // Reflect the current config values on the config topic
 void publish_config();
 
+// Reflect the hard-coded config values on the auto-config topic
+void publish_auto_config();
+
+// Reflect the hard-coded config values on the topic string config topic
+void publish_topic_config();
+
 // Update config file
 void config_change(byte* payload, unsigned int len);
 

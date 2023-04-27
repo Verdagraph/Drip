@@ -53,6 +53,8 @@ void setup_mqtt() {
 
   mqtt_client.setClient(wifi_client);
   mqtt_client.setCallback(srvc::on_message);
+  mqtt_client.setBufferSize(MQTT_MAX_BUFFER_SIZE);
+  mqtt_client.setKeepAlive(MQTT_KEEPALIVE);
 
 }
 
@@ -133,14 +135,27 @@ bool connect_mqtt() {
   mqtt_client.subscribe(RESTART_TOPIC_);
   mqtt_client.subscribe(CONFIG_CHANGE_TOPIC_);
   mqtt_client.subscribe(SETTINGS_RESET_TOPIC_);
+
+  if(USING_FLOW_SENSOR_) {
+    mqtt_client.subscribe(FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_);
+    mqtt_client.subscribe(FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_);
+    mqtt_client.subscribe(FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_);
+  }
+
   if (USING_DRAIN_VALVE_) {
     mqtt_client.subscribe(DRAIN_ACTIVATE_TOPIC_);
+  }
+
+  if (USING_PRESSURE_SENSOR_) {
+    mqtt_client.subscribe(PRESSURE_REQUEST_TOPIC_);
   }
 
   // Log success
   const char message[] = "Connected";
   srvc::publish_log(0, message);
   srvc::publish_config();
+  srvc::publish_auto_config();
+  srvc::publish_topic_config();
 
   return true;
 }

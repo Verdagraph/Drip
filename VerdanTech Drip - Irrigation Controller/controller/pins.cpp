@@ -49,8 +49,7 @@ void pins::init_pins() {
     SLOG.println("Initializing pressure sensor pin");
     if (!pressure_sensor.begin()) {
       char message[] = "Pressure sensor failed to initialize... Restarting";
-      SLOG.println(message);
-      srvc::publish_log(2, message);
+      srvc::error(message);
       delay(5000);
       ESP.restart();
     }
@@ -62,29 +61,36 @@ void pins::init_pins() {
 }
 
 void pins::open_source_output() {
+  if (!USING_SOURCE_) {return;}
   digitalWrite(SOURCE_OUTPUT_VALVE_PIN_, HIGH);
 }
 
 void pins::close_source_output() {
+  if (!USING_SOURCE_) {return;}
   digitalWrite(SOURCE_OUTPUT_VALVE_PIN_, LOW);
 }
 
 void pins::open_tank_output() {
+  if (!USING_TANK_) {return;}
   digitalWrite(TANK_OUTPUT_VALVE_PIN_, HIGH);
 }
 
 void pins::close_tank_output() {
+  if (!USING_TANK_) {return;}
   digitalWrite(TANK_OUTPUT_VALVE_PIN_, LOW);
 }
 
 void pins::open_tank_drain() {
+  if (!USING_DRAIN_VALVE_) {return;}
   digitalWrite(TANK_DRAIN_VALVE_PIN_, HIGH);
 }
 
 void pins::close_tank_drain() {
+  if (!USING_DRAIN_VALVE_) {return;}
   digitalWrite(TANK_DRAIN_VALVE_PIN_, LOW);
 }
 
 float pins::read_pressure() {
+  if (!USING_PRESSURE_SENSOR_) {return -1;}
   return pressure_sensor.readPressure() - app::env.pressure_sensor_config.atmosphere_pressure;
 }

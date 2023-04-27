@@ -18,6 +18,9 @@ void app::init_app() {
 
 // Update the state variables with the new flow sensor data
 void update_output_volume_sensor(){
+
+  if (!USING_FLOW_SENSOR_) {return;}
+
   if (app::env.sensor.pulses > app::env.sensor.last_pulses) {
 
     // Update pulse delta
@@ -37,17 +40,18 @@ void update_output_volume_sensor(){
     if (app::env.slice.flow_rate > app::env.flow_sensor_config.max_flow_rate) {
 
       char message[] = "Flow rate exceeded maximum";
-      SLOG.println(message);
-      srvc::publish_log(1, message);
+      srvc::warning(message);
 
     }
 
   }
 }
 
-
 // Update state variables using static flow rate 
 void update_output_volume_static(){
+
+  if (!USING_SOURCE_ || (USING_SOURCE_ && USING_SOURCE_FLOW)) {return;}
+
   if (app::env.slice.time_elapsed > 0) {
 
     // Update volume delta
@@ -55,6 +59,14 @@ void update_output_volume_static(){
     app::env.slice.total_output_volume += app::env.slice.output_volume_elapsed;
 
   }
+}
+
+// If the flow sensor is currently being used for updates
+bool currently_updating_flow_sensor() {
+  return 
+  (USING_TANK_ && !USING_SOURCE_)  || //If usi
+  (USING_SOURCE_ && USING_SOURCE_FLOW) ||
+  (USING_TANK_ && USING_SOURCE_ && !app::env.flag.resevoir_switch_flag);
 }
 
 void update_tank_pressure() {
@@ -92,9 +104,7 @@ void app::open_dispense_process(float target_output_volume) {
 
   if (USING_TANK_) {
     pins::open_tank_output();
-    if (USING_SOURCE_){
-      pins::close_source_output();
-    }
+    pins::close_source_output();
   } else {
     pins::open_source_output();
   }
@@ -103,44 +113,40 @@ void app::open_dispense_process(float target_output_volume) {
 // End the dispensation process
 void close_dispense_process() {
 
-  //If the dispensing process is ended without switching to the source, set the tank volume to the volume
-  if (USING_TANK_ && !app::env.flag.resevoir_switch_flag && app::env.flag.dispense_flag) {
+  if (!app::env.flag.dispense_flag) {return;}
+
+  //If the dispensing process is ended without switching to the source, set the total tank output volume to the volume
+  bool tank_only_output = 
+  USING_TANK_ &&
+  !app::env.flag.resevoir_switch_flag;
+  if (tank_only_output) {
     app::env.report.total_tank_output_volume = app::env.slice.total_output_volume;
   }
 
-  if (USING_SOURCE_) {
-      pins::close_source_output();
-    }
-
-  if (USING_TANK_) {
-    pins::close_tank_output();
-  }
+  pins::close_source_output();
+  pins::close_tank_output();
 
   app::env.flag.dispense_flag = false;
   app::env.time.process_begin_timestamp = 0;
 
   char message[] = "Ending dispensation process";
-  SLOG.println(message);
-  srvc::publish_log(0, message);
+  srvc::info(message);
 
 }
 
 void dispense_report_slice() {
 
+  if (!app::env.flag.dispense_flag) {return;}
+
   // Update flow rate based on whether the flow sensor is in use
   float avg_flow = 0;
-  if ((USING_TANK_ && USING_SOURCE_ && !app::env.flag.resevoir_switch_flag) || (USING_TANK_ && !USING_SOURCE_)) {
-      avg_flow = app::env.slice.current_avg_flow / app::env.slice.avg_flow_count;
-      app::env.slice.avg_flow_count = 0;
-      app::env.slice.current_avg_flow = 0;
-  } else if ((USING_SOURCE_ && USING_TANK_ && app::env.flag.resevoir_switch_flag) || (USING_SOURCE_ && !USING_TANK_)) {
-    if (USING_SOURCE_FLOW) {
-      avg_flow = app::env.slice.current_avg_flow / app::env.slice.avg_flow_count;
-      app::env.slice.avg_flow_count = 0;
-      app::env.slice.current_avg_flow = 0;
-    } else {
-      avg_flow = app::env.source_config.static_flow_rate;
-    }
+
+  if (currently_updating_flow_sensor()) {
+    avg_flow = app::env.slice.current_avg_flow / app::env.slice.avg_flow_count;
+    app::env.slice.avg_flow_count = 0;
+    app::env.slice.current_avg_flow = 0;
+  } else {
+    avg_flow = app::env.source_config.static_flow_rate;
   }
 
   // Update pressure based on whether pressure sensor is in use
@@ -157,6 +163,8 @@ void dispense_report_slice() {
 }
 
 void dispense_report_summary() {
+
+  if (!app::env.flag.dispense_flag) {return;}
 
   float tank_volume = 0;
   unsigned long int tank_time = 0;
@@ -176,29 +184,27 @@ void loop_dispensation(){
   if (!app::env.flag.dispense_flag) {return;}
 
   // Update state based on mode
-  if ((USING_TANK_ && USING_SOURCE_ && !app::env.flag.resevoir_switch_flag) || (USING_TANK_ && !USING_SOURCE_)) {
+  if (currently_updating_flow_sensor()) {
     update_output_volume_sensor();
-  } else if ((USING_SOURCE_ && USING_TANK_ && app::env.flag.resevoir_switch_flag) || (USING_SOURCE_ && !USING_TANK_)) {
-    if (USING_SOURCE_FLOW) {
-      update_output_volume_sensor();
-    } else {
-      update_output_volume_static();
-    }
+  } else {
+    update_output_volume_static();
   }
-
-  if (USING_PRESSURE_SENSOR_) {
-    update_tank_pressure();
-  } 
+  update_tank_pressure();
 
   // Last time slice report and exit
-  if (app::env.slice.total_output_volume >= app::env.target.target_output_volume) {
+  bool end_condition = app::env.slice.total_output_volume >= app::env.target.target_output_volume;
+  // Send dispense slice report at volume intervals
+  bool slice_report_condition = 
+  (app::env.slice.total_output_volume - app::env.report.last_output_volume_report) >= 
+  app::env.services_config.data_resolution_l;
+  if (end_condition) {
 
     close_dispense_process();
     dispense_report_slice();
     dispense_report_summary();
 
   // Normal slice report
-  } else if ((app::env.slice.total_output_volume - app::env.report.last_output_volume_report) >= app::env.services_config.data_resolution_l) {
+  } else if (slice_report_condition) {
 
     dispense_report_slice();
     app::env.report.last_output_volume_report = app::env.slice.total_output_volume;
@@ -206,7 +212,11 @@ void loop_dispensation(){
   }
 
   // Tank timeout
-  if (USING_TANK_ && (app::env.slice.flow_rate < app::env.flow_sensor_config.min_flow_rate) && (app::env.slice.total_time_elapsed > (app::env.tank_config.tank_timeout * 1000))) {
+  bool tank_timeout = 
+  USING_TANK_ && 
+  (app::env.slice.flow_rate < app::env.flow_sensor_config.min_flow_rate) && 
+  (app::env.slice.total_time_elapsed > (app::env.tank_config.tank_timeout * 1000));
+  if (tank_timeout) {
     if (USING_SOURCE_) {
 
       app::env.flag.resevoir_switch_flag = true;
@@ -227,6 +237,9 @@ void loop_dispensation(){
 }
 
 void app::open_flow_calibration_process(int id) {
+
+  if (!USING_FLOW_SENSOR_) {return;}
+
   app::env.report.calibration_id = id;
   app::env.flag.calibration_flag = true;
   app::env.flag.dispense_flag = false;
@@ -244,12 +257,10 @@ void app::open_flow_calibration_process(int id) {
 
 void app::close_flow_calibration_process(bool save_calibration) {
 
-  if (USING_SOURCE_) {
-    pins::close_source_output();
-  }
-  if(USING_TANK_) {
-    pins::close_tank_output();
-  }
+  if (!USING_FLOW_SENSOR_) {return;}
+
+  pins::close_source_output();
+  pins::close_tank_output();
 
   app::env.flow_sensor_config.pulses_per_l = app::env.slice.current_avg_pulses_per_l / app::env.slice.avg_calibration_count;
 
@@ -259,15 +270,16 @@ void app::close_flow_calibration_process(bool save_calibration) {
 
   char message[150];
   snprintf(message, 150, "Ending calibration process with average pulses per liter: %f. %s", app::env.flow_sensor_config.pulses_per_l, (save_calibration ? "Saving to file." : "Not saving to file."));
-  SLOG.println(message);
-  srvc::publish_log(0, message);
+  srvc::info(message);
 
-  app::env.flag.calibration_flag = 0;
+  app::env.flag.calibration_flag = false;
   app::env.time.process_begin_timestamp = 0;
 
 }
 
 void app::begin_calibration_dispense(float target_volume) {
+
+  if (!USING_FLOW_SENSOR_) {return;}
 
   app::env.target.target_calibration_volume = target_volume;
   app::env.slice.total_output_volume = 0;
@@ -295,17 +307,19 @@ void app::begin_calibration_dispense(float target_volume) {
 }
 
 void end_calibration_dispense() {
-  if (USING_SOURCE_) {
-    pins::close_source_output();
-  }
-  if(USING_TANK_) {
-    pins::close_tank_output();
-  }
+
+  if (!USING_FLOW_SENSOR_) {return;}
+
+  pins::close_source_output();
+  pins::close_tank_output();
   app::env.report.calibration_state = 3;
   app::env.time.last_calibration_action = millis();
 }
 
 void app::take_calibration_measurement(float measured_volume) {
+
+  if (!USING_FLOW_SENSOR_) {return;}
+
   app::env.slice.current_avg_pulses_per_l += app::env.sensor.pulses / measured_volume;
   app::env.slice.avg_calibration_count++;
   app::env.sensor.pulses = 0;
@@ -317,23 +331,30 @@ void app::take_calibration_measurement(float measured_volume) {
 
 void loop_flow_calibration_process() {
 
-  if (!app::env.flag.calibration_flag) {return;}
+  if (!USING_FLOW_SENSOR_ || !app::env.flag.calibration_flag) {return;}
+  
+  // Last calibration time slice timeout
+  bool end_condition = 
+  millis() - app::env.time.last_calibration_action > 
+  (app::env.flow_sensor_config.calibration_timeout * 1000);
 
   if (app::env.report.calibration_state == 2) {
 
     update_output_volume_sensor();
 
-    if (USING_PRESSURE_SENSOR_) {
-      update_tank_pressure();
-    }
+    // Last dispense time slice save and exit
+    bool end_dispense_condition = 
+    (app::env.slice.total_output_volume >= app::env.target.target_calibration_volume) || 
+    ((app::env.slice.flow_rate < app::env.flow_sensor_config.min_flow_rate) && 
+    (millis() - app::env.time.last_calibration_action > (app::env.tank_config.tank_timeout * 1000)));
 
-    // Last time slice save and exit
-    if ((app::env.slice.total_output_volume >= app::env.target.target_calibration_volume) || (app::env.slice.flow_rate < app::env.flow_sensor_config.min_flow_rate) && (millis() - app::env.time.last_calibration_action > (app::env.tank_config.tank_timeout * 1000))) {
+    if (end_dispense_condition) {
+      update_tank_pressure();
       end_calibration_dispense();
       srvc::publish_pressure_report();
     } 
 
-  } else if (millis() - app::env.time.last_calibration_action > (app::env.flow_sensor_config.calibration_timeout * 1000)) {
+  } else if (end_condition) {
 
     app::close_flow_calibration_process(true);
 
@@ -342,6 +363,8 @@ void loop_flow_calibration_process() {
 }
 
 void app::open_drain_process(int target_time, float target_pressure, float target_volume) {
+
+  if (!USING_DRAIN_VALVE_) {return;}
 
   app::env.target.target_drain_time = target_time;
   app::env.target.target_drain_volume = target_pressure;
@@ -359,12 +382,8 @@ void app::open_drain_process(int target_time, float target_pressure, float targe
     app::env.report.drain_start_pressure = pins::read_pressure();
   }
 
-  if (USING_SOURCE_) {
-    pins::close_source_output();
-  }
-  if (USING_TANK_) {
-    pins::close_tank_output();
-  }
+  pins::close_source_output();
+  pins::close_tank_output();
 
   pins::open_tank_drain();
 }
@@ -380,12 +399,13 @@ void close_drain_process() {
   app::env.time.process_begin_timestamp = 0;
 
   char message[] = "Ending drain process";
-  SLOG.println(message);
-  srvc::publish_log(0, message);
+  srvc::info(message);
 
 }
 
 void drain_report_summary() {
+
+  if (!USING_DRAIN_VALVE_) {return;}
 
   float tank_volume = 0;
   unsigned long int tank_time = 0;
@@ -411,18 +431,16 @@ void drain_report_summary() {
 
 void loop_drain(){
 
-  if (!app::env.flag.drain_flag) {return;}
+  if (!USING_DRAIN_VALVE_ || !app::env.flag.drain_flag) {return;}
 
   // Update the pressure sensor if using
-  if (USING_PRESSURE_SENSOR_) {
-    update_tank_pressure();
-  } 
-
+  update_tank_pressure();
 
   // Check end condition
   if (app::env.target.target_drain_time > 0) {
 
-    if (app::env.slice.total_time_elapsed >= app::env.target.target_drain_time) {
+    bool end_condition = app::env.slice.total_time_elapsed >= app::env.target.target_drain_time;
+    if (end_condition) {
       close_drain_process();
       drain_report_summary();
     }
@@ -430,14 +448,16 @@ void loop_drain(){
   } else if (app::env.target.target_drain_volume > 0) {
 
     float volume = app::pressure_to_volume(app::env.sensor.pressure);
-    if (volume <= app::env.target.target_drain_volume) {
+    bool end_condition = volume <= app::env.target.target_drain_volume;
+    if (end_condition) {
       close_drain_process();
       drain_report_summary();
     }
 
   } else if (app::env.target.target_drain_pressure > 0) {
-    
-    if (app::env.sensor.pressure <= app::env.target.target_drain_pressure) {
+
+    bool end_condition = app::env.sensor.pressure <= app::env.target.target_drain_pressure;
+    if (end_condition) {
       close_drain_process();
       drain_report_summary();
     }
@@ -466,23 +486,14 @@ void app::deactivate() {
     app::env.flag.drain_flag = false;
   }
 
-  if (USING_SOURCE_) {
-    pins::close_source_output();
-  }
-
-  if (USING_TANK_) {
-    pins::close_tank_output();
-  }
-
-  if(USING_DRAIN_VALVE_) {
-    pins::close_tank_drain();
-  }
+  pins::close_source_output();
+  pins::close_tank_output();
+  pins::close_tank_drain();
 
   app::env.time.process_begin_timestamp = 0;
 
   char message[] = "Deactivation successful";
-  SLOG.println(message);
-  srvc::publish_log(0, message);  
+  srvc::info(message);  
 
 }
 
@@ -587,13 +598,8 @@ void app::loop_app(){
     net::reconnect_mqtt();
   }
 
-  if (USING_FLOW_SENSOR_) {
-    loop_flow_calibration_process();
-  }
-
-  if (USING_DRAIN_VALVE_) {
-    loop_drain();
-  }
+  loop_flow_calibration_process();
+  loop_drain();
 
   log_state();
 

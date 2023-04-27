@@ -13,9 +13,9 @@ to understand the device's capabilities and limitations.
 
 3. Secure the use of an MQTT broker
 
-4. Source materials
+4. Source [materials](#equipment-1)
 
-5. Assemble the device
+5. [Assemble](#assembly) the device
 
 6. Install the Arduino platform, required libraries, and board drivers
 
@@ -78,6 +78,8 @@ This section describes the functionality of the MQTT topics through which the de
 | [Warning logging](#warnings)  | [`WARNING_TOPIC_`](#auto-config)  | Publish | Yes |
 | [Error logging](#errors)  | [`ERROR_TOPIC_`](#auto-config)  | Publish | Yes |
 | [Read config](#read)  | [`CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Read auto-config](#read-auto-config)  | [`AUTO_CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
+| [Read topic config](#read-topic-config)  | [`TOPIC_CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
 | [Write config](#write)  | [`CONFIG_CHANGE_TOPIC_`](#auto-config)  | Subscribe | Yes |
 | [Reset settings](#reset-settings)  | [`SETTINGS_RESET_TOPIC_`](#auto-config)  | Subscribe | Yes |
 | [Flow sensor calibrate begin](#begin) | [`FLOW_SENSOR_CALIBRATE_BEGIN`](#auto-config) | Subscribe | No |
@@ -250,7 +252,7 @@ Sample payload:
 
 ### Config
 
-These topics allow viewing and updating configuration settings at runtime. The available settings are listed as [config defaults](#defaults). 
+These topics allow viewing and updating configuration settings at runtime, and viewing the hard-coded auto-configs. The available settings are listed as [config defaults](#defaults). 
 
 #### Read
 
@@ -275,6 +277,65 @@ Outputs:
 - `["flow"]["cmax"]` (conditional) float. The value of [`FlowSensorConfig.calibration_max_volume`](#runtime-config). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
 - `["prssr"]["mode"]` (conditional) int. The value of [`PressureSensorConfig.report_mode`](#runtime-config). Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config).
 - `["prssr"]["atmo"]` (conditional) float. The value of [`PressureSensorConfig.atmosphere_pressure`](#runtime-config). Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config).
+- `["auto"]["src"]` float. The value of [`USING_SOURCE_`](#auto-config).
+
+Sample payload:
+```
+```
+
+#### Read Auto-Config
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| [`AUTO_CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
+
+This topic is where the device will send the hard-coded [auto-config](#auto-config) values, in a retained message. This topic is published to only on startup.
+
+Outputs:
+- `["src"]` bool. The value of [`USING_SOURCE_`](#auto-config).
+- `["tnk"]` bool. The value of [`USING_TANK_`](#auto-config).
+- `["drn"]` bool. The value of [`USING_DRAIN_VALVE_`](#auto-config).
+- `["flow"]` bool. The value of [`USING_FLOW_SENSOR_`](#auto-config).
+- `["prssr"]` bool. The value of [`USING_PRESSURE_SENSOR_`](#auto-config).
+- `["srcpin"]` int. The value of [`SOURCE_OUTPUT_VALVE_PIN_`](#auto-config).
+- `["tnkpin"]` int. The value of [`TANK_OUTPUT_VALVE_PIN_`](#auto-config).
+- `["drnpin"]` int. The value of [`TANK_DRAIN_VALVE_PIN_`](#auto-config).
+- `["flowpin"]` int. The value of [`FLOW_SENSOR_PIN_`](#auto-config).
+
+Sample payload:
+```
+```
+
+#### Read Topic Config
+
+| Topic string config  | Publish or subscribe? | Enabled unconditionally? |
+| ------------- | ------------- | ------------- |
+| [`TOPIC_CONFIG_TOPIC_`](#auto-config)  | Publish | Yes |
+
+This topic is where the device wil send the hard-coded [topic strings](#topics), in a retained message. Keep in mind that the strings are sent as they are before the appendment to [`BASE_TOPIC`](#topics), in order to minimize payload size. This topic is published to only on startup.
+
+Outputs:
+- `["base"]` string. The value of ['BASE_TOPIC'](#topics).
+- `["out"]` string. The value of ['DISPENSE_ACTIVATE_TOPIC'](#topics).
+- `["out_slice"]` string. The value of ['DISPENSE_REPORT_SLICE_TOPIC'](#topics).
+- `["out_summary"]` string. The value of ['DISPENSE_REPORT_SUMMARY_TOPIC'](#topics).
+- `["deactivate"]` string. The value of ['DEACTIVATE_TOPIC'](#topics).
+- `["restart"]` string. The value of ['RESTART_TOPIC'](#topics).
+- `["log"]` string. The value of ['LOG_TOPIC'](#topics).
+- `["warning"]` string. The value of ['WARNING_TOPIC'](#topics).
+- `["error"]` string. The value of ['ERROR_TOPIC'](#topics).
+- `["config"]` string. The value of ['CONFIG_TOPIC'](#topics).
+- `["auto"]` string. The value of ['AUTO_CONFIG_TOPIC'](#topics).
+- `["topics"]` string. The value of ['TOPIC_CONFIG_TOPIC'](#topics).
+- `["conf_write"]` string. The value of ['CONFIG_CHANGE_TOPIC'](#topics).
+- `["conf_reset"]` string. The value of ['SETTINGS_RESET_TOPIC'](#topics).
+- `["cbr_on"]` (conditional) string. The value of ['FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC'](#topics). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
+- `["cbr_out"]` (conditional) string. The value of ['FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC'](#topics). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
+- `["cbr_measure"]` (conditional) string. The value of ['FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC'](#topics). Enabled if [`USING_FLOW_SENSOR_`](#auto-config).
+- `["drn"]` (conditional) string. The value of ['DRAIN_ACTIVATE_TOPIC'](#topics). Enabled if [`USING_DRAIN_`](#auto-config).
+- `["drn_summary"]` (conditional) string. The value of ['DRAIN_REPORT_SUMMARY_TOPIC'](#topics). Enabled if [`USING_DRAIN_`](#auto-config).
+- `["prssr_request"]` (conditional) string. The value of ['PRESSURE_REQUEST_TOPIC'](#topics). Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config).
+- `["prssr"]` (conditional) string. The value of ['PRESSURE_REPORT_TOPIC'](#topics). Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config).
 
 Sample payload:
 ```
@@ -512,7 +573,7 @@ The main mechanical function of the device. **Required if [`USING_SOURCE_`](#aut
 
 The main mechanical function of the device. **Required if [`USING_TANK_`](#auto-config).** These valves, which do not have a minimum pressure requirement to open/close, are suitable for use with a tank and a source, because a tank is assumed to possibly have zero pressure. I used a 12V solenoid valve because I had a 12V power supply and it seemed a suitable choice. Keep in mind that for every valve you will need a [diode](#diode) to prevent EMF feedback, and that you will need a [relay](#relay) with a rated voltage that matches the valve's voltage, with at least as many modules as valves. 
 
-If you want to be able to drain fluid from your tank without having it go into your irrigation system, you'll need two of these valves: one output valve, and one drain valve. The output valve is of course necessary for all setups with a tank, but the drain valve may not be necessary depending on your requirements. I chose to use one because, from what I understand, you're not supposed to let water sit stale in a rain barrel for more than 10 days or so, and I didn't want to have to manually clear my tank. I also combined the tank drain with a simple overflow tube running out of the top of the barrel, to ensure that it doesn't overflow even if the controller didn't have power to open the drain valve. More details in the [operating modes](#operating-modes) section and the [assembly](#assembly) section. 
+If you want to be able to drain fluid from your tank without having it go into your irrigation system, you'll need two of these valves: one output valve, and one drain valve. The output valve is of course necessary for all setups with a tank, but the drain valve may not be necessary depending on your requirements. I chose to use one because, from what I understand, you're not supposed to let water sit stale in a rain barrel for more than 10 days or so, and I wanted to automate that. I also combined the tank drain with a simple overflow tube running out of the top of the barrel, to ensure that it doesn't overflow even if the controller didn't have power to open the drain valve. More details in the [operating modes](#operating-modes) section and the [assembly](#assembly) section. 
 
 #### Flow Sensor
 
@@ -535,7 +596,7 @@ When it comes down to it, the pressure sensor's only function is to tell us how 
 
 ### Cases
 
-These items are protective cases around the other items. Most are optional.
+These items are protective cases around the other items. Most are optional. How much moisture your components will have to handle will determine whether you should use a case. I happened to setup my rain barrel on a side of my house sheltered from the wind and rain, and the components directly underneath, so I'm testing these under relatively low stress. I recommend trying to place your setup in a similar area. 
 
 | Item | Quantity | Where to source | Product Link |
 | -------------  | ------------- | ------------- | ------------- |
@@ -547,14 +608,41 @@ These items are protective cases around the other items. Most are optional.
 
 #### Controller Case
 
-This case holds the proto-board circuit ([microcontroller](#microcontroller), [voltage regulator](#voltage-regulator), and [logic level converter](#logic-level-converter)) along with the relay. **Required for every project**. The included model screws in using 8 [M3 screws](#m3-screws), and has a hole for [power supply adapter](#power-supply-adapter) and
+![Controller case](images/equipment/controller-case.JPG)
+
+This case holds the proto-board circuit ([microcontroller](#microcontroller), [voltage regulator](#voltage-regulator), and [logic level converter](#logic-level-converter)) along with the relay. **Required for every project**. The included model screws in using 8 [M3 screws](#m3-screws), with two mounting holes for larger screws, and has a hole for a [power supply adapter](#power-supply-adapter) and a [cable gland](#cable-gland).
 
 #### Valve Case
+
+![Valve case](images/equipment/valve-case.JPG)
+
+This case fits both the [solenoid valve](#solenoid-valve) and the [no minimum pressure solenoid valve](#solenoid-valve-no-minimum-pressure), with a hole for a [2-wire waterproof connector](#2-wire-waterproof-connector). *Not required.* The valves are well constructed and don't appear to require a case. I decided to use one because I wanted to be safe and because I soldered both the diode and the connector directly onto the terminals of the valve, which didn't seem like a resilient way to join them. If you choose not to use a case, I'd recommend looking into how to get a sturdy and environment-proof connection on the valve terminals.
+
+Screws in using 4 [M3 screws](#m3-screws).
+
 #### Flow Sensor Case
+
+![Flow sensor case](images/equipment/flow-sensor-case.JPG)
+
+This case fits the [flow sensor](#flow-sensor) and the [4-wire waterproof connector](#4-wire-waterproof-connector). **Not required.** The flow sensor's shell is well-constructed but I wanted to ensure the sensor would be protected from the environment.
+
+Screws in using 4 [M3 screws](#m3-screws).
+
 #### Pressure Sensor Case
+
+![Pressure sensor case](images/equipment/pressure-sensor-case.JPG)
+
+This case fits the [pressure sensor](#pressure-sensor), a cable of the [4-wire waterproof connector](#4-wire-waterproof-connector), and a 1/4 inch tube. **Required if [`USING_PRESSURE_SENSOR_`](#auto-config).** This case was my attempt to utilize the port on the sensor to measure water pressure. The port pressure fits into a hole on the bottom of the top half of the case, which is connected to an enclosed 1/4 inch hose barb. Being tightly fitted into the case, the pressure sensor is very easy to break by snapping off sensor from the board and the port from the sensor. I recommend fitting the port into the case as close as possible to closing up the device.
+
+In order to waterproof as much as possible, I sprayed both sides of the case with an epoxy coating, and I placed small strips of electrical tape over the port and board of the pressure sensor.
+
+Screws in using 4 [M3 screws](#m3-screws).
+
 #### M3 screws
 
 ![M3 screws](images/equipment/m3-screws.jpg)
+
+Used to fit together cases. **Required if using any cases.** There isn't a specific length of screw required by any of the cases, so any assortment of M3 screw lengths can be used. 
 
 ### Electrical
 
@@ -687,14 +775,24 @@ These items are needed to fit together the fluids supplies.
 ![1/2 poly tubing elbow join](images/equipment/1-2-poly-elbow-join.jpeg)
 
 #### Tank Bulkhead
+
+![Tank bulkhead](images/equipment/tank-bulkhead.JPG)
+
 #### Hose Washer
 
 ![Hose washer](images/equipment/hose-washer.jpg)
 
 #### Tank Bulkhead to 3/4 Thread
+
+![Tank bulkhead to 3/4 inch thread](images/equipment/tank-bulkhead-to-3-4-thread.JPG)
+
 #### Tank Bulkhead to 1/4 Poly
+
+![Tank bulkhead to 1/4 inch poly](images/equipment/tank-bulkhead-to-1-4-poly.JPG)
+
 #### 3/8 Thread to 3/4 Thread
 
+![3/8 inch thread to 3/4 inch thread](images/equipment/3-8-thread-to-3-4-thread.JPG)
 
 ### Irrigation System
 
@@ -874,6 +972,10 @@ These settings are used to configue the MQTT client, an instance of the PubSubCl
 
 - `MQTT_RETRY_TIMEOUT int` The duration of time to continually attempt connection to the MQTT broker before returning to the auto-connect access point, in seconds. **This likely does not need to be changed.**
 
+- `MQTT_MAX_BUFFER_SIZE int` The maximum message size of an MQTT message, in bytes. **This likely does not need to be changed. Be aware of perfomance impacts when adjusting outsize the range of 256-512 bytes.**
+
+- `MQTT_KEEPALIVE int` The keepalive interval, in seconds.
+
 ### Pins
 
 These settings define the pins used to interact with the equipment connected to the controller. Don't worry about changing the settings that don't apply to your use case - unused pins are automatically set to -1 in the [auto-config](#auto-config). 
@@ -980,7 +1082,11 @@ These settings define the topic strings to use for the MQTT interface. See the [
 
 - `ERROR_TOPIC string` The topic used to send [error logs](#errors).
 
-- `CONFIG_TOPIC string` The topic used to send current [config values](#read).
+- `CONFIG_TOPIC string` The topic used to send current [config values](#read) in a retained message.
+
+- `AUTO_CONFIG_TOPIC_` The topic used to send [auto-config values]() in a retained message.
+
+- `TOPIC_CONFIG_TOPIC_` The topic used to send [topic string values]() in a retained message.
 
 - `CONFIG_CHANGE_TOPIC string` The topic used to recieve [config change requests](#write).
 
@@ -1030,6 +1136,8 @@ These settings are configured automatically and shouldn't be altered unless you'
 #define WARNING_TOPIC_ (BASE_TOPIC WARNING_TOPIC)
 #define ERROR_TOPIC_ (BASE_TOPIC ERROR_TOPIC)
 #define CONFIG_TOPIC_ (BASE_TOPIC CONFIG_TOPIC)
+#define TOPIC_CONFIG_TOPIC_ (BASE_TOPIC TOPIC_CONFIG_TOPIC)
+#define CONFIG_CHANGE_TOPIC_ (BASE_TOPIC CONFIG_CHANGE_TOPIC)
 #define CONFIG_CHANGE_TOPIC_ (BASE_TOPIC CONFIG_CHANGE_TOPIC)
 #define SETTINGS_RESET_TOPIC_ (BASE_TOPIC SETTINGS_RESET_TOPIC)
 #define FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_ (USING_FLOW_SENSOR_ ? (BASE_TOPIC FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC) : NULL)

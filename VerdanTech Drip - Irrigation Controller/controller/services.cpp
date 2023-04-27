@@ -43,17 +43,17 @@ void srvc::on_message(const char topic[], byte* payload, unsigned int len) {
     handled_topic = true;
   }
 
-  if (strcmp(topic, FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_) == 0) {
+  if (USING_FLOW_SENSOR_ && strcmp(topic, FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_) == 0) {
     flow_calibration_begin(payload, len);
     handled_topic = true;
   }
 
-  if (strcmp(topic, FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_) == 0) {
+  if (USING_FLOW_SENSOR_ && strcmp(topic, FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_) == 0) {
     flow_calibration_dispense(payload, len);
     handled_topic = true;
   }
 
-  if (strcmp(topic, FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_) == 0) {
+  if (USING_FLOW_SENSOR_ && strcmp(topic, FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_) == 0) {
     flow_calibration_measure(payload, len);
     handled_topic = true;
   }
@@ -73,17 +73,29 @@ void srvc::on_message(const char topic[], byte* payload, unsigned int len) {
   }
 }
 
-
-
 // Catch errors in deserialization process
-bool deserialize_json(byte* payload, unsigned int len, StaticJsonDocument<512>& json, const char topic[]) {
+bool deserialize(byte* payload, unsigned int len, StaticJsonDocument<512>& json, const char topic[]) {
   DeserializationError error = deserializeJson(json, payload, len);
   if (error) {
     char message[150];
     snprintf(message, 150, "%s: MQTT payload failed to deserialize with error: %s", topic, error.c_str());
-    srvc::warning(message);
+    srvc::error(message);
     return false;
   }
+  return true;
+}
+
+// Catch errors in serialization process and publish to network
+bool serialize(const char topic[], StaticJsonDocument<512>& json, bool retained) {
+  char buffer[MQTT_MAX_BUFFER_SIZE+1];
+  size_t size = serializeJson(json, buffer);
+  if (size > MQTT_MAX_BUFFER_SIZE) {
+    char message[150];
+    snprintf(message, 150, "%s: MQTT payload exceeded max message size of: %d bytes", topic, MQTT_MAX_BUFFER_SIZE);
+    srvc::error(message);
+    return false;
+  }
+  net::publish(topic, buffer, size, retained);
   return true;
 }
 
@@ -114,7 +126,7 @@ void srvc::dispense_activate(byte* payload, unsigned int len) {
 
   // Deserialize
   StaticJsonDocument<512> json;
-  if (!deserialize_json(payload, len, json, DISPENSE_ACTIVATE_TOPIC_)) { return; }
+  if (!deserialize(payload, len, json, DISPENSE_ACTIVATE_TOPIC_)) { return; }
 
   // Validate input
   if (json["tv"].isNull()) {
@@ -160,9 +172,7 @@ void srvc::publish_dispense_slice_report(unsigned long int time, float volume, f
     json["tv"] = app::pressure_to_volume(avg_pressure);
   }
 
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
-  net::publish(DISPENSE_REPORT_SLICE_TOPIC_, buffer, size, false);
+  serialize(DISPENSE_REPORT_SLICE_TOPIC_, json, false);
 }
 
 void srvc::publish_dispense_summary_report(unsigned long int total_time, float total_volume, float tank_volume, unsigned long int tank_time) {
@@ -184,9 +194,7 @@ void srvc::publish_dispense_summary_report(unsigned long int total_time, float t
     }
   }
 
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
-  net::publish(DISPENSE_REPORT_SUMMARY_TOPIC_, buffer, size, false);
+  serialize(DISPENSE_REPORT_SUMMARY_TOPIC_, json, false);
   srvc::publish_pressure_report();
 }
 
@@ -199,18 +207,16 @@ void srvc::restart() {
 }
 
 void srvc::publish_log(int level, const char message[]) {
-  StaticJsonDocument<256> json;
+  StaticJsonDocument<512> json;
   json["m"] = message;
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
   // Switch the correct level for logging, warning, and errors
   switch (level) {
     case 0:
-      net::publish(LOG_TOPIC_, buffer, size, false);
+      serialize(LOG_TOPIC_, json, false);
     case 1:
-      net::publish(WARNING_TOPIC_, buffer, size, false);
+      serialize(WARNING_TOPIC_, json, false);
     case 2:
-      net::publish(ERROR_TOPIC_, buffer, size, false);
+      serialize(ERROR_TOPIC_, json, false);
   }
 }
 
@@ -245,15 +251,70 @@ void srvc::publish_config() {
     json["prssr"]["atmo"] = app::env.pressure_sensor_config.atmosphere_pressure;
   }
 
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
-  net::publish(CONFIG_TOPIC_, buffer, size, true);
+  serialize(CONFIG_TOPIC_, json, true);
+}
+
+void srvc::publish_auto_config() {
+
+  StaticJsonDocument<512> json;
+
+  json["src"] = USING_SOURCE_;
+  json["tnk"] = USING_TANK_;
+  json["drn"] = USING_DRAIN_VALVE_;
+  json["fnow"] = USING_FLOW_SENSOR_;
+  json["prssr"] = USING_PRESSURE_SENSOR_;
+  json["srcpin"] = SOURCE_OUTPUT_VALVE_PIN_;
+  json["tnkpin"] = TANK_OUTPUT_VALVE_PIN_;
+  json["drnpin"] = TANK_DRAIN_VALVE_PIN_;
+  json["flowpin"] = FLOW_SENSOR_PIN_;
+
+  serialize(AUTO_CONFIG_TOPIC_, json, true);
+
+}
+
+void srvc::publish_topic_config() {
+
+  StaticJsonDocument<512> json;
+
+  json["base"] = BASE_TOPIC;
+  json["out"] = DISPENSE_ACTIVATE_TOPIC;
+  json["out_slice"] = DISPENSE_REPORT_SLICE_TOPIC;
+  json["out_summary"] = DISPENSE_REPORT_SUMMARY_TOPIC;
+  json["deactivate"] = DEACTIVATE_TOPIC;
+  json["restart"] = RESTART_TOPIC;
+  json["log"] = LOG_TOPIC;
+  json["warning"] = WARNING_TOPIC;
+  json["error"] = ERROR_TOPIC;
+  json["config"] = CONFIG_TOPIC;
+  json["auto"] = AUTO_CONFIG_TOPIC;
+  json["topics"] = TOPIC_CONFIG_TOPIC;
+  json["conf_write"] = CONFIG_CHANGE_TOPIC;
+  json["conf_reset"] = SETTINGS_RESET_TOPIC;
+
+
+  if (USING_FLOW_SENSOR_) {
+    json["cbr_on"] = FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC;
+    json["cbr_out"] = FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC;
+    json["cbr_measure"] = FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC;
+  }
+
+  if (USING_DRAIN_VALVE_) {
+    json["drn"] = DRAIN_ACTIVATE_TOPIC;
+    json["drn_summary"] = DRAIN_REPORT_SUMMARY_TOPIC;
+  }
+
+  if (USING_PRESSURE_SENSOR_) {
+    json["prssr_request"] = PRESSURE_REQUEST_TOPIC;
+    json["prssr"] = PRESSURE_REPORT_TOPIC;
+  }
+
+  serialize(TOPIC_CONFIG_TOPIC_, json, true);
 }
 
 void srvc::config_change(byte* payload, unsigned int len) {
 
   StaticJsonDocument<512> json;
-  if (!deserialize_json(payload, len, json, CONFIG_CHANGE_TOPIC_)) { return; }
+  if (!deserialize(payload, len, json, CONFIG_CHANGE_TOPIC_)) { return; }
 
   if (!json["srvc"].isNull()) {
     if (!json["srvc"]["res"].isNull()) {
@@ -407,7 +468,7 @@ void srvc::config_change(byte* payload, unsigned int len) {
 void srvc::settings_reset(byte* payload, unsigned int len) {
 
   StaticJsonDocument<512> json;
-  if (!deserialize_json(payload, len, json, SETTINGS_RESET_TOPIC_)) { return; }
+  if (!deserialize(payload, len, json, SETTINGS_RESET_TOPIC_)) { return; }
 
   bool restart = false;
 
@@ -449,7 +510,7 @@ void srvc::flow_calibration_begin(byte* payload, unsigned int len) {
   }
 
   StaticJsonDocument<512> json;
-  if (!deserialize_json(payload, len, json, FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_)) { return; }
+  if (!deserialize(payload, len, json, FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_)) { return; }
 
   // Ensure valid input
   if (json["id"].isNull()) {
@@ -480,12 +541,13 @@ void srvc::flow_calibration_begin(byte* payload, unsigned int len) {
 
   } else {
 
-    srvc::publish_pressure_report();
-    app::open_flow_calibration_process(id);
-
     char message[150];
     snprintf(message, 150, "%s: Beginning calibration process. Max dispensation volume: %f liters. Timeout: %d seconds.", FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_, app::env.flow_sensor_config.calibration_max_volume, app::env.flow_sensor_config.calibration_timeout);
     srvc::info(message);
+
+    srvc::publish_pressure_report();
+    app::open_flow_calibration_process(id);
+
   }
 }
 
@@ -514,7 +576,7 @@ void srvc::flow_calibration_dispense(byte* payload, unsigned int len) {
   }
 
   StaticJsonDocument<512> json;
-  if (!deserialize_json(payload, len, json, FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_)) { return; }
+  if (!deserialize(payload, len, json, FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_)) { return; }
 
   // Ensure valid input
 
@@ -589,7 +651,7 @@ void srvc::flow_calibration_measure(byte* payload, unsigned int len) {
   }
 
   StaticJsonDocument<512> json;
-  if (!deserialize_json(payload, len, json, FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_)) { return; }
+  if (!deserialize(payload, len, json, FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_)) { return; }
 
   // Ensure valid input
   if (json["id"].isNull()) {
@@ -622,11 +684,12 @@ void srvc::flow_calibration_measure(byte* payload, unsigned int len) {
   }
   float measured_volume = json["mv"].as<float>();
 
+  char message[150];
+  snprintf(message, 150, "%s: Registering calibration measurement of: %f liters", FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_, measured_volume);
+  srvc::info(message);
+
   app::take_calibration_measurement(measured_volume);
 
-  char message[150];
-  snprintf(message, 150, "%s: Registered calibration measurement of: %f liters", FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_, measured_volume);
-  srvc::info(message);
 }
 
 void srvc::drain_activate(byte* payload, unsigned int len) {
@@ -642,7 +705,7 @@ void srvc::drain_activate(byte* payload, unsigned int len) {
   }
 
   StaticJsonDocument<512> json;
-  if (!deserialize_json(payload, len, json, DRAIN_ACTIVATE_TOPIC_)) { return; }
+  if (!deserialize(payload, len, json, DRAIN_ACTIVATE_TOPIC_)) { return; }
 
   // Ensure valid input
   if ((!json["tt"].isNull() && !json["tv"].isNull()) || (!json["tt"].isNull() && !json["tp"].isNull()) || (!json["tp"].isNull() && !json["tv"].isNull())) {
@@ -753,9 +816,7 @@ void srvc::publish_drain_summary_report(unsigned long int total_time, float star
     json["fv"] = end_volume;
   }
 
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
-  net::publish(DRAIN_REPORT_SUMMARY_TOPIC_, buffer, size, false);
+  serialize(DRAIN_REPORT_SUMMARY_TOPIC_, json, false);
   srvc::publish_pressure_report();
 }
 
@@ -781,7 +842,5 @@ void srvc::publish_pressure_report() {
     json["tv"] = volume;
   }
 
-  char buffer[256];
-  size_t size = serializeJson(json, buffer);
-  net::publish(PRESSURE_REPORT_TOPIC_, buffer, size, false);
+  serialize(PRESSURE_REPORT_TOPIC_, json, false);
 }
