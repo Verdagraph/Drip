@@ -504,7 +504,7 @@ void srvc::flow_calibration_begin(byte* payload, unsigned int len) {
   // Stop process from being overwritten
   if (app::env.flag.dispense_flag || app::env.flag.drain_flag) {
     char message[150];
-    snprintf(message, 150, "%s: Updated all validated config changes. Deactivate with topic: %s", FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_, DEACTIVATE_TOPIC_);
+    snprintf(message, 150, "%s: Request denied, process already in progress. Deactivate with topic: %s", FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_, DEACTIVATE_TOPIC_);
     srvc::error(message);
     return;
   }
