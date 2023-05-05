@@ -23,9 +23,9 @@
 #define SLOG if(DEBUG)Serial
 
 #define RESEVOIR_MODE 1
-#define USING_SOURCE_FLOW false
+#define USING_SOURCE_FLOW true
 #define USING_DRAIN_VALVE true
-#define USING_PRESSURE_SENSOR true
+#define USING_PRESSURE_SENSOR false
 
 
 // ************* WiFiManager AutoConnect config ************* //
@@ -45,8 +45,9 @@
 #define MQTT_SERVER_DOMAIN_DEFAULT "192.168.0.195"
 #define MQTT_SERVER_PORT_DEFAULT "1883"
 #define MQTT_ID_DEFAULT "irrigation_controller1"
-#define MQTT_USERNAME_DEFAULT "username"
-#define MQTT_PASSWORD_DEFAULT "VerdanTech-Devices"
+#define MQTT_USE_CREDENTIALS false
+#define MQTT_USERNAME_DEFAULT "irrigation"
+#define MQTT_PASSWORD_DEFAULT "tank"
 #define MQTT_RETRY_TIMEOUT 300
 #define MQTT_MAX_BUFFER_SIZE 512
 #define MQTT_KEEPALIVE 15
@@ -54,10 +55,10 @@
 
 // ************* Pin config ************* //
 
-#define SOURCE_OUTPUT_VALVE_PIN 13
-#define TANK_OUTPUT_VALVE_PIN 12
-#define TANK_DRAIN_VALVE_PIN 14
-#define FLOW_SENSOR_PIN 5
+#define SOURCE_OUTPUT_VALVE_PIN 14
+#define TANK_OUTPUT_VALVE_PIN 15
+#define TANK_DRAIN_VALVE_PIN 13
+#define FLOW_SENSOR_PIN 12
 
 
 // ************* Defaults ************* //
@@ -166,11 +167,11 @@ struct MQTTConfig {
   char password[50];
 
   MQTTConfig() {
-    strcpy(domain, MQTT_SERVER_DOMAIN_DEFAULT);
-    strcpy(port, MQTT_SERVER_PORT_DEFAULT);
-    strcpy(id, MQTT_ID_DEFAULT);
-    strcpy(username, MQTT_USERNAME_DEFAULT);
-    strcpy(password, MQTT_PASSWORD_DEFAULT);
+    strlcpy(domain, MQTT_SERVER_DOMAIN_DEFAULT, 100);
+    strlcpy(port, MQTT_SERVER_PORT_DEFAULT, 10);
+    strlcpy(id, MQTT_ID_DEFAULT, 50);
+    strlcpy(username, MQTT_USERNAME_DEFAULT, 50);
+    strlcpy(password, MQTT_PASSWORD_DEFAULT, 50);
   }
 
 };

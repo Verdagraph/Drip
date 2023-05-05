@@ -108,14 +108,36 @@ void connect_wifi(bool auto_connect) {
   }
 }
 
+// Try to connnect to mqtt broker based on credentials setting
+bool try_mqtt_connection(){
+  if (MQTT_USE_CREDENTIALS) {
+    return mqtt_client.connect(mqtt_config.id, mqtt_config.username, mqtt_config.password);
+  } else {
+    return mqtt_client.connect(mqtt_config.id);
+  }
+}
+
 // Connect to MQTT server using mqtt config file
 bool connect_mqtt() {
 
+  int port = atoi(mqtt_config.port);
+
   SLOG.println("Connecting to mqtt server...");
-  mqtt_client.setServer(mqtt_config.domain, (int)mqtt_config.port);
+  SLOG.print("Domain: ");
+  SLOG.println(mqtt_config.domain);
+  SLOG.print("Port: ");
+  SLOG.println(port);
+  SLOG.print("ID: ");
+  SLOG.println(mqtt_config.id);
+  SLOG.print("Username: ");
+  SLOG.println(mqtt_config.username);
+  SLOG.print("Password: ");
+  SLOG.println(mqtt_config.password);
+
+  mqtt_client.setServer(mqtt_config.domain, port);
   int count = 0;
   // While client hasn't connected, check timeout
-  while (!mqtt_client.connect(mqtt_config.id, mqtt_config.username, mqtt_config.password)) {
+  while (!try_mqtt_connection()) {
 
     SLOG.print("*");
     delay(1000);

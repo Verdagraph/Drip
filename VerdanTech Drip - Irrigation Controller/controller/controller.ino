@@ -22,4 +22,5 @@ void setup() {
 void loop() {
   net::loop_mqtt();
   app::loop_app();
+  delay(100);
 }

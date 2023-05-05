@@ -506,7 +506,7 @@ void log_state() {
   SLOG.println("Device state log:");
   SLOG.print("dispense_flag: ");
   SLOG.print(app::env.flag.dispense_flag);
-  SLOG.print("calibration_flag: ");
+  SLOG.print(" calibration_flag: ");
   SLOG.print(app::env.flag.calibration_flag);
   SLOG.print(" drain_flag: ");
   SLOG.print(app::env.flag.drain_flag);
@@ -526,7 +526,7 @@ void log_state() {
 
   SLOG.print("target_output_volume: ");
   SLOG.print(app::env.target.target_output_volume);
-  SLOG.print("target_calibration_volume: ");
+  SLOG.print(" target_calibration_volume: ");
   SLOG.print(app::env.target.target_calibration_volume);
   SLOG.print(" target_drain_time: ");
   SLOG.print(app::env.target.target_drain_time);
