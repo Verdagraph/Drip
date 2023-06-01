@@ -655,7 +655,7 @@ This section assumes you already has a soldering setup, solder, and wires
 | [Relay](#relay) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/4-channel-relay-breakout-12v/) |
 | [Power supply](#power-supply) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/12v-3a-power-supply-2-5mm/) |
 | [Power supply adapter](#power-supply-adapter) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/dc-barrel-jack-to-2-pin-terminal-block-adapter/) |
-| [Voltage regulator](#voltage-regulator) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/6v-2-5a-step-down-voltage-regulator/) |
+| [Voltage regulator](#voltage-regulator) | 1 | Hobby shop | [BC Robotics]() |
 | [Diode](#diode) | 1-3 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/diode-rectifier-1a-50v/) |
 | [Logic level converter](#logic-level-converter) | 0-1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/4-channel-logic-level-converter-bi-directional/) |
 | [Proto Board](#proto-board) | 1 | Hobby shop | [BC Robotics](https://bc-robotics.com/shop/1591l-proto-board/) |
@@ -965,6 +965,8 @@ These settings are used to configue the MQTT client, an instance of the PubSubCl
 - `MQTT_SERVER_PORT_DEFAULT string` The port on the MQTT broker to connect to.
 
 - `MQTT_ID_DEFAULT string` The ID of the client.
+
+- `MQTT_USE_CREDENTIALS bool` Whether to connect to the MQTT broker using a username and password. If false, username and password will still show up on the auto-connect access point, but they can be safely ignored as they won't be used to make the connection. 
 
 - `MQTT_USERNAME_DEFAULT string` The username of the client.
 

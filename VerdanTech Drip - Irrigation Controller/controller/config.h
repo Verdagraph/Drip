@@ -177,7 +177,7 @@ struct MQTTConfig {
 };
 
 struct ServicesConfig {
-  int data_resolution_l;
+  float data_resolution_l;
 
   ServicesConfig() {
     data_resolution_l = DATA_RESOLUTION_L_DEFAULT;

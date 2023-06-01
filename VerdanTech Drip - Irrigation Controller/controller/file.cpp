@@ -153,7 +153,7 @@ void file::read_config(app::DeviceState* state) {
   SLOG.println("Main config serialized");
 
   // Assign config values to config structs
-  state->services_config.data_resolution_l = json["srvc"]["res"].as<int>();
+  state->services_config.data_resolution_l = json["srvc"]["res"].as<float>();
   if (USING_SOURCE_) {
     state->source_config.static_flow_rate = json["src"]["rate"].as<float>();
   }

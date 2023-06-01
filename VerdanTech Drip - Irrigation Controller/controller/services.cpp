@@ -213,10 +213,13 @@ void srvc::publish_log(int level, const char message[]) {
   switch (level) {
     case 0:
       serialize(LOG_TOPIC_, json, false);
+      break;
     case 1:
       serialize(WARNING_TOPIC_, json, false);
+      break;
     case 2:
       serialize(ERROR_TOPIC_, json, false);
+      break;
   }
 }
 
@@ -319,7 +322,7 @@ void srvc::config_change(byte* payload, unsigned int len) {
   if (!json["srvc"].isNull()) {
     if (!json["srvc"]["res"].isNull()) {
       if (json["srvc"]["res"].is<float>()) {
-        app::env.services_config.data_resolution_l = json["srvc"]["res"].as<int>();
+        app::env.services_config.data_resolution_l = json["srvc"]["res"].as<float>();
       } else {
         char message[150];
         snprintf(message, 150, "%s: Provided data resolution invalid type (type: float, name: [\"srvc\"][\"res\"])", CONFIG_CHANGE_TOPIC_);

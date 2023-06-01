@@ -131,6 +131,7 @@ void close_dispense_process() {
 
   char message[] = "Ending dispensation process";
   srvc::info(message);
+  ESP.restart();
 
 }
 
@@ -400,6 +401,7 @@ void close_drain_process() {
 
   char message[] = "Ending drain process";
   srvc::info(message);
+  ESP.restart();
 
 }
 
