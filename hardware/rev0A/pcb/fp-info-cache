@@ -1,4 +1,4 @@
-57576101483377
+62812215453292
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -57995,6 +57995,13 @@ One digit LED 7 segment SA39-11 SC39-11 SA39-12 SC39-12
 10
 10
 Drip
+IC_ADS1115IRUGT
+<b>10 Lead Platic MSOP</b><p>Source: http://www.linear.com .. LT1996
+
+0
+10
+10
+Drip
 RELAY_SRD-05VDC-SL-C
 
 
@@ -101402,6 +101409,13 @@ RELAY-TH_SRD-XXVDC-XL-C
 5
 5
 easyeda2kicad
+RES-TH_BD2.2-L6.5-P10.50-D0.6
+
+
+0
+2
+2
+easyeda2kicad
 RES-TH_BD2.3-L6.5-P10.50-D0.5
 
 
@@ -101506,3 +101520,10 @@ WIFIM-SMD_18P-L20.0-W18.0-P1.50
 0
 27
 19
+easyeda2kicad
+X2QFN-10_L2.0-W1.5-P0.50-TL_RUG0010B
+
+
+0
+10
+10
