@@ -8,6 +8,10 @@ typedef enum TankShapes_e {
     TANK_CYLINDER
 } TankShapes_e;
 
+typedef struct SystemConfig_t {
+    uint32_t sleepInterval;
+} SystemConfig_t;
+
 typedef struct DispenseConfig_t {
     float dataResolutionLiters;
 } DispenseConfig_t;
@@ -41,6 +45,7 @@ typedef struct PressureSensorCalibrationPoint_t {
 } PressureSensorCalibrationPoint_t;
 
 typedef struct Config_t {
+    SystemConfig_t system;
     DispenseConfig_t dispense;
     SourceConfig_t source;
     TankConfig_t tank;

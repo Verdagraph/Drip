@@ -5,6 +5,7 @@
 #include "configManager.h"
 #include "mqttManager.h"
 #include "connectionManager.h"
+#include "valveManager.h"
 #include "messages.h"
 
 #include "stateManager.h"
@@ -14,11 +15,12 @@ static const char* TAG = "StateManager";
 /**
  * @brief Constructor
  */
-StateManager::StateManager(ConfigManager *configManager, MqttManager *mqttManager, ConnectionManager *connectionManager) {
+StateManager::StateManager(ConfigManager *configManager, MqttManager *mqttManager, ConnectionManager *connectionManager, ValveManager *valveManager) {
     state = STATE_MIN;
     configManager = configManager;
     mqttManager = mqttManager;
     connectionManager = connectionManager;
+    valveManager = valveManager;
 }
 
 /**
@@ -51,32 +53,14 @@ void StateManager::handle_current_state() {
         case STATE_LISTEN:
             listen();
             break;
-        case STATE_SLEEP:
-            sleep();
+        case STATE_DISPENSE:
+            dispense();
             break;
-        case STATE_CONFIG:
-            config();
-            break;
-        case STATE_DISPENSE_START:
-            dispense_start();
-            break;
-        case STATE_DISPENSE_SOURCE:
-            dispense_source();
-            break;
-        case STATE_DISPENSE_TANK:
-            dispense_tank();
-            break;
-        case STATE_FLOW_CALIBRATE_DISPENSE:
-            flow_calibrate_dispense();
-            break;
-        case STATE_FLOW_CALIBRATE_MEASURE:
-            flow_calibrate_measure();
+        case STATE_FLOW_CALIBRATE:
+            flowCalibrate();
             break;
         case STATE_PRESSURE_CALIBRATE:
-            pressure_calibrate();
-            break;
-        case STATE_PRESSURE_POLL:
-            pressure_poll();
+            pressureCalibrate();
             break;
         case STATE_DRAIN:
             drain();
@@ -195,89 +179,93 @@ void StateManager::restart() {
 void StateManager::listen() {
     esp_err_t err = ESP_OK;
     MqttRxMessage_t* message = nullptr;
-    Config_t* config = nullptr; 
-
+    Config_t config = {}; 
+    
     /** In case MQTT has not checked for any messages yet, wait until it has. */
-    if (mqttManager->checkedForMessages() == false) {
+    if (mqttManager->numMessagesInQueue() == 0) {
+        return;
+    }
+
+    /** Retrieve config. */
+    err = configManager->getConfig(config);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to retrieve device config.");
         return;
     }
     
     /** Check for new MQTT messages. */
-    err = mqttManager->getNextMessage(message);
-    if (err != ESP_OK) {
-        ESP_LOGW(TAG, "Failed to retrieve MQTT message.");
-        return;
+    while(mqttManager->numMessagesInQueue() > 0) {
+
+        /** Get the next message from the queue. */
+        err = mqttManager->getNextMessage(message);
+        if (err != ESP_OK) {
+            ESP_LOGW(TAG, "Failed to retrieve MQTT message.");
+            return;
+        }
+        if (message == nullptr) {
+            ESP_LOGW(TAG, "Non-zero queue count returned null reference.");
+            break;
+        }
+        
+        /** Handle message. */
+        switch (message->messageCode) {
+            case MQTT_RX_DISPENSE_ACTIVATE:
+                handleDispenseRequest(message)
+                break;
+        
+            case MQTT_RX_RESTART:
+                state = STATE_RESTART;
+                break;
+        
+            case MQTT_RX_CHANGE_CONFIG:
+                // Handle change config
+                break;
+        
+            case MQTT_RX_FLOW_CALIBRATE
+                // Handle flow calibrate begin
+                break;
+
+            case MQTT_RX_PRESSURE_CALIBRATE
+                // Handle pressure calibrate begin
+                break;
+        
+            case MQTT_RX_DRAIN:
+                // Handle drain
+                break;
+        
+            case MQTT_RX_PRESSURE_POLL:
+                // Handle pressure poll
+                break;
+        
+            default:
+                // Handle unknown message type
+                break;
+
+        }
+        
     }
 
-    /** Handle message. */
-    if (message != nullptr) {
-
-    }
-
-    /** Sleep. */
 }
 
 /**
- * @brief Handler for state STATE_SLEEP.
+ * @brief Handler for state STATE_DISPENSE.
  */
-void StateManager::sleep() {
-    // Placeholder for sleep state logic
-}
-
-/**
- * @brief Handler for state STATE_CONFIG.
- */
-void StateManager::config() { 
-    // Placeholder for config state logic
-}
-
-/**
- * @brief Handler for state STATE_DISPENSE_START.
- */
-void StateManager::dispense_start() {
+void StateManager::dispense() {
     // Placeholder for dispense start state logic
 }
 
 /**
- * @brief Handler for state STATE_DISPENSE_SOURCE.
+ * @brief Handler for state STATE_FLOW_CALIBRATE.
  */
-void StateManager::dispense_source() {
-    // Placeholder for dispense source state logic
-}
-
-/**
- * @brief Handler for state STATE_DISPENSE_TANK.
- */
-void StateManager::dispense_tank() {
-    // Placeholder for dispense tank state logic
-}
-
-/**
- * @brief Handler for state STATE_FLOW_CALIBRATE_DISPENSE.
- */
-void StateManager::flow_calibrate_dispense() {
+void StateManager::flowCalibrate() {
     // Placeholder for flow calibrate dispense state logic
-}
-
-/**
- * @brief Handler for state STATE_FLOW_CALIBRATE_MEASURE.
- */
-void StateManager::flow_calibrate_measure() {
-    // Placeholder for flow calibrate measure state logic
 }
 
 /**
  * @brief Handler for state STATE_PRESSURE_CALIBRATE.
  */
-void StateManager::pressure_calibrate() {
+void StateManager::pressureCalibrate() {
     // Placeholder for pressure calibrate state logic
-}
-
-/**
- * @brief Handler for state STATE_PRESSURE_POLL.
- */
-void StateManager::pressure_poll() {
-    // Placeholder for pressure poll state logic
 }
 
 /**
@@ -285,4 +273,51 @@ void StateManager::pressure_poll() {
  */
 void StateManager::drain() {
     // Placeholder for drain state logic
+}
+
+/**
+ * @brief Handles state change for a dispense request.
+ * 
+ * @param message MQTT received message.
+ * @return esp_err_t Return code.
+ */
+esp_err_t StateManager::handleDispenseRequest(MqttRxMessage_t *message) {
+    MqttRxDispenseActivateMessage_t *payload = nullptr;
+    DispensationStage_e dispenseStage = NOT_DISPENSING; 
+
+    /** Reject null input. */
+    if (message == nullptr) {
+        ESP_LOGE(TAG, "Mqtt handler received null message.")
+        return ESP_ERR_INVALID_INPUT;
+    }
+    
+    /** Typecast the payload. */
+    payload = reinterpret_cast<MqttRxDispenseActivateMessage_t*>(message->payload);
+
+    /** Begin the dispensation process. */
+    err = valveManager.beginDispensation(payload->targetVolume, payload->targetTime, payload->timeout, dispenseStage);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Valve manager failure.")
+    }
+
+    /** Handle state transition based on dispensation status. */
+    switch (dispenseStage) {
+        case NOT_DISPENSING:
+            ESP_LOGW(TAG, "Failed to begin dispensation.")
+            break;
+        case DISPENSING_TANK:
+            state = STATE_DISPENSE;
+            break;
+        case DISPENSING_SOURCE:
+            state = STATE_DISPENSE;
+            break;
+        case CONCLUDED:
+            ESP_LOGW(TAG, "Dispensation concluded immediately.")
+            break;
+        default:
+            ESP_LOGE(TAG, "Unrecognized value of DispensationStage_e.")
+            break;
+    }
+
+    return ESP_OK;
 }

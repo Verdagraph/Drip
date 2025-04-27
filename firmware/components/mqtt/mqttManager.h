@@ -25,9 +25,15 @@ public:
     /**
      * @brief Get the checkedForMessages flagged.
      * 
-     * @returns True iff the first scan for messages has happened. 
+     * @returns True if the first scan for messages has happened. 
      */
     bool checkedForMessages();
+
+    /**
+     * @brief Returns the number of received MQTT messages in
+     * the queue.
+     */
+    uint8_t numMessagesInQueue();
     
     /**
      * @brief Pull the next incoming MQTT message from the queue.

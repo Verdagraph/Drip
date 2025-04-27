@@ -5,6 +5,7 @@
 #include "configManager.h"
 #include "mqttManager.h"
 #include "connectionManager.h"
+#include "valveManager.h"
 
 /**
  * @brief Defines main application routines and transistions between states.
@@ -14,7 +15,12 @@ public:
     /**
      * @brief Constructor.
      */
-    StateManager(ConfigManager *configManager, MqttManager *mqttManager, ConnectionManager *connectionManager);
+    StateManager(
+        ConfigManager *configManager, 
+        MqttManager *mqttManager, 
+        ConnectionManager *connectionManager, 
+        ValveManager *valveManager
+    );
 
     /**
      * @brief Begins the finite state machine.
@@ -34,6 +40,9 @@ private:
     ConfigManager *configManager;
     MqttManager *mqttManager;
     ConnectionManager *connectionManager;
+    ValveManager *valveManager;
+
+    /** State handlers. */
 
     /**
      * @brief Handler for state STATE_BOOT.
@@ -66,54 +75,34 @@ private:
     void listen();
 
     /**
-     * @brief Handler for state STATE_SLEEP.
+     * @brief Handler for state STATE_DISPENSE.
      */
-    void sleep();
+    void dispense();
 
     /**
-     * @brief Handler for state STATE_CONFIG.
+     * @brief Handler for state STATE_FLOW_CALIBRATE.
      */
-    void config();
-
-    /**
-     * @brief Handler for state STATE_DISPENSE_START.
-     */
-    void dispense_start();
-
-    /**
-     * @brief Handler for state STATE_DISPENSE_SOURCE.
-     */
-    void dispense_source();
-
-    /**
-     * @brief Handler for state STATE_DISPENSE_TANK.
-     */
-    void dispense_tank();
-
-    /**
-     * @brief Handler for state STATE_FLOW_CALIBRATE_DISPENSE.
-     */
-    void flow_calibrate_dispense();
-
-    /**
-     * @brief Handler for state STATE_FLOW_CALIBRATE_MEASURE.
-     */
-    void flow_calibrate_measure();
+    void flowCalibrate();
 
     /**
      * @brief Handler for state STATE_PRESSURE_CALIBRATE.
      */
-    void pressure_calibrate();
-
-    /**
-     * @brief Handler for state STATE_PRESSURE_POLL.
-     */
-    void pressure_poll();
+    void pressureCalibrate();
 
     /**
      * @brief Handler for state STATE_DRAIN.
      */
     void drain();
+
+    /** Received MQTT message handlers. */
+
+    /**
+     * @brief Handles state change for a dispense request.
+     * 
+     * @param message MQTT received message.
+     * @return esp_err_t Return code.
+     */
+    esp_err_t handleDispenseRequest(MqttRxMessage_t *message);
 };
 
 #endif

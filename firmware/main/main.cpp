@@ -5,6 +5,7 @@
 #include "configManager.h"
 #include "mqttManager.h"
 #include "connectionManager.h"
+#include "valveManager.h"
 #include "stateManager.h"
 
 /** Main task stack size, in works (4 bytes on Esp32c3) */
@@ -20,7 +21,8 @@ void vMainTask(void *pvParameters) {
     ConfigManager configManager = ConfigManager();
     MqttManager mqttManager = MqttManager();
     ConnectionManager connectionManager = ConnectionManager();
-    StateManager stateManager = StateManager(&configManager, &mqttManager, &connectionManager);
+    ValveManager valveManager = ValveManager();
+    StateManager stateManager = StateManager(&configManager, &mqttManager, &connectionManager, &valveManager);
 
     /** Initialize the FSM. */
     stateManager.initialize();

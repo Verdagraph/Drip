@@ -16,8 +16,8 @@ typedef enum MqttRxMessages_e {
     MQTT_RX_DEACTIVATE,
     MQTT_RX_RESTART,
     MQTT_RX_CHANGE_CONFIG,
-    MQTT_RX_FLOW_CALIBRATE_BEGIN,
-    MQTT_RX_FLOW_CALIBRATE_MEASURE,
+    MQTT_RX_FLOW_CALIBRATE,
+    MQTT_RX_PRESSURE_CALIBRATE,
     MQTT_RX_DRAIN,
     MQTT_RX_PRESSURE_POLL,
 
@@ -48,7 +48,7 @@ typedef enum MqttTxMessages_e {
  * @brief Describes a message that has been received.
  */
 typedef struct MqttRxMessage_t {
-    MqttRxMessages_e messageNum;
+    MqttRxMessages_e messageCode;
     char* payload;
 } MqttRxMessage_t;
 
