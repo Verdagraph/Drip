@@ -169,12 +169,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "GPIO21"
 			(at -0.4 2.4 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2c9a7b81-96dd-4880-948b-2ea5d850a112")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -328,12 +329,13 @@
 		(at 179.645 84)
 		(property "Reference" "R6"
 			(at -1.465 2.2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "91b27c2c-ebb4-4c9d-b196-904f5fb76ce2")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -496,12 +498,13 @@
 		(at 154.41 131.4725 180)
 		(property "Reference" "J3"
 			(at 2.27 -1.9 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "08cd8970-60ce-480a-b435-a58891cd5dde")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -703,12 +706,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP4"
 			(at -3 -0.8 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "77720a45-3314-45a5-a58e-4c144dd59f1b")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -852,12 +856,13 @@
 		(at 187.98 82 -90)
 		(property "Reference" "C21"
 			(at -1 -2 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "29d6d852-cd50-471d-9e66-e967bce8cfa6")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1064,12 +1069,13 @@
 		(at 139.38 111.88 90)
 		(property "Reference" "Q1"
 			(at -2.32 -2.7 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b0914f39-753a-46b6-82b8-f7267dcde0eb")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1265,12 +1271,13 @@
 		(at 190.38 77.35 -90)
 		(property "Reference" "R3"
 			(at -0.5 -2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "cdf4a513-b538-4ccf-ae88-63a52c8d38f7")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1433,13 +1440,14 @@
 		(at 179.58 96.5 180)
 		(property "Reference" "SW2"
 			(at 0 -4.2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "08c2ad9e-5890-49db-8e91-d633068e1beb")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1749,12 +1757,13 @@
 		(at 194.88 83.2)
 		(property "Reference" "D2"
 			(at -3.6 0 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "4bfc8509-a446-4d2a-8127-e0a901fa8cca")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1909,12 +1918,13 @@
 		(at 195.28 120.2 90)
 		(property "Reference" "J4"
 			(at -3.7 2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "dac7e91a-b121-436a-a93c-35be8340ee37")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2215,12 +2225,13 @@
 		(at 181.63 108.73 -90)
 		(property "Reference" "C12"
 			(at -3.43 0.55 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "91fb1220-e3bd-4463-bda9-12ba6232c24c")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2429,12 +2440,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "GPIO8"
 			(at 2.3 0.8 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "9016aae7-0508-485b-9320-b1e3651c5274")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2588,12 +2600,13 @@
 		(at 138.9 87.25)
 		(property "Reference" "L1"
 			(at 0 -7.15 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a2f8a1b1-55e8-4062-9dff-757e2016678a")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2835,12 +2848,13 @@
 		(at 163.18 65.1 90)
 		(property "Reference" "C7"
 			(at -0.4 -2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ed7de9aa-ef64-4b3a-b254-8a54fa3ce7ff")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3058,12 +3072,13 @@
 		(at 174.98 88.65 90)
 		(property "Reference" "C20"
 			(at 0.15 2.4 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "fe8a3396-0852-423f-8d33-b90e038c9078")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3270,13 +3285,14 @@
 		(at 172.58 88.6 90)
 		(property "Reference" "U1"
 			(at 0.2 -2.6 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "1a6bb0cd-5efa-4418-b8bb-8d0fa448e5d4")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3677,12 +3693,13 @@
 		(at 188.68 67.1 90)
 		(property "Reference" "C10"
 			(at -0.2 -1.18 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e94352b3-4f4e-406b-b904-06e32388e10e")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3889,12 +3906,13 @@
 		(at 176.68 79.68 -90)
 		(property "Reference" "R14"
 			(at -3.28 -0.2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e753abb4-b510-4168-bb00-d0db3512d9b9")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4068,12 +4086,13 @@
 		(at 175.78 117.2 90)
 		(property "Reference" "R5"
 			(at 0 -4 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "22cb9e93-7dca-40ee-be97-bb9d30cb16f9")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4275,12 +4294,13 @@
 		(tags "ESP32-C3 WROOM-02 espressif")
 		(property "Reference" "IC1"
 			(at 0 -3.1 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "21349a5d-fe16-4cd4-a4bf-95fc77ee673f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5202,12 +5222,13 @@
 		(tags "VSSOP SO JEDEC-MO-187-CA TI-DCU0008A")
 		(property "Reference" "IC2"
 			(at 0 -2.2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f880b19d-ae50-4357-98f2-bfd1103108e9")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5489,12 +5510,13 @@
 		(tags "mounting hole 3.2mm no annular m3")
 		(property "Reference" "REF**"
 			(at 0 -4.2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "4807179c-c24f-4075-938a-0e4fac4ee37f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5586,12 +5608,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP13"
 			(at -0.1 3.685 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "362f29b5-d29b-40c5-af2c-86492ce4b044")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5735,12 +5758,13 @@
 		(at 190.98 72.35 -90)
 		(property "Reference" "D5"
 			(at -2.65 -0.1 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "acffab00-996e-41d4-ac9b-0dec5907ffc2")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6028,12 +6052,13 @@
 		(at 165.52 102.4 180)
 		(property "Reference" "Q3"
 			(at -3.16 -2.4 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a4d74e9d-d8ea-415b-81f4-5ad2cb7b8aec")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6230,13 +6255,15 @@
 		(descr "Mounting Hole 3.2mm, no annular, M3")
 		(tags "mounting hole 3.2mm no annular m3")
 		(property "Reference" "REF**"
-			(at 0 -4.2 0)
+			(at -0.7 -5.2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "7b56dbfe-7313-4f64-b460-4f3f27d1ac9f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6326,12 +6353,13 @@
 		(at 126.28 124.8 180)
 		(property "Reference" "K2"
 			(at -0.1 6.5 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a63cabd3-3240-4228-b415-1374b576134c")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6874,12 +6902,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP9"
 			(at 2.9 0 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "bb91bfe2-cf7f-4c71-a68d-a22ab5c22787")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7023,12 +7052,13 @@
 		(at 139.38 131.38 90)
 		(property "Reference" "Q2"
 			(at -2.22 -3 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "746956a8-0518-4f86-b43d-ed7bbf1a5d77")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7225,13 +7255,14 @@
 		(descr "SMD rectangular pad as test Point, square 2.0mm side length")
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP2"
-			(at -0.5 -4.5 0)
+			(at -0.78 -2.4 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f607e3c6-a416-4e82-9e2c-6e0edc275624")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7278,46 +7309,6 @@
 		(sheetname "/")
 		(sheetfile "rev0A.kicad_sch")
 		(attr exclude_from_pos_files)
-		(fp_line
-			(start -1.2 -1.2)
-			(end 1.2 -1.2)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "a16882f2-2f7c-4d14-81f6-c5b5bf903f71")
-		)
-		(fp_line
-			(start -1.2 1.2)
-			(end -1.2 -1.2)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "3f8e0045-4478-42bf-b8d7-f650301e0fbf")
-		)
-		(fp_line
-			(start 1.2 -1.2)
-			(end 1.2 1.2)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "75c77a30-419b-484c-9c2d-f367f7af3174")
-		)
-		(fp_line
-			(start 1.2 1.2)
-			(end -1.2 1.2)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "30fa0baa-e35e-4f68-a357-0cee807291ff")
-		)
 		(fp_line
 			(start -1.5 -1.5)
 			(end -1.5 1.5)
@@ -7375,12 +7366,13 @@
 		(at 189.38 96.72 -90)
 		(property "Reference" "R2"
 			(at 3.28 3 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1210a2ea-14e7-40d8-ab54-eb48e1569ddb")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7543,12 +7535,13 @@
 		(at 172.28 85.75 90)
 		(property "Reference" "C18"
 			(at 2.45 0 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8c63ab0e-f3e5-4e9f-9ae9-2578defa2a04")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7755,12 +7748,13 @@
 		(at 160.18 80.7)
 		(property "Reference" "C6"
 			(at -0.5 -1.3 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f85a2ed1-49ea-474b-a291-9f4239d746e8")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7967,12 +7961,13 @@
 		(at 142.88 128.4 90)
 		(property "Reference" "R10"
 			(at 0 2.9 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "27fd1a0d-f719-439a-875f-17080534ca13")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8146,12 +8141,13 @@
 		(at 118.58 76.76 90)
 		(property "Reference" "VREG1"
 			(at -0.64 0.1 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "fce6a072-73c2-49c6-a60e-7c9d5a21f8a4")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8372,13 +8368,14 @@
 		(tags "mounting hole 3.2mm no annular m3")
 		(property "Reference" "REF**"
 			(at 0 -4.2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "4618bb3d-8a90-4226-b6e1-98c83f1b658d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8470,12 +8467,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP1"
 			(at -2.9 -1 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "378e8a5e-2b77-4633-8828-acb03b33d984")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8619,13 +8617,14 @@
 		(at 194.9275 74.6 90)
 		(property "Reference" "USBC1"
 			(at 6.1 0.6525 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "d74efdee-6ac5-4c19-ac3d-4e00f0cae543")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9156,12 +9155,13 @@
 		(at 188.98 74.8 90)
 		(property "Reference" "D4"
 			(at -2.55 -0.1 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "dba72ea4-0c57-4b5d-9569-8af24269ce19")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9449,12 +9449,13 @@
 		(at 194.83 81)
 		(property "Reference" "D3"
 			(at -2.75 0.2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1380ebf6-fd8a-4826-892b-3c4fcd2e89da")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9742,12 +9743,13 @@
 		(at 139.38 121.3 -90)
 		(property "Reference" "D7"
 			(at 0 -1.9 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a53dc8ce-7a4b-4e7a-a733-3bc2d40b9f19")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10029,12 +10031,13 @@
 		(at 161.03 82.7)
 		(property "Reference" "C5"
 			(at 3.15 0 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a4c545d7-cc52-4521-bd4c-b8d1878bd1f3")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10241,12 +10244,13 @@
 		(at 145.63 111.88 180)
 		(property "Reference" "R7"
 			(at 0 1.78 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2005959f-eae5-4e90-91e2-8b04a7933cb9")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10409,12 +10413,13 @@
 		(at 193.18 102.1 90)
 		(property "Reference" "J7"
 			(at -0.2 2.5 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5c8ef0ce-f276-4d7b-8914-745a665c6ea1")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10628,12 +10633,13 @@
 		(at 137.4 73.25 180)
 		(property "Reference" "C2"
 			(at 0.02 5.95 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "062ad027-9f22-4fe6-836b-d6723e6cd8dc")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10827,12 +10833,13 @@
 		(at 190.68 67.15 90)
 		(property "Reference" "R4"
 			(at -1.25 1.82 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f808f442-a44d-4432-8308-07e257292f98")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -10995,13 +11002,14 @@
 		(at 186.68 107.8 180)
 		(property "Reference" "SW1"
 			(at 0 -4.2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "684b7102-67f7-45f6-b0ba-0dfc6efda022")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11311,25 +11319,27 @@
 		(at 147.28 98.6)
 		(property "Reference" "G***"
 			(at 8.32 -3.4 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "63eaddf3-2c20-493b-b05f-dcfcef326935")
 			(effects
 				(font
-					(size 1.5 1.5)
-					(thickness 0.3)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "LOGO"
 			(at 0.75 0 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "b71d7194-1dd9-4de2-b651-202a46448f9f")
 			(effects
 				(font
-					(size 1.5 1.5)
-					(thickness 0.3)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -11878,12 +11888,13 @@
 		(at 145.63 131.38 180)
 		(property "Reference" "R9"
 			(at 0.25 1.5 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "91efa9f1-1032-4e24-abd4-23ba90324cd1")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12048,12 +12059,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "GPIO0"
 			(at -2.48 0.5 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1121323d-b655-497b-b556-6ce1a0598fb4")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12207,12 +12219,13 @@
 		(at 162.28 74.4 90)
 		(property "Reference" "LED1"
 			(at 3.9 -1.8 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2ea46d58-2a23-4ad4-84c4-7dbfa00e368f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12415,12 +12428,13 @@
 		(at 165.68 64.35 90)
 		(property "Reference" "C8"
 			(at 0.65 -1 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "021abfff-f001-4b56-a439-abf439e85ace")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12627,12 +12641,13 @@
 		(at 180.815 85.9 180)
 		(property "Reference" "C22"
 			(at 0.535 -1.4 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3ebca308-2db6-438f-93f5-1df4a4cca994")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12841,12 +12856,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP3"
 			(at 0 -4 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f5a91c60-edf4-4989-acd8-cbcfe4c97ac4")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -12990,12 +13006,13 @@
 		(at 151.53 87.6)
 		(property "Reference" "C3"
 			(at 3 0 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7256bf92-49dc-4ce5-b9e3-ec52473bb15c")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13204,13 +13221,14 @@
 		(tags "mounting hole 3.2mm no annular m3")
 		(property "Reference" "REF**"
 			(at 0 -4.2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "5809df33-ea6d-42e6-b593-a71eb6f2c40e")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13300,12 +13318,13 @@
 		(at 142.88 108.9 90)
 		(property "Reference" "R8"
 			(at 0.7 2.7 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "beed37b3-5c19-46f1-97ee-2e6b053b194e")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13481,12 +13500,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP11"
 			(at -2 0.285 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "90e7c4d9-2c91-452b-80b3-78edcc8e1b0a")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13641,12 +13661,13 @@
 		(at 194.88 85.9)
 		(property "Reference" "C14"
 			(at -3.7 -0.8 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "649b108a-8572-4b74-911b-c401a149d0b2")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -13853,12 +13874,13 @@
 		(at 173.68 79.62 -90)
 		(property "Reference" "R15"
 			(at -3.22 -0.1 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "78844095-867b-4728-b894-184a14d4d866")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -14032,12 +14054,13 @@
 		(at 119.48 90.8)
 		(property "Reference" "C1"
 			(at 5.7 -2.1 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f7ac3e52-14c7-435a-8c31-54b9990cbeb1")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -14233,12 +14256,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP12"
 			(at -2 0 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "9cbf970e-809e-4b1f-bb43-a2cce66bb542")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -14393,12 +14417,13 @@
 		(at 162.08 98.9 180)
 		(property "Reference" "R12"
 			(at 0.02 0 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ad0610ff-b76e-42a4-9dcb-8c98b7b0af21")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -14572,12 +14597,13 @@
 		(at 151.7175 68.5025 180)
 		(property "Reference" "DC1"
 			(at -2.2 5.2025 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3544a421-b6b5-4c4f-8255-b3164aaaf904")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -14817,12 +14843,13 @@
 		(at 163.68 69.2 90)
 		(property "Reference" "C9"
 			(at -2.5 -0.7 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "9e3ec1f4-ee2d-4726-913e-4196a6048885")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -15041,12 +15068,13 @@
 		(at 139.38 101.38 -90)
 		(property "Reference" "D6"
 			(at 0.02 -2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8c6ec156-d16a-4dcd-8f8d-d62d8ff93dfd")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -15328,12 +15356,13 @@
 		(at 170.68 79.62 -90)
 		(property "Reference" "R16"
 			(at -3.22 0.1 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ff5750b6-5816-4606-befa-aa8041935800")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -15509,12 +15538,13 @@
 		(tags "CMS SOT")
 		(property "Reference" "VREG2"
 			(at 0 -1.6 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "dca10ef1-3f88-473d-ae3d-6c5248d2e390")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -15785,12 +15815,13 @@
 		(at 181.71 132.9 180)
 		(property "Reference" "J5"
 			(at 0 -2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "61b14a88-c267-4774-87e4-8f21f8fad8f8")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -15990,12 +16021,13 @@
 		(at 186.28 96.68 -90)
 		(property "Reference" "R1"
 			(at -2.98 -3.1 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3cfc2837-e8a1-41b4-8a93-861530bd3909")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -16158,12 +16190,13 @@
 		(at 150.98 89.6)
 		(property "Reference" "C4"
 			(at 2.55 0 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "533ff36f-582d-420a-b0c3-b8c72be49384")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -16370,12 +16403,13 @@
 		(at 174.08 85 90)
 		(property "Reference" "C17"
 			(at 1 2 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "624abb56-8777-4f47-94ef-6450a00e8ae1")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -16582,12 +16616,13 @@
 		(at 174.63 97.42 -90)
 		(property "Reference" "C13"
 			(at -2.12 1.15 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "fe847228-2cae-4fd5-9265-540eafa54123")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -16796,12 +16831,13 @@
 		(tags "test point SMD pad rectangle square")
 		(property "Reference" "TP8"
 			(at 3.2 1.6 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "c1905f8b-d6ad-483f-b803-8e84c7a540df")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -16945,12 +16981,13 @@
 		(at 154.38 102.4)
 		(property "Reference" "D8"
 			(at -0.09 -2 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ff6842ed-ceb4-4df5-bc4a-5405ed2b68fc")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -17232,12 +17269,13 @@
 		(at 165.06 96.15 -90)
 		(property "Reference" "R11"
 			(at -0.25 1.5 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a1a506b4-4f10-4e46-b99f-2e89e5f673d6")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -17400,12 +17438,13 @@
 		(at 109.68 101.1 90)
 		(property "Reference" "J1"
 			(at 2.5 -2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "41f918f4-757c-4a6b-b25a-9e1b86f2b83f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -17605,12 +17644,13 @@
 		(at 158.48 115.5 -90)
 		(property "Reference" "K3"
 			(at 0 6.5 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8d785325-fd24-4dc6-b6e7-3dc027d24fb0")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -18151,12 +18191,13 @@
 		(at 185.58 125.52 -90)
 		(property "Reference" "R13"
 			(at 0 -2.9 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1d34ee5f-5cd7-431f-bd0d-55e07ee82619")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -18319,12 +18360,13 @@
 		(at 127.4 77.75 90)
 		(property "Reference" "D1"
 			(at -5.25 3.38 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "81107a1b-e338-4175-b97c-f47360333f79")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -18556,12 +18598,13 @@
 		(at 126.28 105.3 180)
 		(property "Reference" "K1"
 			(at -0.1 6.5 0)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "26dd8ec3-0e9c-4322-80cc-0a0901e4c835")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -19102,12 +19145,13 @@
 		(at 109.68 120.37 90)
 		(property "Reference" "J2"
 			(at 2.27 -2 180)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "bb307a62-7f32-4d47-8f94-f5d3db8c4324")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -19307,12 +19351,13 @@
 		(at 188.68 71 -90)
 		(property "Reference" "C11"
 			(at 0.7 1.4 90)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1d28873a-93f5-4870-808e-e642f5c07a6f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -19531,7 +19576,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19543,7 +19588,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19555,7 +19600,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.1)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19567,7 +19612,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19579,7 +19624,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19591,7 +19636,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19603,7 +19648,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19615,7 +19660,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19627,7 +19672,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19639,7 +19684,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19651,7 +19696,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19663,7 +19708,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19675,7 +19720,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19687,7 +19732,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19699,7 +19744,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19711,19 +19756,19 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
 	)
 	(gr_text "12V"
-		(at 107.38 70.4 0)
+		(at 107.2 76.3 0)
 		(layer "F.SilkS")
 		(uuid "e92249bb-4002-4f7b-a368-36d1880c25be")
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -19735,7 +19780,7 @@
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.15)
+				(thickness 0.2)
 			)
 			(justify left bottom)
 		)
@@ -20803,14 +20848,6 @@
 		(layer "F.Cu")
 		(net 1)
 		(uuid "e5e6cae6-3843-455e-b768-46385a547b0e")
-	)
-	(segment
-		(start 197.3975 70.27)
-		(end 196.55 70.27)
-		(width 0.6)
-		(layer "F.Cu")
-		(net 1)
-		(uuid "e7106af5-c928-4bd2-8d99-b02b12f53dc7")
 	)
 	(segment
 		(start 131.05 73.25)
@@ -22685,14 +22722,6 @@
 		(uuid "284e09c9-d558-4a4d-82f6-d9a7b4c4176e")
 	)
 	(segment
-		(start 192.4575 74.85)
-		(end 192.4575 74.899)
-		(width 0.2)
-		(layer "F.Cu")
-		(net 6)
-		(uuid "3ffab1ae-1d37-4b2e-bffe-5b4dcfae07bf")
-	)
-	(segment
 		(start 190.88 73.2)
 		(end 190.98 73.1)
 		(width 0.2)
@@ -22795,14 +22824,6 @@
 		(layer "F.Cu")
 		(net 6)
 		(uuid "ded03fef-6a6b-4482-ba48-50e8c96f4a36")
-	)
-	(segment
-		(start 192.4575 74.899)
-		(end 192.48 74.899)
-		(width 0.2)
-		(layer "F.Cu")
-		(net 6)
-		(uuid "e49970ef-1b80-4020-95b8-2c432c3fe448")
 	)
 	(segment
 		(start 188.68 67.8)
@@ -22909,14 +22930,6 @@
 		(uuid "95d2220c-851d-40a5-8267-9c7bc94174ed")
 	)
 	(segment
-		(start 189.755 71.375)
-		(end 189.755 72.5)
-		(width 0.2)
-		(layer "F.Cu")
-		(net 7)
-		(uuid "9c113b3b-5407-4993-bcda-fe807299945b")
-	)
-	(segment
 		(start 191.5555 74.35)
 		(end 191.5065 74.399)
 		(width 0.2)
@@ -22963,14 +22976,6 @@
 		(layer "F.Cu")
 		(net 7)
 		(uuid "ea7c088a-3ff1-47ee-8c49-6d5afb450321")
-	)
-	(segment
-		(start 192.4075 75.4)
-		(end 192.4575 75.35)
-		(width 0.2)
-		(layer "F.Cu")
-		(net 7)
-		(uuid "f3fce041-c4df-4840-a242-1b6c6f539a7c")
 	)
 	(segment
 		(start 186.955001 69.8)

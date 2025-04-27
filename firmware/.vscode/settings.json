@@ -1,0 +1,9 @@
+{
+    "idf.customExtraVars": {
+        "IDF_TARGET": "esp32c3"
+    },
+    "idf.openOcdConfigs": [
+        "board/esp32c3-builtin.cfg"
+    ],
+    "C_Cpp.default.compilerPath": "/usr/lib64/ccache/gcc"
+}
