@@ -14,7 +14,7 @@ typedef enum ValveStates_e {
     /** The source valve is open for dispensing. */
     VALVES_SOURCE_DISPENSE,
     /** The tank drain valve is open for draining. */
-    VALVES_TANK_DRAIN;
+    VALVES_TANK_DRAIN
 } ValveStates_e;
 
 /**
@@ -160,7 +160,7 @@ public:
 
 
 private:
-    ValveState_e state;
+    ValveStates_e state;
     DispenseTarget_t dispenseTarget;
     DispenseProcess_t dispenseProcess;
     DispenseSummary_t dispenseSummary;

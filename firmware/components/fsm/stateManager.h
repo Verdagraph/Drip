@@ -103,6 +103,46 @@ private:
      * @return esp_err_t Return code.
      */
     esp_err_t handleDispenseRequest(MqttRxMessage_t *message);
+
+    /**
+     * @brief Handles state change for a config change request.
+     * 
+     * @param message MQTT received message.
+     * @return esp_err_t Return code.
+     */
+    esp_err_t handleConfigChangeRequest(MqttRxMessage_t *message);
+
+    /**
+     * @brief Handles state change for a flow calibrate request.
+     * 
+     * @param message MQTT received message.
+     * @return esp_err_t Return code.
+     */
+    esp_err_t handleFlowCalibrateRequest(MqttRxMessage_t *message);
+
+    /**
+     * @brief Handles state change for a pressure calibrate request.
+     * 
+     * @param message MQTT received message.
+     * @return esp_err_t Return code.
+     */
+    esp_err_t handlePressureCalibrateRequest(MqttRxMessage_t *message);
+
+    /**
+     * @brief Handles state change for a drain request.
+     * 
+     * @param message MQTT received message.
+     * @return esp_err_t Return code.
+     */
+    esp_err_t handleDrainRequest(MqttRxMessage_t *message);
+
+    /**
+     * @brief Handles state change for a pressure poll request.
+     * 
+     * @param message MQTT received message.
+     * @return esp_err_t Return code.
+     */
+    esp_err_t handlePressurePollRequest(MqttRxMessage_t *message);
 };
 
 #endif

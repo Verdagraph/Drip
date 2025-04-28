@@ -10,9 +10,11 @@ static const char* TAG = "ValveManager";
 ValveManager::ValveManager() {
     state = VALVES_IDLE;
     dispenseTarget = {};
-    dispenseState = {};
+    dispenseProcess = {};
     dispenseSummary = {};
     drainTarget = {};
+    drainProcess = {};
+    drainSummary = {};
 }
 
 /**

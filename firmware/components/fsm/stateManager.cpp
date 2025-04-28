@@ -68,7 +68,7 @@ void StateManager::handle_current_state() {
             drain();
             break;
         default:
-            mqttManager->txError(TAG, "State machine set to invalid state: {%d}", state);
+            mqttManager->txError(TAG, "State machine set to invalid state.");
             state = STATE_FATAL_ERROR;
             break;
     }
@@ -212,38 +212,35 @@ void StateManager::listen() {
         /** Handle message. */
         switch (message->messageCode) {
             case MQTT_RX_DISPENSE_ACTIVATE:
-                handleDispenseRequest(message)
+                handleDispenseRequest(message);
                 break;
         
             case MQTT_RX_RESTART:
                 state = STATE_RESTART;
                 break;
 
-            case MQTT_RX_DEACTIVATE:
-                break;
-        
             case MQTT_RX_CHANGE_CONFIG:
-                // Handle change config
+                handleConfigChangeRequest(message);
                 break;
         
-            case MQTT_RX_FLOW_CALIBRATE
-                // Handle flow calibrate begin
+            case MQTT_RX_FLOW_CALIBRATE;
+                handleFlowCalibrateRequest(message);
                 break;
 
-            case MQTT_RX_PRESSURE_CALIBRATE
-                // Handle pressure calibrate begin
+            case MQTT_RX_PRESSURE_CALIBRATE;
+                handlePressureCalibrateRequest(message);
                 break;
         
             case MQTT_RX_DRAIN:
-                // Handle drain
+                handleDrainRequest(message);
                 break;
         
             case MQTT_RX_PRESSURE_POLL:
-                // Handle pressure poll
+                handlePressurePollRequest(message);
                 break;
         
             default:
-                // Handle unknown message type
+                mqttManager->txWarning(TAG, "Message not valid in idle state.");
                 break;
 
         }
@@ -281,7 +278,7 @@ void StateManager::dispense() {
 
             /** Handle deactivation. */
             case MQTT_RX_DEACTIVATE:
-                goto(exit);
+                goto exit;
                 break;
         
             default:
@@ -293,10 +290,10 @@ void StateManager::dispense() {
     }
 
     /** Update dispense state. */
-    err = valveManager.loopDispensation(valveState, dispenseProcess, dispenseSummary);
+    err = valveManager->loopDispensation(valveState, dispenseProcess, dispenseSummary);
     if (err != ESP_OK) {
         mqttManager->txError(TAG, "Error detected. Ending dispense process.");
-        goto(exit);
+        goto exit;
     }
     
     /** Handle state transition based on dispensation status. */
@@ -307,7 +304,7 @@ void StateManager::dispense() {
         case VALVES_UNKNOWN:
         case VALVES_TANK_DRAIN:
             mqttManager->txError(TAG, "ValveManager in an invalid state.");
-            goto(exit);
+            goto exit;
             break;
         
         /** Continuing to dispense. */
@@ -322,14 +319,14 @@ void StateManager::dispense() {
             
         /** Dispense has concluded. */
         case VALVES_IDLE:
-            goto(exit);
+            goto exit;
             break;
     }
 
 exit:
     /** End the process. */
-    err = valveManager.endDispenstaion(valveState, dispenseProcess, dispenseSummary);
-    if ( (err != ESP_OK) || (dispenseStage != NOT_DISPENSaING) ) {
+    err = valveManager->endDispenstaion(valveState, dispenseProcess, dispenseSummary);
+    if ( (err != ESP_OK) || (valveState != VALVES_IDLE) ) {
         mqttManager->txError(TAG, "Failed to deactivate dispensation.");
     }
     
@@ -343,7 +340,7 @@ exit:
         mqttManager->txError(TAG, "Failed to transmit dispense summary.");
     }
 
-    mqttManager->txInfo(TAG, "Concluded dispense process.")
+    mqttManager->txInfo(TAG, "Concluded dispense process.");
     state = STATE_LISTEN;
     return;
 }
@@ -392,7 +389,7 @@ esp_err_t StateManager::handleDispenseRequest(MqttRxMessage_t *message) {
     payload = reinterpret_cast<MqttRxDispenseActivateMessage_t*>(message->payload);
 
     /** Begin the dispensation process. */
-    err = valveManager.beginDispensation(payload*, valveState, dispenseProcess);
+    err = valveManager->beginDispensation(payload*, valveState, dispenseProcess);
     if (err != ESP_OK) {
         mqttManager->txError(TAG, "Valve manager failure.");
     }
@@ -425,4 +422,55 @@ esp_err_t StateManager::handleDispenseRequest(MqttRxMessage_t *message) {
     }
 
     return ESP_OK;
+}
+
+
+/**
+ * @brief Handles state change for a config change request.
+ * 
+ * @param message MQTT received message.
+ * @return esp_err_t Return code.
+ */
+esp_err_t handleConfigChangeRequest(MqttRxMessage_t *message) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Handles state change for a flow calibrate request.
+ * 
+ * @param message MQTT received message.
+ * @return esp_err_t Return code.
+ */
+esp_err_t handleFlowCalibrateRequest(MqttRxMessage_t *message) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Handles state change for a pressure calibrate request.
+ * 
+ * @param message MQTT received message.
+ * @return esp_err_t Return code.
+ */
+esp_err_t handlePressureCalibrateRequest(MqttRxMessage_t *message) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Handles state change for a drain request.
+ * 
+ * @param message MQTT received message.
+ * @return esp_err_t Return code.
+ */
+esp_err_t handleDrainRequest(MqttRxMessage_t *message) {
+    return ESP_OK
+}
+
+/**
+ * @brief Handles state change for a pressure poll request.
+ * 
+ * @param message MQTT received message.
+ * @return esp_err_t Return code.
+ */
+esp_err_t handlePressurePollRequest(MqttRxMessage_t *message) {
+    return ESP_OK
 }
