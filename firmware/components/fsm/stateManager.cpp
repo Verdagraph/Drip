@@ -1,3 +1,5 @@
+#include "cstdio"
+
 #include "esp_log.h"
 #include "esp_err.h"
 #include "esp_system.h"
@@ -66,7 +68,7 @@ void StateManager::handle_current_state() {
             drain();
             break;
         default:
-            ESP_LOGW(TAG, "State machine set to invalid state: {%d}", state);
+            mqttManager->txError(TAG, "State machine set to invalid state: {%d}", state);
             state = STATE_FATAL_ERROR;
             break;
     }
@@ -162,7 +164,7 @@ void StateManager::restart() {
     /** Report reset to MQTT. */
     //err = mqttManager->info("Resetting the device.");
     if (err != ESP_OK) {
-        ESP_LOGW(TAG, "Failed to transmit reset notification.");
+        mqttManager->txWarning(TAG, "Failed to transmit reset notification.");
     }
 
     /** Reset device. */
@@ -189,7 +191,7 @@ void StateManager::listen() {
     /** Retrieve config. */
     err = configManager->getConfig(config);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to retrieve device config.");
+        mqttManager->txError(TAG, "Failed to retrieve device config.");
         return;
     }
     
@@ -199,11 +201,11 @@ void StateManager::listen() {
         /** Get the next message from the queue. */
         err = mqttManager->getNextMessage(message);
         if (err != ESP_OK) {
-            ESP_LOGW(TAG, "Failed to retrieve MQTT message.");
+            mqttManager->txWarning(TAG, "Failed to retrieve MQTT message.");
             return;
         }
         if (message == nullptr) {
-            ESP_LOGW(TAG, "Non-zero queue count returned null reference.");
+            mqttManager->txWarning(TAG, "Non-zero queue count returned null reference.");
             break;
         }
         
@@ -215,6 +217,9 @@ void StateManager::listen() {
         
             case MQTT_RX_RESTART:
                 state = STATE_RESTART;
+                break;
+
+            case MQTT_RX_DEACTIVATE:
                 break;
         
             case MQTT_RX_CHANGE_CONFIG:
@@ -251,7 +256,96 @@ void StateManager::listen() {
  * @brief Handler for state STATE_DISPENSE.
  */
 void StateManager::dispense() {
-    // Placeholder for dispense start state logic
+    esp_err_t err = ESP_OK;
+    MqttRxMessage_t* message = nullptr;
+    ValveStates_e valveState = VALVES_UNKNOWN;
+    DispenseProcess_t dispenseProcess = {};
+    DispenseSummary_t dispenseSummary = {};
+
+    /** Check for new MQTT messages. */
+    while(mqttManager->numMessagesInQueue() > 0) {
+
+        /** Get the next message from the queue. */
+        err = mqttManager->getNextMessage(message);
+        if (err != ESP_OK) {
+            mqttManager->txWarning(TAG, "Failed to retrieve MQTT message.");
+            return;
+        }
+        if (message == nullptr) {
+            mqttManager->txWarning(TAG, "Non-zero queue count returned null reference.");
+            break;
+        }
+        
+        /** Handle message. */
+        switch (message->messageCode) {
+
+            /** Handle deactivation. */
+            case MQTT_RX_DEACTIVATE:
+                goto(exit);
+                break;
+        
+            default:
+                mqttManager->txWarning(TAG, "Only DEACTIVATE commands are accepted during dispensation.")
+                break;
+
+        }
+        
+    }
+
+    /** Update dispense state. */
+    err = valveManager.loopDispensation(valveState, dispenseProcess, dispenseSummary);
+    if (err != ESP_OK) {
+        mqttManager->txError(TAG, "Error detected. Ending dispense process.");
+        goto(exit);
+    }
+    
+    /** Handle state transition based on dispensation status. */
+    switch (valveState) {
+
+        /** Error state. */
+        default:
+        case VALVES_UNKNOWN:
+        case VALVES_TANK_DRAIN:
+            mqttManager->txError(TAG, "ValveManager in an invalid state.");
+            goto(exit);
+            break;
+        
+        /** Continuing to dispense. */
+        case VALVES_TANK_DISPENSE:
+        case VALVES_SOURCE_DISPENSE:
+            
+            err = mqttManager->txDispenseSlice(dispenseProcess);
+            if (err != ESP_OK) {
+                mqttManager->txError(TAG, "Failed to transmit dispense slice.");
+            }
+            break;
+            
+        /** Dispense has concluded. */
+        case VALVES_IDLE:
+            goto(exit);
+            break;
+    }
+
+exit:
+    /** End the process. */
+    err = valveManager.endDispenstaion(valveState, dispenseProcess, dispenseSummary);
+    if ( (err != ESP_OK) || (dispenseStage != NOT_DISPENSaING) ) {
+        mqttManager->txError(TAG, "Failed to deactivate dispensation.");
+    }
+    
+    /** Report the final variables, or none if none has been collected. */
+    err = mqttManager->txDispenseSlice(dispenseProcess);
+    if (err != ESP_OK) {
+        mqttManager->txError(TAG, "Failed to transmit dispense slice.");
+    }
+    err = mqttManager->txDispenseSummary(dispenseSummary);
+    if (err != ESP_OK) {
+        mqttManager->txError(TAG, "Failed to transmit dispense summary.");
+    }
+
+    mqttManager->txInfo(TAG, "Concluded dispense process.")
+    state = STATE_LISTEN;
+    return;
 }
 
 /**
@@ -282,12 +376,15 @@ void StateManager::drain() {
  * @return esp_err_t Return code.
  */
 esp_err_t StateManager::handleDispenseRequest(MqttRxMessage_t *message) {
+    esp_err_t err = ESP_OK;
+    char message[128];
     MqttRxDispenseActivateMessage_t *payload = nullptr;
-    DispensationStage_e dispenseStage = NOT_DISPENSING; 
+    ValveStates_e valveState = VALVES_UNKNOWN; 
+    DispenseProcess_t dispenseProcess = {};
 
     /** Reject null input. */
     if (message == nullptr) {
-        ESP_LOGE(TAG, "Mqtt handler received null message.")
+        mqttManager->txError(TAG, "Mqtt handler received null message.");
         return ESP_ERR_INVALID_INPUT;
     }
     
@@ -295,27 +392,35 @@ esp_err_t StateManager::handleDispenseRequest(MqttRxMessage_t *message) {
     payload = reinterpret_cast<MqttRxDispenseActivateMessage_t*>(message->payload);
 
     /** Begin the dispensation process. */
-    err = valveManager.beginDispensation(payload->targetVolume, payload->targetTime, payload->timeout, dispenseStage);
+    err = valveManager.beginDispensation(payload*, valveState, dispenseProcess);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Valve manager failure.")
+        mqttManager->txError(TAG, "Valve manager failure.");
     }
 
     /** Handle state transition based on dispensation status. */
-    switch (dispenseStage) {
-        case NOT_DISPENSING:
-            ESP_LOGW(TAG, "Failed to begin dispensation.")
+    switch (valveState) {
+        case VALVES_UNKNOWN:
+        case VALVES_IDLE:
+        case VALVES_TANK_DRAIN:
+            mqttManager->txError(TAG, "Failed to begin dispensation.");
             break;
-        case DISPENSING_TANK:
+
+        case VALVES_TANK_DISPENSE:
+        case VALVES_SOURCE_DISPENSE:
+
+            snprintf(message, 
+                sizeof(message), 
+                "Beginning dispense process with a target volume: %.2f liters, time: %d min, timeout: %d min", 
+                payload->targetVolume, 
+                payload->targetTime / 1000, 
+                payload->timeout / 1000
+            );
+            mqttManager->txInfo(TAG, message);
             state = STATE_DISPENSE;
             break;
-        case DISPENSING_SOURCE:
-            state = STATE_DISPENSE;
-            break;
-        case CONCLUDED:
-            ESP_LOGW(TAG, "Dispensation concluded immediately.")
-            break;
+
         default:
-            ESP_LOGE(TAG, "Unrecognized value of DispensationStage_e.")
+            mqttManager->txError(TAG, "Unrecognized value of ValveStates_e.");
             break;
     }
 

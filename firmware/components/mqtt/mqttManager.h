@@ -2,6 +2,7 @@
 #define MQTT_MANAGER_H
 
 #include "messages.h"
+#include "valveManager.h"
 
 #define RX_PAYLOAD_MAX_BYTES 512
 
@@ -49,7 +50,7 @@ public:
      * @param Log message.
      * @return esp_err_t Return code.
      */
-    esp_err_t info(char message[]);
+    esp_err_t txInfo(const char* tag, const char *message);
 
     /**
      * @brief Transmit a warning log.
@@ -57,7 +58,7 @@ public:
      * @param Log message.
      * @return esp_err_t Return code.
      */
-    esp_err_t warning(char message[]);
+    esp_err_t txWarning(const char* tag, const char *message);
 
     /**
      * @brief Transmit an error log.
@@ -65,7 +66,23 @@ public:
      * @param Log message.
      * @return esp_err_t Return code.
      */
-    esp_err_t error(char message[]);
+    esp_err_t txError(const char* tag, const char *message);
+
+    /**
+     * @brief Transmits a time slice of the dispense process realtime variables.
+     * 
+     * @param slice The variables.
+     * @return esp_err_t Return code.
+     */
+    esp_err_t txDispenseSlice(DispenseProcess_t &slice);
+
+    /**
+     * @brief Transmits a summary of the dispense process variables.
+     * 
+     * @param summary The variables.
+     * @return esp_err_t Return code. 
+     */
+    esp_err_t txDispenseSummary(DispenseSummary_t &summary);
 
     
 private:

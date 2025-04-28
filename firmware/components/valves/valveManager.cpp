@@ -8,7 +8,11 @@ static const char* TAG = "ValveManager";
  * @brief Constructor.
  */
 ValveManager::ValveManager() {
-    dispensationState = {};
+    state = VALVES_IDLE;
+    dispenseTarget = {};
+    dispenseState = {};
+    dispenseSummary = {};
+    drainTarget = {};
 }
 
 /**
@@ -23,24 +27,71 @@ esp_err_t ValveManager::initialize() {
 /**
  * @brief Begins a dispensation process.
  * 
- * @param targetVolume Target volume for the process in liters.
- * @param targetTime Target duration for the process in miliseconds. If defined,
- * and targetVolume is defined, the targetTime will apply instead
- * only if the tank flow rate drops while the pressure reads high.
- * @param timeout Maximum duration of the process in miliseconds.
- * @param stage Overwritten with the initial stage of the dispensation process.
+ * @param target Target for the process.
+ * @param state Overwritten with the initial state of the dispensation process.
+ * @param process Overwritten with the initial process variables.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::beginDispenstation(float targetVolume, uint32_t targetTime, uint32_t timeout, DispensationStage_e &stage) {
+esp_err_t ValveManager::beginDispenstation(DispenseTarget_t &target, ValveStates_e &state, DispenseProcess_t &process) {
     return ESP_OK;
 }
 
 /**
  * @brief Updates the dispensation process.
  * 
- * @param stage Overwritten with the current stage.
+ * @param state Overwritten with the current state.
+ * @param process Overwritten with the current process variables.
+ * @param summary Overwritten with the current process summary.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::loopDispensation(DispensationStage_e &stage) {
+esp_err_t ValveManager::loopDispense(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Ends the dispensation process.
+ * 
+ * @param state Overwritten with the state.
+ * @param process Overwritten with the current process variables.
+ * @param summary Overwritten with the current process summary.
+ * @return esp_err_t Return code.
+ */
+esp_err_t ValveManager::endDispense(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Begins a drain process.
+ * 
+ * @param target Target for the process.
+ * @param state Overwritten with the initial state of the drain process.
+ * @param process Overwritten with the initial process variables.
+ * @return esp_err_t Return code.
+ */
+esp_err_t ValveManager::beginDrain(DrainTarget_t &target, ValveStates_e &state, DrainProcess_t &process) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Updates the drain process.
+ * 
+ * @param state Overwritten with the current state.
+ * @param process Overwritten with the current process variables.
+ * @param summary Overwritten with the current process summary.
+ * @return esp_err_t Return code.
+ */
+esp_err_t ValveManager::loopDrain(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Ends the drain process.
+ * 
+ * @param state Overwritten with the state.
+ * @param process Overwritten with the current process variables.
+ * @param summary Overwritten with the current process summary.
+ * @return esp_err_t Return code.
+ */
+esp_err_t ValveManager::endDrain(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
     return ESP_OK;
 }

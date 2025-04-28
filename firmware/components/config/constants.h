@@ -1,0 +1,6 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define ERROR_MESSAGE_BUFFER_BYTES 256;
+
+#endif 

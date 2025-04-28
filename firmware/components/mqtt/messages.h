@@ -3,6 +3,7 @@
 #define MQTT_MESSAGES_H
 
 #include "config.h"
+#include "valveManager.h"
 
 #define MAX_LOG_MESSAGE_BYTES 256
 
@@ -62,11 +63,7 @@ typedef struct MqttRxConfigMessage_t {
 /** 
  * @brief Dispense activate command.
  */
-typedef struct MqttRxDispenseActivateMessage_t {
-    float targetVolume;
-    uint32_t targetTime;
-    uint32_t timeout;
-} MqttRxDispenseActivateMessage_t;
+typedef DispenseTarget_t MqttRxDispenseActivateMessage_t;
 
 /** Outgoing messages. */
 

@@ -110,7 +110,7 @@ void app::open_dispense_process(float target_output_volume) {
   }
 }
 
-// End the dispensation process
+// End the dispense process
 void close_dispense_process() {
 
   if (!app::env.flag.dispense_flag) {return;}
@@ -129,7 +129,7 @@ void close_dispense_process() {
   app::env.flag.dispense_flag = false;
   app::env.time.process_begin_timestamp = 0;
 
-  char message[] = "Ending dispensation process";
+  char message[] = "Ending dispense process";
   srvc::info(message);
   ESP.restart();
 
@@ -159,7 +159,7 @@ void dispense_report_slice() {
   }
 
   srvc::publish_dispense_slice_report(app::env.slice.total_time_elapsed, app::env.slice.total_output_volume, avg_flow, avg_pressure);
-  SLOG.println("Reported dispensation slice");
+  SLOG.println("Reported dispense slice");
 
 }
 
@@ -175,12 +175,12 @@ void dispense_report_summary() {
   }
 
   srvc::publish_dispense_summary_report(app::env.slice.total_time_elapsed, app::env.slice.total_output_volume, tank_volume, tank_time);
-  SLOG.println("Reported dispensation summary");
+  SLOG.println("Reported dispense summary");
 
 }
 
 
-void loop_dispensation(){
+void loop_dispense(){
 
   if (!app::env.flag.dispense_flag) {return;}
 
@@ -593,7 +593,7 @@ void app::loop_app(){
     app::env.slice.total_time_elapsed = current_time - app::env.time.process_begin_timestamp;
   }
 
-  loop_dispensation();
+  loop_dispense();
 
   // Try to reconnect to the MQTT broker if there isn't any process going on
   if (!app::env.flag.dispense_flag && !app::env.flag.drain_flag && !app::env.flag.mqtt_connected_flag) {

@@ -545,7 +545,7 @@ void srvc::flow_calibration_begin(byte* payload, unsigned int len) {
   } else {
 
     char message[150];
-    snprintf(message, 150, "%s: Beginning calibration process. Max dispensation volume: %f liters. Timeout: %d seconds.", FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_, app::env.flow_sensor_config.calibration_max_volume, app::env.flow_sensor_config.calibration_timeout);
+    snprintf(message, 150, "%s: Beginning calibration process. Max dispense volume: %f liters. Timeout: %d seconds.", FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC_, app::env.flow_sensor_config.calibration_max_volume, app::env.flow_sensor_config.calibration_timeout);
     srvc::info(message);
 
     srvc::publish_pressure_report();
@@ -567,13 +567,13 @@ void srvc::flow_calibration_dispense(byte* payload, unsigned int len) {
 
   if (app::env.report.calibration_state == 2) {
     char message[150];
-    snprintf(message, 150, "%s: Request denied, calibration dispensation already in progress", FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_);
+    snprintf(message, 150, "%s: Request denied, calibration dispense already in progress", FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_);
     srvc::error(message);
     return;
 
   } else if (app::env.report.calibration_state == 3) {
     char message[150];
-    snprintf(message, 150, "%s: Request denied, last calibration dispensation ended without measurment", FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_);
+    snprintf(message, 150, "%s: Request denied, last calibration dispense ended without measurment", FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_);
     srvc::error(message);
     return;
   }
@@ -622,7 +622,7 @@ void srvc::flow_calibration_dispense(byte* payload, unsigned int len) {
   }
 
   char message[150];
-  snprintf(message, 150, "%s: Beginning dispensation process with target volume: %f liters", FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_, target_volume);
+  snprintf(message, 150, "%s: Beginning dispense process with target volume: %f liters", FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC_, target_volume);
   srvc::info(message);
 
   srvc::publish_pressure_report();
@@ -648,7 +648,7 @@ void srvc::flow_calibration_measure(byte* payload, unsigned int len) {
     return;
   } else if (app::env.report.calibration_state == 2) {
     char message[150];
-    snprintf(message, 150, "%s: Request denied, dispensation already in progress", FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_);
+    snprintf(message, 150, "%s: Request denied, dispense already in progress", FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC_);
     srvc::error(message);
     return;
   }

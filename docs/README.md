@@ -58,7 +58,7 @@ For specific product examples see the [equipment](#equipment) section.
 
 ### Operation
 
-- **Dispensation**
+- **Dispense**
     - A process of attempting to output a target volume of water, first from the tank, then from the source.
 - **Drain**
     - A process of attempting to release water from the tank without it going to the usual intended output, to prevent overflow, or to get rid of stale water.
@@ -90,9 +90,9 @@ This section describes the functionality of the MQTT topics through which the de
 | [Pressure report request](#request)  | [`PRESSURE_REQUEST_TOPIC_`](#auto-config) | Subscribe | No |
 | [Pressure report](#report) | [`PRESSURE_REPORT_TOPIC_`](#auto-config) | Publish | No |
 
-### Dispensation
+### Dispense
 
-The main functionality of the device. The dispentation topics handle setting target volumes for the dispensation process, publishing data taken at regular intervals through the process, and publishing data at the end of the process.
+The main functionality of the device. The dispentation topics handle setting target volumes for the dispense process, publishing data taken at regular intervals through the process, and publishing data at the end of the process.
 
 #### Activation
 
@@ -100,10 +100,10 @@ The main functionality of the device. The dispentation topics handle setting tar
 | ------------- | ------------- | ------------- |
 | [`DISPENSE_ACTIVATE_TOPIC_`](#auto-config)  | Subscribe | Yes |
 
-This topic allows activating the dispensation process and setting the target volume. Activation will fail if a dispensation process or drain process is already in progress. The dispensation process will continue until the output volume is greater than or equal to the target volume, or a singularly connected tank produces a flow rate less than that defined by [`FlowSensorConfig.min_flow_rate`](#runtime-config) and the current duration of the process is greater than that defined by [`TankConfig.tank_timeout`](#runtime-config). If the tank is connected with a source, then the dispensation will switch to the source until the target volume is reached.
+This topic allows activating the dispense process and setting the target volume. Activation will fail if a dispense process or drain process is already in progress. The dispense process will continue until the output volume is greater than or equal to the target volume, or a singularly connected tank produces a flow rate less than that defined by [`FlowSensorConfig.min_flow_rate`](#runtime-config) and the current duration of the process is greater than that defined by [`TankConfig.tank_timeout`](#runtime-config). If the tank is connected with a source, then the dispense will switch to the source until the target volume is reached.
 
 Inputs:
-- `["tv"]` float. Target volume of the dispensation process in liters.
+- `["tv"]` float. Target volume of the dispense process in liters.
 
 Sample payload:
 ```
@@ -118,11 +118,11 @@ Sample payload:
 | ------------- | ------------- | ------------- | 
 | [`DISPENSE_REPORT_SLICE_TOPIC_`](#auto-config)  | Publish | Yes |
 
-This topic is where the mid-process datapoints on the dispensation process are published at a volume interval in liters defined by [`ServicesConfig.data_resolution_l`](#runtime-config). If the connection to the MQTT broker fails, these reports will fail to be sent and are lost, but the dispensation process will continue. Unfortunately, the [MQTT client](#dependencies) class is only able to send messages at a quality-of-service of 0. 
+This topic is where the mid-process datapoints on the dispense process are published at a volume interval in liters defined by [`ServicesConfig.data_resolution_l`](#runtime-config). If the connection to the MQTT broker fails, these reports will fail to be sent and are lost, but the dispense process will continue. Unfortunately, the [MQTT client](#dependencies) class is only able to send messages at a quality-of-service of 0. 
 
 Outputs:
-- `["t"]` float. Current duration of the dispensation process in seconds.
-- `["v"]` float. Current output volume of the dispensation process in liters.
+- `["t"]` float. Current duration of the dispense process in seconds.
+- `["v"]` float. Current output volume of the dispense process in liters.
 - `["q"]` float. The average flow rate of output volume calculated either from the last slice report to the current one (or from the beginning of the process if on the first report) in liters per minute
 - `["tp"]` (conditional) float. The average tank gauge pressure calculated from the last slice report to the current one (or from the beginning of the process if on the first report) in hectopascals. Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config) and [`PressureSensorConfig.report_mode`](#runtime-config) equals 1 or 3.
 - `["tv"]` (conditional) float. The average tank volume calculated from the last slice report to the current one (or from the beginning of the process if on the first report) in liters. Enabled if [`USING_PRESSURE_SENSOR_`](#auto-config) and [`PressureSensorConfig.report_mode`](#runtime-config) equals 2 or 3. Ensure that the [tank geometry](#runtime-config) is properly configured.
@@ -144,13 +144,13 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`DISPENSE_REPORT_SUMMARY_TOPIC_`](#auto-config)  | Publish | Yes |
 
-This topic is where the post-process datapoints on the dispensation process are published. If the connection to the MQTT broker fails, the connection is re-tried once before the message is lost.  Unfortunately, the [MQTT client](#dependencies) class is only able to send messages at a quality-of-service of 0.
+This topic is where the post-process datapoints on the dispense process are published. If the connection to the MQTT broker fails, the connection is re-tried once before the message is lost.  Unfortunately, the [MQTT client](#dependencies) class is only able to send messages at a quality-of-service of 0.
 
 Outputs:
-- `["tt"]` float. Total duration of the dispensation process in seconds.
-- `["vt"]` float. Total output volume of the dispensation process in liters.
+- `["tt"]` float. Total duration of the dispense process in seconds.
+- `["vt"]` float. Total output volume of the dispense process in liters.
 - `["tv"]` (conditional) float. The total output volume produced by the tank in liters. Enabled if [`USING_TANK_`](#auto-config).
-- `["tts"]` (conditional) int. The time stamp at which the dispensation process switched from the tank to the source. Will equal `["tt"]` if the processes ended without switching water supplies. Enabled if [`USING_TANK_`](#auto-config) and [`USING_SOURCE_`](#auto-config).
+- `["tts"]` (conditional) int. The time stamp at which the dispense process switched from the tank to the source. Will equal `["tt"]` if the processes ended without switching water supplies. Enabled if [`USING_TANK_`](#auto-config) and [`USING_SOURCE_`](#auto-config).
 
 Sample payload:
 ```
@@ -168,7 +168,7 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`DEACTIVATE_TOPIC_`](#auto-config)  | Subscribe | Yes |
 
-This topic is where commands for deactivating current processes are sent. Any message recieved on this topic will trigger the deactivation regardless of payload. Upon reception, the device will close all valves, end all ongoing dispensation or drain processes, and send summary reports of any ongoing processes.
+This topic is where commands for deactivating current processes are sent. Any message recieved on this topic will trigger the deactivation regardless of payload. Upon reception, the device will close all valves, end all ongoing dispense or drain processes, and send summary reports of any ongoing processes.
 
 Inputs: None.
 
@@ -210,7 +210,7 @@ Outputs:
 Sample payload:
 ```
 {
-  "m": "Beginning dispensation process with target volume: 10.25 liters"
+  "m": "Beginning dispense process with target volume: 10.25 liters"
 }
 ```
 
@@ -394,11 +394,11 @@ Sample payload:
 | ------------- | ------------- | ------------- |
 | [`FLOW_SENSOR_CALIBRATE_DISPENSE`](#auto-config) | Subscribe | No |
 
-This topic allows dispensing a given amount of fluid similarily to the usual dispensation process. Unlike the usual dispensation process, there is no switch from tank to source if both are being used: the source will be used the entire time. Once dispensed, the controller will wait until the measured volume is sent to the [measurment topic](#measure) before being able to start another dispensation.
+This topic allows dispensing a given amount of fluid similarily to the usual dispense process. Unlike the usual dispense process, there is no switch from tank to source if both are being used: the source will be used the entire time. Once dispensed, the controller will wait until the measured volume is sent to the [measurment topic](#measure) before being able to start another dispense.
 
 Inputs:
-- `["id"]` int. The id of the calibration process. If the ID is incorrect or absent, no dispensation will occur.
-- `["tv"]` float. The target volume in liters. If this volume is greater than [`FlowSensorConfig.calibration_max_volume`](), no dispensation will occur.
+- `["id"]` int. The id of the calibration process. If the ID is incorrect or absent, no dispense will occur.
+- `["tv"]` float. The target volume in liters. If this volume is greater than [`FlowSensorConfig.calibration_max_volume`](), no dispense will occur.
 
 Sample payload:
 ```
@@ -446,7 +446,7 @@ The drain topics handle setting target times, pressures, or volumes for the drai
 | ------------- | ------------- | ------------- |
 | [`DRAIN_ACTIVATE_TOPIC_`](#auto-config)  | Subscribe | No |
 
-This topic allows activating the drain process and setting either the target time, pressure, or volume. Activation will fail if a drain process or dispensation process is already in progress. While inputs are listed as optional, the process will only start if exactly one target is sent. The drain process will continue until the duration of the process is greater than or equal to the target time, the tank gauge pressure is less than or equal to the target pressure, or the tank volume is less than or equal to the target volume, depending on which target was sent.
+This topic allows activating the drain process and setting either the target time, pressure, or volume. Activation will fail if a drain process or dispense process is already in progress. While inputs are listed as optional, the process will only start if exactly one target is sent. The drain process will continue until the duration of the process is greater than or equal to the target time, the tank gauge pressure is less than or equal to the target pressure, or the tank volume is less than or equal to the target volume, depending on which target was sent.
 
 Inputs:
 - `["tt"]` (optional) int. Target time of the drain process in seconds.
@@ -1027,7 +1027,7 @@ These settings are default settings that can be changed at runtime through the [
 
 These settings are initialized at runtime, first reading a configuration file from the file system, then using and writing to the file the [default values](#defaults) if the file doesn't exist. The file can be update at runtime through the [config write](#write) topic. 
 
-- `ServicesConfig.data_resolution_l = float` The volume interval at which slice reports are sent to the [dispense slice report](#slice-reporting) topic during the dispensation process, in liters. 
+- `ServicesConfig.data_resolution_l = float` The volume interval at which slice reports are sent to the [dispense slice report](#slice-reporting) topic during the dispense process, in liters. 
 
 - `SourceConfig.static_flow_rate = float` The static flow rate to use for the source output volume in liters. Enabled if [`USING_SOURCE_FLOW`](#core) is false.
 
@@ -1045,11 +1045,11 @@ These settings are initialized at runtime, first reading a configuration file fr
 
 - `FlowSensorConfig.pulses_per_l = float` Defines the amount of pulses returned by the flow sensor per liter.
 
-- `FlowSensorConfig.max_flow_rate = float` Defines the maximum rated flow rate of the flow sensor in liters per minute. When the dispensation flow rate surpasses this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config).
+- `FlowSensorConfig.max_flow_rate = float` Defines the maximum rated flow rate of the flow sensor in liters per minute. When the dispense flow rate surpasses this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config).
 
-- `FlowSensorConfig.min_flow_rate = float` Defines the minimum rated flow rate of the flow sensor in liters per minute. When the dispensation flow rate goes below this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config). If the active water supply is the tank, a flow rate below this value, combined with a current dispense duration greater than `TankConfig.tank_timeout`, will result in the dispensation either shutting off or switching to the source, depending on [`USING_SOURCE_`](#auto-config).
+- `FlowSensorConfig.min_flow_rate = float` Defines the minimum rated flow rate of the flow sensor in liters per minute. When the dispense flow rate goes below this value, a warning will be sent to [`WARNING_TOPIC_`](#auto-config). If the active water supply is the tank, a flow rate below this value, combined with a current dispense duration greater than `TankConfig.tank_timeout`, will result in the dispense either shutting off or switching to the source, depending on [`USING_SOURCE_`](#auto-config).
 
-- `FlowSensorConfig.calibration_timeout = int` Defines the duration of time, in seconds, after which the flow sensor calibration process will be ended if no dispensation requests or measurments are made.
+- `FlowSensorConfig.calibration_timeout = int` Defines the duration of time, in seconds, after which the flow sensor calibration process will be ended if no dispense requests or measurments are made.
 
 - `FlowSensorConfig.calibration_max_volume = float` Defines the maximum volume, in liters, to allow to be dispensed at a time during the flow sensor calibration process. 
 
@@ -1096,7 +1096,7 @@ These settings define the topic strings to use for the MQTT interface. See the [
 
 - `FLOW_SENSOR_CALIBRATE_BEGIN_TOPIC string` The topic used to [begin flow sensor calibration](#flow-sensor-calibration) requests.
 
-- `FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC string` The topic used to recieve [flow sensor calibration dispensation](#dispense) requests.
+- `FLOW_SENSOR_CALIBRATE_DISPENSE_TOPIC string` The topic used to recieve [flow sensor calibration dispense](#dispense) requests.
 
 - `FLOW_SENSOR_CALIBRATE_MEASURE_TOPIC string` The topic used to recieve [flow sensor calibration measurments](#measure).
 

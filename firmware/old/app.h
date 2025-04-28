@@ -29,7 +29,7 @@ struct TimeStore {
   unsigned long int process_begin_timestamp; // Initial process timestamp
   unsigned long int last_timestamp; // Last timestamp
   unsigned long int resevoir_switch_timestamp; // Timestamp of resevoir switch
-  unsigned long int last_calibration_action; // Timestamp of last dispensation requested or measurment sent in the calibration process
+  unsigned long int last_calibration_action; // Timestamp of last dispense requested or measurment sent in the calibration process
 
   TimeStore() {
     process_begin_timestamp = 0;
@@ -41,7 +41,7 @@ struct TimeStore {
 
 // Stores targets for processes
 struct TargetStore {
-  float target_output_volume; // Target dispensation output in L
+  float target_output_volume; // Target dispense output in L
   float target_calibration_volume; // Target calibration volume in L
   float target_drain_time; // Target drain time in s
   float target_drain_volume; // Target drain volume in L
@@ -145,7 +145,7 @@ void init_app();
 // Run all necessary update functions for global state
 void loop_app();
 
-// Begin a dispensation process
+// Begin a dispense process
 void open_dispense_process(float target_output_volume);
 
 // Wrap up all processes
@@ -160,7 +160,7 @@ void open_flow_calibration_process(int id);
 // End the calibration process, with the option to not save the calibration
 void close_flow_calibration_process(bool save_calibration);
 
-// Begin a calibration dispensation
+// Begin a calibration dispense
 void begin_calibration_dispense(float target_volume);
 
 // Save a measured volume to the pulses per liter average

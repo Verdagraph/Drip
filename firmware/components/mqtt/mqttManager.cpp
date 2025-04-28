@@ -53,7 +53,7 @@ esp_err_t MqttManager::getNextMessage(MqttRxMessage_t* message) {
  * @param Log message.
  * @return esp_err_t Return code.
  */
-esp_err_t info(char *message[]) {
+esp_err_t txInfo(const char* tag, const char *message) {
     return ESP_OK;
 }
 /**
@@ -62,7 +62,7 @@ esp_err_t info(char *message[]) {
  * @param Log message.
  * @return esp_err_t Return code.
  */
-esp_err_t warning(char *message) {
+esp_err_t txWarning(const char* tag, const char *message) {
     return ESP_OK;
 }
 
@@ -72,6 +72,26 @@ esp_err_t warning(char *message) {
  * @param Log message.
  * @return esp_err_t Return code.
  */
-esp_err_t error(char *message[]) {
+esp_err_t txError(const char* tag, const char *message) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Transmits a time slice of the dispense process realtime variables.
+ * 
+ * @param slice The variables.
+ * @return esp_err_t Return code.
+ */
+esp_err_t txDispenseSlice(DispenseProcess_t &slice) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Transmits a summary of the dispense process variables.
+ * 
+ * @param summary The variables.
+ * @return esp_err_t Return code. 
+ */
+esp_err_t txDispenseSummary(DispenseSummary_t &summary) {
     return ESP_OK;
 }

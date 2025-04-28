@@ -18,10 +18,10 @@ void error(char message[]);
 // Activate the device to dispense water
 void dispense_activate(byte* payload, unsigned int len);
 
-// Publish the dispensation report to the dispensation slice report topic
+// Publish the dispense report to the dispense slice report topic
 void publish_dispense_slice_report(unsigned long int time, float volume, float avg_flow, float avg_pressure);
 
-// Publish the dispensation report to the dispensation summary report topic
+// Publish the dispense report to the dispense summary report topic
 void publish_dispense_summary_report(unsigned long int total_time, float total_volume, float tank_volume, unsigned long int tank_time); 
 
 // Deactivate all current dispense or drain processes
