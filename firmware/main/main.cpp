@@ -8,7 +8,7 @@
 #include "valveManager.h"
 #include "stateManager.h"
 
-/** Main task stack size, in works (4 bytes on Esp32c3) */
+/** Main task stack size, in words (4 bytes on Esp32c3) */
 #define STACK_SIZE 512
 
 /**

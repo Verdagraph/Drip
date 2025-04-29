@@ -16615,7 +16615,7 @@
 		(uuid "d246f4a1-971a-460f-b304-4f7a2ecf2298")
 		(at 174.63 97.42 -90)
 		(property "Reference" "C13"
-			(at -2.12 1.15 180)
+			(at -2.12 1.15 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "fe847228-2cae-4fd5-9265-540eafa54123")

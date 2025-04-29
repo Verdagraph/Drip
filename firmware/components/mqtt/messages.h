@@ -65,6 +65,26 @@ typedef struct MqttRxConfigMessage_t {
  */
 typedef DispenseTarget_t MqttRxDispenseActivateMessage_t;
 
+/**
+ * @brief Flow calibration dispense and measure command.
+ */
+typedef struct MqttRxFlowCalibrate_t {
+    /** 
+     * The target volume of this calibration step in liters.
+     * Ignored if conclude is true.
+     */
+    float targetVolume;
+    /** 
+     * The timeout of this calibration step in seconds. 
+     * Ignored if conclude is true.
+     */
+    uint32_t timeout;
+    /** The measured volume from the last calibration step if applicable. */
+    float measuredVolume;
+    /** If true the calibration process is concluded. */
+    bool conclude = false;
+} MqttRxFlowCalibrate_t;
+
 /** Outgoing messages. */
 
 /**

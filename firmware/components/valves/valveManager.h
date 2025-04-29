@@ -102,8 +102,8 @@ public:
      * @brief Begins a dispensation process.
      * 
      * @param target Target for the process.
-     * @param state Overwritten with the initial state of the dispensation process.
-     * @param process Overwritten with the initial process variables.
+     * @param state Overwritten with the final state of the process.
+     * @param process Overwritten with the final process variables.
      * @return esp_err_t Return code.
      */
     esp_err_t beginDispenstation(DispenseTarget_t &target, ValveStates_e &state, DispenseProcess_t &process);
@@ -111,9 +111,9 @@ public:
     /**
      * @brief Updates the dispense process.
      * 
-     * @param state Overwritten with the current state.
-     * @param process Overwritten with the current process variables.
-     * @param summary Overwritten with the current process summary.
+     * @param state Overwritten with the final state.
+     * @param process Overwritten with the final process variables.
+     * @param summary Overwritten with the final process summary.
      * @return esp_err_t Return code.
      */
     esp_err_t loopDispense(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary);
@@ -121,9 +121,9 @@ public:
     /**
      * @brief Ends the dispense process.
      * 
-     * @param state Overwritten with the state.
-     * @param process Overwritten with the current process variables.
-     * @param summary Overwritten with the current process summary.
+     * @param state Overwritten with the final state.
+     * @param process Overwritten with the final process variables.
+     * @param summary Overwritten with the final process summary.
      * @return esp_err_t Return code.
      */
     esp_err_t endDispense(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary);
@@ -132,7 +132,7 @@ public:
      * @brief Begins a drain process.
      * 
      * @param target Target for the process.
-     * @param state Overwritten with the initial state of the drain process.
+     * @param state Overwritten with the initial state of the process.
      * @param process Overwritten with the initial process variables.
      * @return esp_err_t Return code.
      */
@@ -141,9 +141,9 @@ public:
     /**
      * @brief Updates the drain process.
      * 
-     * @param state Overwritten with the current state.
-     * @param process Overwritten with the current process variables.
-     * @param summary Overwritten with the current process summary.
+     * @param state Overwritten with the final state.
+     * @param process Overwritten with the final process variables.
+     * @param summary Overwritten with the final process summary.
      * @return esp_err_t Return code.
      */
     esp_err_t loopDrain(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary);
@@ -151,9 +151,9 @@ public:
     /**
      * @brief Ends the drain process.
      * 
-     * @param state Overwritten with the state.
-     * @param process Overwritten with the current process variables.
-     * @param summary Overwritten with the current process summary.
+     * @param state Overwritten with the final state.
+     * @param process Overwritten with the final process variables.
+     * @param summary Overwritten with the final process summary.
      * @return esp_err_t Return code.
      */
     esp_err_t endDrain(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary);

@@ -349,7 +349,103 @@ exit:
  * @brief Handler for state STATE_FLOW_CALIBRATE.
  */
 void StateManager::flowCalibrate() {
-    // Placeholder for flow calibrate dispense state logic
+    esp_err_t err = ESP_OK;
+    MqttRxMessage_t* message = nullptr;
+    MqttRxFlowCalibrate_t *calibrateMessagePayload = nullptr;
+    FlowSensorStates_e flowState = FLOW_SENSOR_UNKNOWN;
+    FlowCalibrateProcess_t calibrationProcess = {};
+    FlowCalibrateSummary_t calibrationSummary = {};
+    bool saveConfig = false;
+
+    /** Check for new MQTT messages. */
+    while(mqttManager->numMessagesInQueue() > 0) {
+
+        /** Get the next message from the queue. */
+        err = mqttManager->getNextMessage(message);
+        if (err != ESP_OK) {
+            mqttManager->txWarning(TAG, "Failed to retrieve MQTT message.");
+            return;
+        }
+        if (message == nullptr) {
+            mqttManager->txWarning(TAG, "Non-zero queue count returned null reference.");
+            break;
+        }
+        
+        /** Handle message. */
+        switch (message->messageCode) {
+
+            /** Handle deactivation. */
+            case MQTT_RX_DEACTIVATE:
+                goto exit;
+                break;
+
+            case MQTT_RX_FLOW_CALIBRATE:
+                calibrateMessagePayload = reinterpret_cast<MqttRxFlowCalibrate_t*>(message->payload);
+                break;
+        
+            default:
+                mqttManager->txWarning(TAG, "Only DEACTIVATE and FLOW_CALIBRATE commands are accepted during flow sensor calibration.")
+                break;
+
+        }
+        
+    }
+
+    /** Update calibration state. */
+    err = flowManager->loopCalibration(flowState, calibrationProcess, calibrationSummary);
+    if (err != ESP_OK) {
+        mqttManager->txError(TAG, "Error detected. Ending calibration process.");
+        goto exit;
+    }
+
+    /** Process calibration message. */
+    if (calibrateMessagePayload != nullptr) {
+        err = flowManager->inputCalibration(flowState, calibrateMessagePayload->targetVolume, calibrateMessagePayload->conclude);
+        if (err != ESP_OK) {
+            mqttManager->txError(TAG, "Error detected. Ending calibration process.");
+            goto exit;
+        }
+    } 
+    
+    /** Handle state transition based on dispensation status. */
+    switch (flowState) {
+
+        /** Error state. */
+        default:
+        case FLOW_SENSOR_UNKNOWN:
+        case FLOW_SENSOR_DISPENSING:
+            mqttManager->txError(TAG, "FlowManager in an invalid state.");
+            goto exit;
+            break;
+        
+        /** Continuing to dispense. */
+        case FLOW_SENSOR_CALIBRATION_DISPENSING:
+            break
+
+        /** Waiting for measurement. */
+        case FLOW_SENSOR_CALIBRATION_WAITING_FOR_MEASUREMENT:
+            break;
+            
+        /** Calibration has concluded. */
+        case FLOW_SENSOR_IDLE:
+            goto exit;
+            break;
+    }
+
+exit:
+    /** End the process. */
+    err = flowManager->endCalibration(flowState, calibrationProcess, calibrationSummary);
+    if ( (err != ESP_OK) || (flowState != FLOW_SENSOR_IDLE) ) {
+        mqttManager->txError(TAG, "Failed to deactivate dispensation.");
+    }
+
+    if (saveConfig) {
+        mqttManager->txInfo(TAG, "Saved flow sensor calibration data:...");
+    }
+
+    mqttManager->txInfo(TAG, "Concluded calibration process.");
+    state = STATE_LISTEN;
+    return;
 }
 
 /**
@@ -442,6 +538,52 @@ esp_err_t handleConfigChangeRequest(MqttRxMessage_t *message) {
  * @return esp_err_t Return code.
  */
 esp_err_t handleFlowCalibrateRequest(MqttRxMessage_t *message) {
+    esp_err_t err = ESP_OK;
+    char message[128];
+    MqttRxFlowCalibrate_t *payload = nullptr;
+    FlowSensorStates_e flowState = FLOW_SENSOR_UNKNOWN; 
+    FlowCalibrateProcess_t calibrateProcess = {};
+
+    /** Reject null input. */
+    if (message == nullptr) {
+        mqttManager->txError(TAG, "Mqtt handler received null message.");
+        return ESP_ERR_INVALID_INPUT;
+    }
+    
+    /** Typecast the payload. */
+    payload = reinterpret_cast<MqttRxFlowCalibrate_t*>(message->payload);
+
+    /** Begin the calibration process. */
+    err = flowManager->beginCalibration(payload*, flowState, calibrateProcess);
+    if (err != ESP_OK) {
+        mqttManager->txError(TAG, "Flow manager failure.");
+    }
+
+    /** Handle state transition based on dispensation status. */
+    switch (flowState) {
+        case FLOW_SENSOR_UNKNOWN:
+        case FLOW_SENSOR_IDLE:
+        case FLOW_SENSOR_DISPENSING:
+            mqttManager->txError(TAG, "Failed to begin dispensation.");
+            break;
+
+        case SENSOR_CALIBRATING:
+
+            snprintf(message, 
+                sizeof(message), 
+                "Beginning calibration process with a target volume: %.2f liters, timeout: %d min", 
+                payload->targetVolume, 
+                payload->timeout / (1000 * 60)
+            );
+            mqttManager->txInfo(TAG, message);
+            state = STATE_FLOW_CALIBRATE;
+            break;
+
+        default:
+            mqttManager->txError(TAG, "Unrecognized value of FlowSensorStates_e.");
+            break;
+    }
+
     return ESP_OK;
 }
 
