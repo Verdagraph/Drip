@@ -68,10 +68,10 @@ See the [contributing](./contributing.md) for instructions on contributing and s
 <!-- IN-REPO -->
 
 [version-shield]: https://img.shields.io/badge/version-0.0.1-blue?style=for-the-badge
-[version-url]: https://github.com/nathanielarking/Autonomous-Agriculture/releases
-[issues-shield]: https://img.shields.io/github/issues/nathanielarking/Verdagraph.svg?style=for-the-badge
-[issues-url]: https://github.com/nathanielarking/Verdagraph/issues
-[prs-shield]: https://img.shields.io/github/issues-pr/nathanielarking/Verdagraph.svg?style=for-the-badge
-[prs-url]: https://github.com/nathanielarking/Verdagraph/pulls
-[license-shield]: https://img.shields.io/github/license/nathanielarking/Verdagraph.svg?style=for-the-badge
-[license-url]: https://github.com/nathanielarking/Verdagraph/LICENSE.txt
+[version-url]: https://github.com/Verdagraph/Drip/releases
+[issues-shield]: https://img.shields.io/github/issues/Verdagraph/Drip.svg?style=for-the-badge
+[issues-url]: https://github.com/Verdagraph/Drip/issues
+[prs-shield]: https://img.shields.io/github/issues-pr/Verdagraph/Drip.svg?style=for-the-badge
+[prs-url]: https://github.com/Verdagraph/Drip/pulls
+[license-shield]: https://img.shields.io/github/license/Verdagraph/Drip.svg?style=for-the-badge
+[license-url]: https://github.com/Verdagraph/Drip/LICENSE.txt
