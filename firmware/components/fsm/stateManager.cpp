@@ -391,12 +391,6 @@ void StateManager::flowCalibrate() {
         
     }
 
-    /** Update calibration state. */
-    err = flowManager->loopCalibration(flowState, calibrationProcess, calibrationSummary);
-    if (err != ESP_OK) {
-        mqttManager->txError(TAG, "Error detected. Ending calibration process.");
-        goto exit;
-    }
 
     /** Process calibration message. */
     if (calibrateMessagePayload != nullptr) {
@@ -406,6 +400,13 @@ void StateManager::flowCalibrate() {
             goto exit;
         }
     } 
+
+    /** Update calibration state. */
+    err = flowManager->loopCalibration(flowState, calibrationProcess, calibrationSummary);
+    if (err != ESP_OK) {
+        mqttManager->txError(TAG, "Error detected. Ending calibration process.");
+        goto exit;
+    }
     
     /** Handle state transition based on dispensation status. */
     switch (flowState) {
@@ -428,6 +429,7 @@ void StateManager::flowCalibrate() {
             
         /** Calibration has concluded. */
         case FLOW_SENSOR_IDLE:
+            saveConfig = true;
             goto exit;
             break;
     }
@@ -441,6 +443,8 @@ exit:
 
     if (saveConfig) {
         mqttManager->txInfo(TAG, "Saved flow sensor calibration data:...");
+
+        /** TODO: Set and persist the config. */
     }
 
     mqttManager->txInfo(TAG, "Concluded calibration process.");
