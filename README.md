@@ -28,7 +28,7 @@
     <br />
     -->
     <br />
-    <a href="https://discord.gg/U8ps6YCc">Discord</a>
+    <a href="https://verdagraph.org">Documentation</a>
     <!-- 
     ·
     <a href="https://youtu.be/jGFHhRVdxRM">YouTube</a>
