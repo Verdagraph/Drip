@@ -1,0 +1,2675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/home/nathaniel/Documents/dev/Drip/hardware/rev0A/pcb/rev0A.kicad_sch</source>
+    <date>2025-07-02T22:43:48-0700</date>
+    <tool>Eeschema 9.0.2</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>Verdagrap Drip PCB A</title>
+        <company>Verdagraph</company>
+        <rev>0</rev>
+        <date>2025-06-30</date>
+        <source>rev0A.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C1">
+      <value>100uF</value>
+      <footprint>easyeda2kicad:CAP-SMD_BD8.0-L8.3-W8.3-FD</footprint>
+      <datasheet>https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_100uF-50V-20_C72480.html</datasheet>
+      <description>Polarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C72480</field>
+        <field name="Footprint">easyeda2kicad:CAP-SMD_BD8.0-L8.3-W8.3-FD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_100uF-50V-20_C72480.html</field>
+        <field name="Description">Polarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C_Polarized" description="Polarized capacitor"/>
+      <property name="LCSC Part" value="C72480"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="CP_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1dafc094-f94b-44d0-8568-c45a7f7f1580</tstamps>
+    </comp>
+    <comp ref="C2">
+      <value>330uF</value>
+      <footprint>easyeda2kicad:CAP-SMD_BD10.0-L10.3-W10.3-FD</footprint>
+      <datasheet>https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_330uF-35V_C19606.html</datasheet>
+      <description>Polarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">19606</field>
+        <field name="Footprint">easyeda2kicad:CAP-SMD_BD10.0-L10.3-W10.3-FD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_330uF-35V_C19606.html</field>
+        <field name="Description">Polarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C_Polarized" description="Polarized capacitor"/>
+      <property name="LCSC Part" value="19606"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="CP_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ec799044-76d9-4504-9f68-ef2f84c497c9</tstamps>
+    </comp>
+    <comp ref="C3">
+      <value>10uF</value>
+      <footprint>easyeda2kicad:C0805</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1713</field>
+        <field name="Footprint">easyeda2kicad:C0805</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1713"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>30b7a16d-f740-45e3-b474-2e5d91d7b904</tstamps>
+    </comp>
+    <comp ref="C4">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3b9d56c3-7c25-42ff-bb9b-13290d51174c</tstamps>
+    </comp>
+    <comp ref="C5">
+      <value>10uF</value>
+      <footprint>easyeda2kicad:C0805</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1713</field>
+        <field name="Footprint">easyeda2kicad:C0805</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1713"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>111c88ef-81d0-4edb-974b-c9ca74c3aa15</tstamps>
+    </comp>
+    <comp ref="C6">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3a24de59-a5ed-42f2-97f8-eb066ba5890d</tstamps>
+    </comp>
+    <comp ref="C7">
+      <value>10uF</value>
+      <footprint>easyeda2kicad:C0805</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1713</field>
+        <field name="Footprint">easyeda2kicad:C0805</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1713"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>72bff1ed-afe8-42c3-9cab-649c5306de5c</tstamps>
+    </comp>
+    <comp ref="C8">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e20eec5d-3093-452c-b116-c7d8e88ce682</tstamps>
+    </comp>
+    <comp ref="C9">
+      <value>1uF</value>
+      <footprint>easyeda2kicad:C0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL10A105KO8NNNC_1uF-105-10-16V_C1592.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1592</field>
+        <field name="Footprint">easyeda2kicad:C0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL10A105KO8NNNC_1uF-105-10-16V_C1592.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1592"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>049d59ba-bf4b-4a2f-b290-53feaf593e0e</tstamps>
+    </comp>
+    <comp ref="C10">
+      <value>22pF</value>
+      <footprint>easyeda2kicad:C0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL10C220JB8NNNC_22pF-220-5-50V_C1653.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1653</field>
+        <field name="Footprint">easyeda2kicad:C0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL10C220JB8NNNC_22pF-220-5-50V_C1653.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1653"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>fd73db89-e595-4c66-8b9a-4a5e4a7a8b6b</tstamps>
+    </comp>
+    <comp ref="C11">
+      <value>22pF</value>
+      <footprint>easyeda2kicad:C0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL10C220JB8NNNC_22pF-220-5-50V_C1653.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1653</field>
+        <field name="Footprint">easyeda2kicad:C0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL10C220JB8NNNC_22pF-220-5-50V_C1653.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1653"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1b0a17e0-4821-4a08-b1e1-a0ee65e4d80f</tstamps>
+    </comp>
+    <comp ref="C12">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>93ba63cc-6f31-4f48-9574-3dfeba4970c5</tstamps>
+    </comp>
+    <comp ref="C13">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8b9ce9e2-06e2-4571-bace-c084223de4a3</tstamps>
+    </comp>
+    <comp ref="C14">
+      <value>10uF</value>
+      <footprint>easyeda2kicad:C0805</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1713</field>
+        <field name="Footprint">easyeda2kicad:C0805</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1713"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>63eb18e8-fa84-4efd-a327-ffed87296707</tstamps>
+    </comp>
+    <comp ref="C17">
+      <value>10uF</value>
+      <footprint>easyeda2kicad:C0805</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1713</field>
+        <field name="Footprint">easyeda2kicad:C0805</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A106KOQNNNE_10uF-106-10-16V_C1713.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1713"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>6efe519c-319c-4f61-a8a6-b0de57b25396</tstamps>
+    </comp>
+    <comp ref="C18">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>59cce861-ea65-4fe6-b7a9-b2ba9f94fec7</tstamps>
+    </comp>
+    <comp ref="C20">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>afc6b118-cf7b-4aa2-b2ac-dd1c230c5e15</tstamps>
+    </comp>
+    <comp ref="C21">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>fbb8779f-eba4-48f6-9324-0b834cca9e48</tstamps>
+    </comp>
+    <comp ref="C22">
+      <value>0.1uF</value>
+      <footprint>easyeda2kicad:C0402</footprint>
+      <datasheet>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</datasheet>
+      <description>Unpolarized capacitor</description>
+      <fields>
+        <field name="LCSC Part">C1525</field>
+        <field name="Footprint">easyeda2kicad:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="LCSC Part" value="C1525"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>02de6ef3-ac28-4fc8-a55b-1dade6d515a7</tstamps>
+    </comp>
+    <comp ref="D1">
+      <value>1N5822</value>
+      <footprint>easyeda2kicad:DO-201AD_BD5.3-L8.4-P12.50-D1.4-FD</footprint>
+      <datasheet>https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_1N5822_C2476.html</datasheet>
+      <description>40V 3A Schottky Barrier Rectifier Diode, DO-201AD</description>
+      <fields>
+        <field name="LCSC Part">C2476</field>
+        <field name="Footprint">easyeda2kicad:DO-201AD_BD5.3-L8.4-P12.50-D1.4-FD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_1N5822_C2476.html</field>
+        <field name="Description">40V 3A Schottky Barrier Rectifier Diode, DO-201AD</field>
+      </fields>
+      <libsource lib="Diode" part="1N5822" description="40V 3A Schottky Barrier Rectifier Diode, DO-201AD"/>
+      <property name="LCSC Part" value="C2476"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="diode Schottky"/>
+      <property name="ki_fp_filters" value="D*DO?201AD*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>354fa368-845e-47f2-836b-e7630e682478</tstamps>
+    </comp>
+    <comp ref="D2">
+      <value>1N5819</value>
+      <footprint>easyeda2kicad:SOD-123_L2.7-W1.6-LS3.7-RD</footprint>
+      <datasheet>https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_DIODES_1N5819HW-7-F_1N5819HW-7-F_C82544.html</datasheet>
+      <description>40V 1A Schottky Barrier Rectifier Diode, DO-41</description>
+      <fields>
+        <field name="LCSC Part">C82544</field>
+        <field name="Footprint">easyeda2kicad:SOD-123_L2.7-W1.6-LS3.7-RD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_DIODES_1N5819HW-7-F_1N5819HW-7-F_C82544.html</field>
+        <field name="Description">40V 1A Schottky Barrier Rectifier Diode, DO-41</field>
+      </fields>
+      <libsource lib="Diode" part="1N5819" description="40V 1A Schottky Barrier Rectifier Diode, DO-41"/>
+      <property name="LCSC Part" value="C82544"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="diode Schottky"/>
+      <property name="ki_fp_filters" value="D*DO?41*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a3e29567-34b9-4900-b2bd-1da3a7b5df58</tstamps>
+    </comp>
+    <comp ref="D3">
+      <value>LESD5D5.0CT1G</value>
+      <footprint>easyeda2kicad:SOD-523_L1.2-W0.8-LS1.6-BI</footprint>
+      <datasheet>https://lcsc.com/product-detail/New-Arrivals_Leshan-Radio-LESD5D5-0CT1G_C383211.html</datasheet>
+      <fields>
+        <field name="MF">Leshan Radio Co.</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">0.7 mm</field>
+        <field name="Package">None</field>
+        <field name="Price">None</field>
+        <field name="Check_prices"/>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="PARTREV">O</field>
+        <field name="SnapEDA_Link"/>
+        <field name="MP">LESD5D5.0CT1G</field>
+        <field name="Description_1">Transient Voltage Suppressors for ESD Protection</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">LRC</field>
+        <field name="LCSC Part">C383211</field>
+        <field name="Footprint">easyeda2kicad:SOD-523_L1.2-W0.8-LS1.6-BI</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/New-Arrivals_Leshan-Radio-LESD5D5-0CT1G_C383211.html</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Drip" part="LESD5D5.0CT1G" description=""/>
+      <property name="MF" value="Leshan Radio Co."/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value="0.7 mm"/>
+      <property name="Package" value="None"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value="Manufacturer Recommendations"/>
+      <property name="PARTREV" value="O"/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value="LESD5D5.0CT1G"/>
+      <property name="Description_1" value="Transient Voltage Suppressors for ESD Protection"/>
+      <property name="Availability" value="In Stock"/>
+      <property name="MANUFACTURER" value="LRC"/>
+      <property name="LCSC Part" value="C383211"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e580595f-0657-4540-b985-b03ba84ae0e7</tstamps>
+    </comp>
+    <comp ref="D4">
+      <value>LESD5D5.0CT1G</value>
+      <footprint>easyeda2kicad:SOD-523_L1.2-W0.8-LS1.6-BI</footprint>
+      <datasheet>https://lcsc.com/product-detail/New-Arrivals_Leshan-Radio-LESD5D5-0CT1G_C383211.html</datasheet>
+      <fields>
+        <field name="MF">Leshan Radio Co.</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">0.7 mm</field>
+        <field name="Package">None</field>
+        <field name="Price">None</field>
+        <field name="Check_prices"/>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="PARTREV">O</field>
+        <field name="SnapEDA_Link"/>
+        <field name="MP">LESD5D5.0CT1G</field>
+        <field name="Description_1">Transient Voltage Suppressors for ESD Protection</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">LRC</field>
+        <field name="LCSC Part">C383211</field>
+        <field name="Footprint">easyeda2kicad:SOD-523_L1.2-W0.8-LS1.6-BI</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/New-Arrivals_Leshan-Radio-LESD5D5-0CT1G_C383211.html</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Drip" part="LESD5D5.0CT1G" description=""/>
+      <property name="MF" value="Leshan Radio Co."/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value="0.7 mm"/>
+      <property name="Package" value="None"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value="Manufacturer Recommendations"/>
+      <property name="PARTREV" value="O"/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value="LESD5D5.0CT1G"/>
+      <property name="Description_1" value="Transient Voltage Suppressors for ESD Protection"/>
+      <property name="Availability" value="In Stock"/>
+      <property name="MANUFACTURER" value="LRC"/>
+      <property name="LCSC Part" value="C383211"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e6983f3d-2180-4221-b8ad-11c1f5e0089c</tstamps>
+    </comp>
+    <comp ref="D5">
+      <value>LESD5D5.0CT1G</value>
+      <footprint>easyeda2kicad:SOD-523_L1.2-W0.8-LS1.6-BI</footprint>
+      <datasheet>https://lcsc.com/product-detail/New-Arrivals_Leshan-Radio-LESD5D5-0CT1G_C383211.html</datasheet>
+      <fields>
+        <field name="MF">Leshan Radio Co.</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">0.7 mm</field>
+        <field name="Package">None</field>
+        <field name="Price">None</field>
+        <field name="Check_prices"/>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="PARTREV">O</field>
+        <field name="SnapEDA_Link"/>
+        <field name="MP">LESD5D5.0CT1G</field>
+        <field name="Description_1">Transient Voltage Suppressors for ESD Protection</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">LRC</field>
+        <field name="LCSC Part">C383211</field>
+        <field name="Footprint">easyeda2kicad:SOD-523_L1.2-W0.8-LS1.6-BI</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/New-Arrivals_Leshan-Radio-LESD5D5-0CT1G_C383211.html</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Drip" part="LESD5D5.0CT1G" description=""/>
+      <property name="MF" value="Leshan Radio Co."/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value="0.7 mm"/>
+      <property name="Package" value="None"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value="Manufacturer Recommendations"/>
+      <property name="PARTREV" value="O"/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value="LESD5D5.0CT1G"/>
+      <property name="Description_1" value="Transient Voltage Suppressors for ESD Protection"/>
+      <property name="Availability" value="In Stock"/>
+      <property name="MANUFACTURER" value="LRC"/>
+      <property name="LCSC Part" value="C383211"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d9755c5b-053f-418a-9c32-097f43dec598</tstamps>
+    </comp>
+    <comp ref="D6">
+      <value>1N4148W</value>
+      <footprint>easyeda2kicad:SOD-123_L2.8-W1.8-LS3.7-RD</footprint>
+      <datasheet>https://lcsc.com/product-detail/Switching-Diode_1N4148W-T4_C2099.html</datasheet>
+      <description>75V 0.15A Fast Switching Diode, SOD-123</description>
+      <fields>
+        <field name="Sim.Device">D</field>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="LCSC Part">C2099</field>
+        <field name="Footprint">easyeda2kicad:SOD-123_L2.8-W1.8-LS3.7-RD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Switching-Diode_1N4148W-T4_C2099.html</field>
+        <field name="Description">75V 0.15A Fast Switching Diode, SOD-123</field>
+      </fields>
+      <libsource lib="Diode" part="1N4148W" description="75V 0.15A Fast Switching Diode, SOD-123"/>
+      <property name="Sim.Device" value="D"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="LCSC Part" value="C2099"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="diode"/>
+      <property name="ki_fp_filters" value="D*SOD?123*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>61474b79-9cfa-4352-b0d6-b7c3a77c666a</tstamps>
+    </comp>
+    <comp ref="D7">
+      <value>1N4148W</value>
+      <footprint>easyeda2kicad:SOD-123_L2.8-W1.8-LS3.7-RD</footprint>
+      <datasheet>https://lcsc.com/product-detail/Switching-Diode_1N4148W-T4_C2099.html</datasheet>
+      <description>75V 0.15A Fast Switching Diode, SOD-123</description>
+      <fields>
+        <field name="Sim.Device">D</field>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="LCSC Part">C2099</field>
+        <field name="Footprint">easyeda2kicad:SOD-123_L2.8-W1.8-LS3.7-RD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Switching-Diode_1N4148W-T4_C2099.html</field>
+        <field name="Description">75V 0.15A Fast Switching Diode, SOD-123</field>
+      </fields>
+      <libsource lib="Diode" part="1N4148W" description="75V 0.15A Fast Switching Diode, SOD-123"/>
+      <property name="Sim.Device" value="D"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="LCSC Part" value="C2099"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="diode"/>
+      <property name="ki_fp_filters" value="D*SOD?123*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>f6cbc217-3dfc-4d29-8943-dfb860b5a714</tstamps>
+    </comp>
+    <comp ref="D8">
+      <value>1N4148W</value>
+      <footprint>easyeda2kicad:SOD-123_L2.8-W1.8-LS3.7-RD</footprint>
+      <datasheet>https://lcsc.com/product-detail/Switching-Diode_1N4148W-T4_C2099.html</datasheet>
+      <description>75V 0.15A Fast Switching Diode, SOD-123</description>
+      <fields>
+        <field name="Sim.Device">D</field>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="LCSC Part">C2099</field>
+        <field name="Footprint">easyeda2kicad:SOD-123_L2.8-W1.8-LS3.7-RD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Switching-Diode_1N4148W-T4_C2099.html</field>
+        <field name="Description">75V 0.15A Fast Switching Diode, SOD-123</field>
+      </fields>
+      <libsource lib="Diode" part="1N4148W" description="75V 0.15A Fast Switching Diode, SOD-123"/>
+      <property name="Sim.Device" value="D"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="LCSC Part" value="C2099"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="diode"/>
+      <property name="ki_fp_filters" value="D*SOD?123*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7bf3c864-944e-45b4-a16c-d9d0e0620f8e</tstamps>
+    </comp>
+    <comp ref="J1">
+      <value>EJ508A</value>
+      <footprint>easyeda2kicad:DC-IN-TH_EJ508A</footprint>
+      <description>DC Barrel Jack with an internal switch</description>
+      <fields>
+        <field name="LCSC Part">C3030986</field>
+        <field name="Footprint">easyeda2kicad:DC-IN-TH_EJ508A</field>
+        <field name="Datasheet"/>
+        <field name="Description">DC Barrel Jack with an internal switch</field>
+      </fields>
+      <libsource lib="Connector" part="Barrel_Jack_Switch" description="DC Barrel Jack with an internal switch"/>
+      <property name="LCSC Part" value="C3030986"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="DC power barrel jack connector"/>
+      <property name="ki_fp_filters" value="BarrelJack*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>95d18e18-6334-4860-abbe-ad855fd73006</tstamps>
+    </comp>
+    <comp ref="J2">
+      <value>TYPE-C-31-M-12</value>
+      <footprint>easyeda2kicad:USB-C_SMD-TYPE-C-31-M-12</footprint>
+      <datasheet>https://jlcpcb.com/api/file/downloadByFileSystemAccessId/8550723676069908480</datasheet>
+      <fields>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="SNAPEDA_PN"/>
+        <field name="Availability"/>
+        <field name="MANUFACTURER"/>
+        <field name="LCSC Part">C165948</field>
+        <field name="Footprint">easyeda2kicad:USB-C_SMD-TYPE-C-31-M-12</field>
+        <field name="Datasheet">https://jlcpcb.com/api/file/downloadByFileSystemAccessId/8550723676069908480</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Drip" part="TYPE-C-31-M-12" description=""/>
+      <property name="MF" value=""/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value=""/>
+      <property name="Package" value=""/>
+      <property name="Price" value=""/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value=""/>
+      <property name="PARTREV" value=""/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value=""/>
+      <property name="Description_1" value=""/>
+      <property name="SNAPEDA_PN" value=""/>
+      <property name="Availability" value=""/>
+      <property name="MANUFACTURER" value=""/>
+      <property name="LCSC Part" value="C165948"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>249f0023-02a0-4d52-92f6-8aabaf03408b</tstamps>
+    </comp>
+    <comp ref="J3">
+      <value>Conn_01x06_Socket</value>
+      <footprint>easyeda2kicad:HDR-TH_6P-P2.54-V-F</footprint>
+      <datasheet>https://lcsc.com/product-detail/Female-Headers_BXCONN-B254YP-ZD06P_C41413860.html?s_z=n_C41413860</datasheet>
+      <description>Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <fields>
+        <field name="LCSC Part">C41413860</field>
+        <field name="Footprint">easyeda2kicad:HDR-TH_6P-P2.54-V-F</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Female-Headers_BXCONN-B254YP-ZD06P_C41413860.html?s_z=n_C41413860</field>
+        <field name="Description">Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x06" description="Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="LCSC Part" value="C41413860"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7008ca75-827b-42da-bfd1-2913d82f8b90</tstamps>
+    </comp>
+    <comp ref="J4">
+      <value>Conn_01x03_Socket</value>
+      <footprint>easyeda2kicad:CONN-TH_3P-P2.50_A2501WV2-3P</footprint>
+      <description>Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <fields>
+        <field name="LCSC Part">C144394</field>
+        <field name="Footprint">easyeda2kicad:CONN-TH_3P-P2.50_A2501WV2-3P</field>
+        <field name="Datasheet"/>
+        <field name="Description">Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x03" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="LCSC Part" value="C144394"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>6e3ce13b-75e7-479f-b17a-1737a9d88dfe</tstamps>
+    </comp>
+    <comp ref="J5">
+      <value>Conn_01x02_Socket</value>
+      <footprint>easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</footprint>
+      <description>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <fields>
+        <field name="LCSC Part">C158012</field>
+        <field name="Footprint">easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</field>
+        <field name="Datasheet"/>
+        <field name="Description">Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x02" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="LCSC Part" value="C158012"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9aa20b1c-19de-486f-8ea2-47d7d72ede08</tstamps>
+    </comp>
+    <comp ref="J6">
+      <value>Conn_01x02_Socket</value>
+      <footprint>easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</footprint>
+      <description>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <fields>
+        <field name="LCSC Part">C158012</field>
+        <field name="Footprint">easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</field>
+        <field name="Datasheet"/>
+        <field name="Description">Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x02" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="LCSC Part" value="C158012"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9b93e3a0-4750-4905-85ed-8b9587dc9bb2</tstamps>
+    </comp>
+    <comp ref="J7">
+      <value>Conn_01x02_Socket</value>
+      <footprint>easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</footprint>
+      <description>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <fields>
+        <field name="LCSC Part">C158012</field>
+        <field name="Footprint">easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</field>
+        <field name="Datasheet"/>
+        <field name="Description">Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x02" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="LCSC Part" value="C158012"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>64bd9fc2-0c75-4086-930c-0101f8f014ac</tstamps>
+    </comp>
+    <comp ref="J8">
+      <value>Conn_01x02_Socket</value>
+      <footprint>easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</footprint>
+      <description>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <fields>
+        <field name="LCSC Part">C158012</field>
+        <field name="Footprint">easyeda2kicad:CONN-TH_B2B-XH-A-LF-SN</field>
+        <field name="Datasheet"/>
+        <field name="Description">Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x02" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="LCSC Part" value="C158012"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>28129537-f8ec-448d-b763-a76750d525ca</tstamps>
+    </comp>
+    <comp ref="K1">
+      <value>SRD-12VDC-SL-C</value>
+      <footprint>easyeda2kicad:RELAY-TH_SRD-XXVDC-XL-C</footprint>
+      <datasheet>https://lcsc.com/product-detail/Relays_SRD-12VDC-SL-C_C30431.html</datasheet>
+      <fields>
+        <field name="MF">Songle Relay</field>
+        <field name="Description_1">5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi</field>
+        <field name="Package">NON STANDARD-5 Songle Relay</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda</field>
+        <field name="STANDARD">IPC-7251</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap</field>
+        <field name="MP">SRD-05VDC-SL-C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">SONGLE RELAY</field>
+        <field name="LCSC Part">C30431</field>
+        <field name="Footprint">easyeda2kicad:RELAY-TH_SRD-XXVDC-XL-C</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Relays_SRD-12VDC-SL-C_C30431.html</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="" part="SRD-05VDC-SL-C_1" description=""/>
+      <property name="MF" value="Songle Relay"/>
+      <property name="Description_1" value="5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi"/>
+      <property name="Package" value="NON STANDARD-5 Songle Relay"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value="https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda"/>
+      <property name="STANDARD" value="IPC-7251"/>
+      <property name="SnapEDA_Link" value="https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap"/>
+      <property name="MP" value="SRD-05VDC-SL-C"/>
+      <property name="Availability" value="In Stock"/>
+      <property name="MANUFACTURER" value="SONGLE RELAY"/>
+      <property name="LCSC Part" value="C30431"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b266ace2-be54-484d-a3bc-3ecdbbb0b482</tstamps>
+    </comp>
+    <comp ref="K2">
+      <value>SRD-12VDC-SL-C</value>
+      <footprint>easyeda2kicad:RELAY-TH_SRD-XXVDC-XL-C</footprint>
+      <datasheet>https://lcsc.com/product-detail/Relays_SRD-12VDC-SL-C_C30431.html</datasheet>
+      <fields>
+        <field name="MF">Songle Relay</field>
+        <field name="Description_1">5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi</field>
+        <field name="Package">NON STANDARD-5 Songle Relay</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda</field>
+        <field name="STANDARD">IPC-7251</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap</field>
+        <field name="MP">SRD-05VDC-SL-C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">SONGLE RELAY</field>
+        <field name="LCSC Part">C30431</field>
+        <field name="Footprint">easyeda2kicad:RELAY-TH_SRD-XXVDC-XL-C</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Relays_SRD-12VDC-SL-C_C30431.html</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="" part="SRD-05VDC-SL-C_2" description=""/>
+      <property name="MF" value="Songle Relay"/>
+      <property name="Description_1" value="5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi"/>
+      <property name="Package" value="NON STANDARD-5 Songle Relay"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value="https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda"/>
+      <property name="STANDARD" value="IPC-7251"/>
+      <property name="SnapEDA_Link" value="https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap"/>
+      <property name="MP" value="SRD-05VDC-SL-C"/>
+      <property name="Availability" value="In Stock"/>
+      <property name="MANUFACTURER" value="SONGLE RELAY"/>
+      <property name="LCSC Part" value="C30431"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ce7df615-ceaa-4e0c-8355-5b6038c4a7e6</tstamps>
+    </comp>
+    <comp ref="K3">
+      <value>SRD-12VDC-SL-C</value>
+      <footprint>easyeda2kicad:RELAY-TH_SRD-XXVDC-XL-C</footprint>
+      <datasheet>https://lcsc.com/product-detail/Relays_SRD-12VDC-SL-C_C30431.html</datasheet>
+      <fields>
+        <field name="MF">Songle Relay</field>
+        <field name="Description_1">5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi</field>
+        <field name="Package">NON STANDARD-5 Songle Relay</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda</field>
+        <field name="STANDARD">IPC-7251</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap</field>
+        <field name="MP">SRD-05VDC-SL-C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">SONGLE RELAY</field>
+        <field name="LCSC Part">C30431</field>
+        <field name="Footprint">easyeda2kicad:RELAY-TH_SRD-XXVDC-XL-C</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Relays_SRD-12VDC-SL-C_C30431.html</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Drip" part="SRD-05VDC-SL-C" description=""/>
+      <property name="MF" value="Songle Relay"/>
+      <property name="Description_1" value="5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi"/>
+      <property name="Package" value="NON STANDARD-5 Songle Relay"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value="https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda"/>
+      <property name="STANDARD" value="IPC-7251"/>
+      <property name="SnapEDA_Link" value="https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap"/>
+      <property name="MP" value="SRD-05VDC-SL-C"/>
+      <property name="Availability" value="In Stock"/>
+      <property name="MANUFACTURER" value="SONGLE RELAY"/>
+      <property name="LCSC Part" value="C30431"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ba1b07c5-5ee0-427b-a033-68e568a6f990</tstamps>
+    </comp>
+    <comp ref="L1">
+      <value>330uH</value>
+      <footprint>easyeda2kicad:IND-SMD_L12.3-W12.3</footprint>
+      <datasheet>https://lcsc.com/product-detail/Power-Inductors_330uH-20_C10152.html</datasheet>
+      <description>Inductor</description>
+      <fields>
+        <field name="LCSC Part">10152</field>
+        <field name="Footprint">easyeda2kicad:IND-SMD_L12.3-W12.3</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Power-Inductors_330uH-20_C10152.html</field>
+        <field name="Description">Inductor</field>
+      </fields>
+      <libsource lib="Device" part="L" description="Inductor"/>
+      <property name="LCSC Part" value="10152"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="inductor choke coil reactor magnetic"/>
+      <property name="ki_fp_filters" value="Choke_* *Coil* Inductor_* L_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>29e8d4dd-71c5-45ae-adda-d901b46311d0</tstamps>
+    </comp>
+    <comp ref="LED1">
+      <value>WS2812B-2020</value>
+      <footprint>easyeda2kicad:LED-SMD_4P-L2.0-W2.0-TL_WS2812B-2020</footprint>
+      <datasheet>https://lcsc.com/product-detail/Light-Emitting-Diodes-LED_Worldsemi-WS2812B-2020_C965555.html</datasheet>
+      <fields>
+        <field name="LCSC Part">C965555</field>
+        <field name="Footprint">easyeda2kicad:LED-SMD_4P-L2.0-W2.0-TL_WS2812B-2020</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Light-Emitting-Diodes-LED_Worldsemi-WS2812B-2020_C965555.html</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="easyeda2kicad" part="WS2812B-2020" description=""/>
+      <property name="LCSC Part" value="C965555"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e67d9e90-988e-46fb-b74b-a31785c07c05</tstamps>
+    </comp>
+    <comp ref="Q1">
+      <value>BC337</value>
+      <footprint>easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</footprint>
+      <datasheet>https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</datasheet>
+      <description>0.8A Ic, 45V Vce, NPN Transistor, TO-92</description>
+      <fields>
+        <field name="LCSC Part">C328602</field>
+        <field name="Footprint">easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</field>
+        <field name="Description">0.8A Ic, 45V Vce, NPN Transistor, TO-92</field>
+      </fields>
+      <libsource lib="" part="BC337_1" description="0.8A Ic, 45V Vce, NPN Transistor, TO-92"/>
+      <property name="LCSC Part" value="C328602"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="NPN Transistor"/>
+      <property name="ki_fp_filters" value="TO?92*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4646bb0a-abc9-4db9-b6f2-c25ea052ea45</tstamps>
+    </comp>
+    <comp ref="Q2">
+      <value>BC337</value>
+      <footprint>easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</footprint>
+      <datasheet>https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</datasheet>
+      <description>0.8A Ic, 45V Vce, NPN Transistor, TO-92</description>
+      <fields>
+        <field name="LCSC Part">C328602</field>
+        <field name="Footprint">easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</field>
+        <field name="Description">0.8A Ic, 45V Vce, NPN Transistor, TO-92</field>
+      </fields>
+      <libsource lib="" part="BC337_2" description="0.8A Ic, 45V Vce, NPN Transistor, TO-92"/>
+      <property name="LCSC Part" value="C328602"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="NPN Transistor"/>
+      <property name="ki_fp_filters" value="TO?92*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>56f9a0c4-8cd4-46c5-ad08-10794459d9d6</tstamps>
+    </comp>
+    <comp ref="Q3">
+      <value>BC337</value>
+      <footprint>easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</footprint>
+      <datasheet>https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</datasheet>
+      <description>0.8A Ic, 45V Vce, NPN Transistor, TO-92</description>
+      <fields>
+        <field name="LCSC Part">C328602</field>
+        <field name="Footprint">easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</field>
+        <field name="Description">0.8A Ic, 45V Vce, NPN Transistor, TO-92</field>
+      </fields>
+      <libsource lib="Transistor_BJT" part="BC337" description="0.8A Ic, 45V Vce, NPN Transistor, TO-92"/>
+      <property name="LCSC Part" value="C328602"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="NPN Transistor"/>
+      <property name="ki_fp_filters" value="TO?92*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>bf729663-77d9-4c90-a714-16da3943f540</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>336f95fb-45f1-453c-885f-751562c4824e</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>166291df-9f5c-4634-a207-970c9eddb6aa</tstamps>
+    </comp>
+    <comp ref="R3">
+      <value>5100</value>
+      <footprint>easyeda2kicad:R0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_5-1KR-5101-1_C23186.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C23186</field>
+        <field name="Footprint">easyeda2kicad:R0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_5-1KR-5101-1_C23186.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C23186"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>55c0a071-a6f2-4a01-a3b6-09dabfac8f91</tstamps>
+    </comp>
+    <comp ref="R4">
+      <value>5100</value>
+      <footprint>easyeda2kicad:R0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_5-1KR-5101-1_C23186.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C23186</field>
+        <field name="Footprint">easyeda2kicad:R0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_5-1KR-5101-1_C23186.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C23186"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b1a782e0-0237-4ed1-a3a0-6440318151f2</tstamps>
+    </comp>
+    <comp ref="R5">
+      <value>120</value>
+      <footprint>easyeda2kicad:RES-TH_BD2.2-L6.5-P10.50-D0.6</footprint>
+      <datasheet>https://www.lcsc.com/product-detail/Through-Hole-Resistors_YAGEO-MFR-25FTE52-120R_C172969.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C172969</field>
+        <field name="Footprint">easyeda2kicad:RES-TH_BD2.2-L6.5-P10.50-D0.6</field>
+        <field name="Datasheet">https://www.lcsc.com/product-detail/Through-Hole-Resistors_YAGEO-MFR-25FTE52-120R_C172969.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C172969"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>010a282d-8b15-44d7-a368-8b68da3924a7</tstamps>
+    </comp>
+    <comp ref="R6">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>50dbc7c4-7752-47c3-9f37-ee329c762274</tstamps>
+    </comp>
+    <comp ref="R7">
+      <value>1000</value>
+      <footprint>easyeda2kicad:R0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_1KR-1001-1_C21190.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C21190</field>
+        <field name="Footprint">easyeda2kicad:R0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_1KR-1001-1_C21190.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C21190"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3b0a185b-88eb-470c-9621-e5baff65330e</tstamps>
+    </comp>
+    <comp ref="R8">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a609e7f4-681f-4d8d-8187-e271d1d6f1b7</tstamps>
+    </comp>
+    <comp ref="R9">
+      <value>1000</value>
+      <footprint>easyeda2kicad:R0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_1KR-1001-1_C21190.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C21190</field>
+        <field name="Footprint">easyeda2kicad:R0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_1KR-1001-1_C21190.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C21190"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>aacab2d5-8d0e-4466-99d3-c4b934417d38</tstamps>
+    </comp>
+    <comp ref="R10">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7f33bbd3-6891-4d85-bbf7-df9f2a9a828b</tstamps>
+    </comp>
+    <comp ref="R11">
+      <value>1000</value>
+      <footprint>easyeda2kicad:R0603</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_1KR-1001-1_C21190.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C21190</field>
+        <field name="Footprint">easyeda2kicad:R0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_1KR-1001-1_C21190.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C21190"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>829a24be-7956-4a7c-88e0-b5f823713933</tstamps>
+    </comp>
+    <comp ref="R12">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3cebe20c-497f-49de-8a3d-cdc9a4538666</tstamps>
+    </comp>
+    <comp ref="R13">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5c8387c4-54ff-4087-88ee-b54ab16b3144</tstamps>
+    </comp>
+    <comp ref="R14">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>64a9d86f-9dc2-417b-8b60-742cffa1b419</tstamps>
+    </comp>
+    <comp ref="R15">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>f16a6efe-dcbe-4ab3-b7c8-0a9e76de174a</tstamps>
+    </comp>
+    <comp ref="R16">
+      <value>10000</value>
+      <footprint>easyeda2kicad:R1206</footprint>
+      <datasheet>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</datasheet>
+      <description>Resistor</description>
+      <fields>
+        <field name="LCSC Part">C1489</field>
+        <field name="Footprint">easyeda2kicad:R1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-103-5_C1489.html</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="LCSC Part" value="C1489"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d7e19bce-8b31-4212-befb-6fd24f914f0d</tstamps>
+    </comp>
+    <comp ref="SW1">
+      <value>SW_Push</value>
+      <footprint>easyeda2kicad:SW-TH_5P-L6.0-W6.0-P4.50-LS6.5</footprint>
+      <datasheet>https://www.lcsc.com/product-detail/Pushbutton-Switches_ALPSALPINE-SKHHQVA010_C470256.html</datasheet>
+      <description>Push button switch, generic, two pins</description>
+      <fields>
+        <field name="LCSC Part">C470256</field>
+        <field name="Footprint">easyeda2kicad:SW-TH_5P-L6.0-W6.0-P4.50-LS6.5</field>
+        <field name="Datasheet">https://www.lcsc.com/product-detail/Pushbutton-Switches_ALPSALPINE-SKHHQVA010_C470256.html</field>
+        <field name="Description">Push button switch, generic, two pins</field>
+      </fields>
+      <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
+      <property name="LCSC Part" value="C470256"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="switch normally-open pushbutton push-button"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>289e2217-959e-48af-b1c5-2acdc83ac251</tstamps>
+    </comp>
+    <comp ref="SW2">
+      <value>SW_Push</value>
+      <footprint>easyeda2kicad:SW-TH_5P-L6.0-W6.0-P4.50-LS6.5</footprint>
+      <datasheet>https://www.lcsc.com/product-detail/Pushbutton-Switches_ALPSALPINE-SKHHQVA010_C470256.html</datasheet>
+      <description>Push button switch, generic, two pins</description>
+      <fields>
+        <field name="LCSC Part">C470256</field>
+        <field name="Footprint">easyeda2kicad:SW-TH_5P-L6.0-W6.0-P4.50-LS6.5</field>
+        <field name="Datasheet">https://www.lcsc.com/product-detail/Pushbutton-Switches_ALPSALPINE-SKHHQVA010_C470256.html</field>
+        <field name="Description">Push button switch, generic, two pins</field>
+      </fields>
+      <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
+      <property name="LCSC Part" value="C470256"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="switch normally-open pushbutton push-button"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>94f44ffb-b26e-4069-a2c0-83c3a2fe51b5</tstamps>
+    </comp>
+    <comp ref="TP1">
+      <value>~</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>260768e0-8218-4ab3-abfe-a9d3214175e8</tstamps>
+    </comp>
+    <comp ref="TP2">
+      <value>~</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e1831e88-9678-41cb-b86b-c148a9a5de28</tstamps>
+    </comp>
+    <comp ref="TP3">
+      <value>TestPoint</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>aefdc2fc-b6da-43d5-827b-407c7a474ab6</tstamps>
+    </comp>
+    <comp ref="TP4">
+      <value>TestPoint</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>cb68127f-9781-4f11-9306-407b6e6d1dae</tstamps>
+    </comp>
+    <comp ref="TP5">
+      <value>TestPoint</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0249c924-ccfd-46bd-9f27-f8801924f575</tstamps>
+    </comp>
+    <comp ref="TP6">
+      <value>~</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>775a8ba6-700b-4809-a9a9-0f5308ef1b4b</tstamps>
+    </comp>
+    <comp ref="TP7">
+      <value>~</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1757cc37-1684-4ffb-aa66-cebb04c36bbc</tstamps>
+    </comp>
+    <comp ref="TP8">
+      <value>~</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4f2810b5-1d9b-45ef-a346-b0ac09a10dda</tstamps>
+    </comp>
+    <comp ref="TP9">
+      <value>TestPoint</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a87ee693-f091-4433-88a7-ac0ef9d655a0</tstamps>
+    </comp>
+    <comp ref="TP10">
+      <value>TestPoint</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0b2c69b7-686a-404c-8c63-bfcca8a8a915</tstamps>
+    </comp>
+    <comp ref="TP11">
+      <value>TestPoint</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>816805df-cc86-4d75-8e57-89ffc93b3609</tstamps>
+    </comp>
+    <comp ref="TP12">
+      <value>TestPoint</value>
+      <footprint>TestPoint:TestPoint_Pad_2.0x2.0mm</footprint>
+      <description>test point</description>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_2.0x2.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description">test point</field>
+      </fields>
+      <libsource lib="Connector" part="TestPoint" description="test point"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="test point tp"/>
+      <property name="ki_fp_filters" value="Pin* Test*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>907d943b-c19d-453f-82c2-ac133cac50de</tstamps>
+    </comp>
+    <comp ref="U1">
+      <value>ESP32-C3-WROOM-02-H4</value>
+      <footprint>RF_Module:ESP32-C3-WROOM-02</footprint>
+      <datasheet>https://www.espressif.com/sites/default/files/documentation/esp32-c3-wroom-02_datasheet_en.pdf</datasheet>
+      <description>802.11 b/g/n Wi­Fi and Bluetooth 5 module, ESP32­C3 SoC, RISC­V microprocessor, On-board antenna</description>
+      <fields>
+        <field name="LCSC Part">C2944070</field>
+        <field name="Footprint">RF_Module:ESP32-C3-WROOM-02</field>
+        <field name="Datasheet">https://www.espressif.com/sites/default/files/documentation/esp32-c3-wroom-02_datasheet_en.pdf</field>
+        <field name="Description">802.11 b/g/n Wi­Fi and Bluetooth 5 module, ESP32­C3 SoC, RISC­V microprocessor, On-board antenna</field>
+      </fields>
+      <libsource lib="RF_Module" part="ESP32-C3-WROOM-02" description="802.11 b/g/n Wi­Fi and Bluetooth 5 module, ESP32­C3 SoC, RISC­V microprocessor, On-board antenna"/>
+      <property name="LCSC Part" value="C2944070"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="esp32 espressif WiFi Bluetooth LE"/>
+      <property name="ki_fp_filters" value="ESP32?C3*WROOM?02*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>80d16ad8-abbf-440c-a135-9acce3b0bdc5</tstamps>
+    </comp>
+    <comp ref="U2">
+      <value>ADS1115IRUGT</value>
+      <footprint>easyeda2kicad:X2QFN-10_L2.0-W1.5-P0.50-TL_RUG0010B</footprint>
+      <datasheet>https://www.lcsc.com/product-detail/Analog-to-Digital-Converters-ADC_Texas-Instruments-ADS1115IRUGT_C701611.html?s_z=n_ads1115</datasheet>
+      <fields>
+        <field name="MF">Texas Instruments</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">0.4 mm</field>
+        <field name="Package">X2QFN-10 Texas Instruments</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/ADS1115IRUGT/Texas+Instruments/view-part/?ref=eda</field>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="PARTREV">B</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/ADS1115IRUGT/Texas+Instruments/view-part/?ref=snap</field>
+        <field name="MP">ADS1115IRUGT</field>
+        <field name="Description_1">16-bit, 860-SPS, 4-channel, delta-sigma ADC with PGA, oscillator, VREF, comparator and I2C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">Texas Instruments</field>
+        <field name="LCSC Part">C701611</field>
+        <field name="Footprint">easyeda2kicad:X2QFN-10_L2.0-W1.5-P0.50-TL_RUG0010B</field>
+        <field name="Datasheet">https://www.lcsc.com/product-detail/Analog-to-Digital-Converters-ADC_Texas-Instruments-ADS1115IRUGT_C701611.html?s_z=n_ads1115</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Drip" part="ADS1115IRUGT" description=""/>
+      <property name="MF" value="Texas Instruments"/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value="0.4 mm"/>
+      <property name="Package" value="X2QFN-10 Texas Instruments"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value="https://www.snapeda.com/parts/ADS1115IRUGT/Texas+Instruments/view-part/?ref=eda"/>
+      <property name="STANDARD" value="Manufacturer Recommendations"/>
+      <property name="PARTREV" value="B"/>
+      <property name="SnapEDA_Link" value="https://www.snapeda.com/parts/ADS1115IRUGT/Texas+Instruments/view-part/?ref=snap"/>
+      <property name="MP" value="ADS1115IRUGT"/>
+      <property name="Description_1" value="16-bit, 860-SPS, 4-channel, delta-sigma ADC with PGA, oscillator, VREF, comparator and I2C"/>
+      <property name="Availability" value="In Stock"/>
+      <property name="MANUFACTURER" value="Texas Instruments"/>
+      <property name="LCSC Part" value="C701611"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>effba693-86a6-434a-8026-51e36c195c6e</tstamps>
+    </comp>
+    <comp ref="U3">
+      <value>TXS0102DCU</value>
+      <footprint>Package_SO:VSSOP-8_2.3x2mm_P0.5mm</footprint>
+      <datasheet>http://www.ti.com/lit/gpn/txs0102</datasheet>
+      <description>2-Bit Bidirectional Voltage-Level Shifter for Open-Drain and Push-Pull Application, VSSOP-8</description>
+      <fields>
+        <field name="LCSC Part">C53434</field>
+        <field name="Footprint">Package_SO:VSSOP-8_2.3x2mm_P0.5mm</field>
+        <field name="Datasheet">http://www.ti.com/lit/gpn/txs0102</field>
+        <field name="Description">2-Bit Bidirectional Voltage-Level Shifter for Open-Drain and Push-Pull Application, VSSOP-8</field>
+      </fields>
+      <libsource lib="Logic_LevelTranslator" part="TXS0102DCU" description="2-Bit Bidirectional Voltage-Level Shifter for Open-Drain and Push-Pull Application, VSSOP-8"/>
+      <property name="LCSC Part" value="C53434"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="Level-Shifter CMOS-TTL-Translation"/>
+      <property name="ki_fp_filters" value="VSSOP*2.3x2mm*P0.5mm*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a9e576ca-d13f-498c-8ad0-cb1d07f9c9fd</tstamps>
+    </comp>
+    <comp ref="VREG1">
+      <value>LM2575T-5.0</value>
+      <footprint>easyeda2kicad:TO-263-5_L10.2-W8.9-P1.70-TL</footprint>
+      <datasheet>https://lcsc.com/product-detail/PMIC-AC-DC-Converters_TI_LM2575SX-5-0-NOPB_LM2575SX-5-0-NOPB_C12061.html</datasheet>
+      <description>Fixed 5.0V 52kHz Simple 1A Buck Regulator, TO-220-5</description>
+      <fields>
+        <field name="LCSC Part">C12061</field>
+        <field name="Footprint">easyeda2kicad:TO-263-5_L10.2-W8.9-P1.70-TL</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/PMIC-AC-DC-Converters_TI_LM2575SX-5-0-NOPB_LM2575SX-5-0-NOPB_C12061.html</field>
+        <field name="Description">Fixed 5.0V 52kHz Simple 1A Buck Regulator, TO-220-5</field>
+      </fields>
+      <libsource lib="Regulator_Switching" part="LM2575-5.0BT" description="Fixed 5.0V 52kHz Simple 1A Buck Regulator, TO-220-5"/>
+      <property name="LCSC Part" value="C12061"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="Buck regulator Switcher"/>
+      <property name="ki_fp_filters" value="TO?220*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>cc33a1a8-e23e-4a90-a85b-4939f7992e8a</tstamps>
+    </comp>
+    <comp ref="VREG2">
+      <value>AMS1117</value>
+      <footprint>Package_TO_SOT_SMD:SOT-223-3_TabPin2</footprint>
+      <datasheet>https://lcsc.com/product-detail/Low-Dropout-Regulators-LDO_AMS_AMS1117-3-3_AMS1117-3-3_C6186.html</datasheet>
+      <description>1A Low Dropout regulator, positive, adjustable output, SOT-223</description>
+      <fields>
+        <field name="LCSC Part">C6186</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-223-3_TabPin2</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Low-Dropout-Regulators-LDO_AMS_AMS1117-3-3_AMS1117-3-3_C6186.html</field>
+        <field name="Description">1A Low Dropout regulator, positive, adjustable output, SOT-223</field>
+      </fields>
+      <libsource lib="Regulator_Linear" part="AMS1117" description="1A Low Dropout regulator, positive, adjustable output, SOT-223"/>
+      <property name="LCSC Part" value="C6186"/>
+      <property name="Sheetname" value="Root"/>
+      <property name="Sheetfile" value="rev0A.kicad_sch"/>
+      <property name="ki_keywords" value="linear regulator ldo adjustable positive"/>
+      <property name="ki_fp_filters" value="SOT?223*TabPin2*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4421a90f-e0e1-47e6-9f07-1bad1b44b343</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="" part="BC337_1">
+      <description>0.8A Ic, 45V Vce, NPN Transistor, TO-92</description>
+      <docs>https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</docs>
+      <footprints>
+        <fp>TO?92*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q1</field>
+        <field name="Value">BC337</field>
+        <field name="Footprint">easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</field>
+        <field name="Description">0.8A Ic, 45V Vce, NPN Transistor, TO-92</field>
+        <field name="LCSC Part">C328602</field>
+      </fields>
+      <pins>
+        <pin num="1" name="E" type="passive"/>
+        <pin num="2" name="B" type="input"/>
+        <pin num="3" name="C" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="" part="BC337_2">
+      <description>0.8A Ic, 45V Vce, NPN Transistor, TO-92</description>
+      <docs>https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</docs>
+      <footprints>
+        <fp>TO?92*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q2</field>
+        <field name="Value">BC337</field>
+        <field name="Footprint">easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</field>
+        <field name="Description">0.8A Ic, 45V Vce, NPN Transistor, TO-92</field>
+        <field name="LCSC Part">C328602</field>
+      </fields>
+      <pins>
+        <pin num="1" name="E" type="passive"/>
+        <pin num="2" name="B" type="input"/>
+        <pin num="3" name="C" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="" part="SRD-05VDC-SL-C_1">
+      <fields>
+        <field name="Reference">K</field>
+        <field name="Value">SRD-05VDC-SL-C</field>
+        <field name="Footprint">SRD-05VDC-SL-C:RELAY_SRD-05VDC-SL-C</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="MF">Songle Relay</field>
+        <field name="Description_1">5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi</field>
+        <field name="Package">NON STANDARD-5 Songle Relay</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda</field>
+        <field name="STANDARD">IPC-7251</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap</field>
+        <field name="MP">SRD-05VDC-SL-C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">SONGLE RELAY</field>
+      </fields>
+      <pins>
+        <pin num="C1" name="" type="passive"/>
+        <pin num="C2" name="" type="passive"/>
+        <pin num="COM" name="" type="passive"/>
+        <pin num="NC" name="" type="passive"/>
+        <pin num="NO" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="" part="SRD-05VDC-SL-C_2">
+      <fields>
+        <field name="Reference">K</field>
+        <field name="Value">SRD-05VDC-SL-C</field>
+        <field name="Footprint">SRD-05VDC-SL-C:RELAY_SRD-05VDC-SL-C</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="MF">Songle Relay</field>
+        <field name="Description_1">5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi</field>
+        <field name="Package">NON STANDARD-5 Songle Relay</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda</field>
+        <field name="STANDARD">IPC-7251</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap</field>
+        <field name="MP">SRD-05VDC-SL-C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">SONGLE RELAY</field>
+      </fields>
+      <pins>
+        <pin num="C1" name="" type="passive"/>
+        <pin num="C2" name="" type="passive"/>
+        <pin num="COM" name="" type="passive"/>
+        <pin num="NC" name="" type="passive"/>
+        <pin num="NO" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="Barrel_Jack_Switch">
+      <description>DC Barrel Jack with an internal switch</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>BarrelJack*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Barrel_Jack_Switch</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">DC Barrel Jack with an internal switch</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+        <pin num="3" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="TestPoint">
+      <description>test point</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Pin*</fp>
+        <fp>Test*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">TP</field>
+        <field name="Value">TestPoint</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">test point</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x02">
+      <description>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x02</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x03">
+      <description>Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x03</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x06">
+      <description>Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x06</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="C">
+      <description>Unpolarized capacitor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">Unpolarized capacitor</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="C_Polarized">
+      <description>Polarized capacitor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>CP_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C_Polarized</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">Polarized capacitor</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="L">
+      <description>Inductor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Choke_*</fp>
+        <fp>*Coil*</fp>
+        <fp>Inductor_*</fp>
+        <fp>L_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">L</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">Inductor</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R">
+      <description>Resistor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">~</field>
+        <field name="Description">Resistor</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Diode" part="1N4148W">
+      <description>75V 0.15A Fast Switching Diode, SOD-123</description>
+      <docs>https://www.vishay.com/docs/85748/1n4148w.pdf</docs>
+      <footprints>
+        <fp>D*SOD?123*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">1N4148W</field>
+        <field name="Footprint">Diode_SMD:D_SOD-123</field>
+        <field name="Datasheet">https://www.vishay.com/docs/85748/1n4148w.pdf</field>
+        <field name="Description">75V 0.15A Fast Switching Diode, SOD-123</field>
+        <field name="Sim.Device">D</field>
+        <field name="Sim.Pins">1=K 2=A</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Diode" part="1N5819">
+      <description>40V 1A Schottky Barrier Rectifier Diode, DO-41</description>
+      <docs>http://www.vishay.com/docs/88525/1n5817.pdf</docs>
+      <footprints>
+        <fp>D*DO?41*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">1N5819</field>
+        <field name="Footprint">Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal</field>
+        <field name="Datasheet">http://www.vishay.com/docs/88525/1n5817.pdf</field>
+        <field name="Description">40V 1A Schottky Barrier Rectifier Diode, DO-41</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Diode" part="1N5822">
+      <description>40V 3A Schottky Barrier Rectifier Diode, DO-201AD</description>
+      <docs>https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_1N5822_C2476.html</docs>
+      <footprints>
+        <fp>D*DO?201AD*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D1</field>
+        <field name="Value">1N5822</field>
+        <field name="Footprint">easyeda2kicad:DO-201AD_BD5.3-L8.4-P12.50-D1.4-FD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_1N5822_C2476.html</field>
+        <field name="Description">40V 3A Schottky Barrier Rectifier Diode, DO-201AD</field>
+        <field name="LCSC Part">C2476</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Drip" part="ADS1115IRUGT">
+      <docs>https://www.lcsc.com/product-detail/Analog-to-Digital-Converters-ADC_Texas-Instruments-ADS1115IRUGT_C701611.html?s_z=n_ads1115</docs>
+      <fields>
+        <field name="Reference">U2</field>
+        <field name="Value">ADS1115IRUGT</field>
+        <field name="Footprint">easyeda2kicad:X2QFN-10_L2.0-W1.5-P0.50-TL_RUG0010B</field>
+        <field name="Datasheet">https://www.lcsc.com/product-detail/Analog-to-Digital-Converters-ADC_Texas-Instruments-ADS1115IRUGT_C701611.html?s_z=n_ads1115</field>
+        <field name="Description"/>
+        <field name="MF">Texas Instruments</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">0.4 mm</field>
+        <field name="Package">X2QFN-10 Texas Instruments</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/ADS1115IRUGT/Texas+Instruments/view-part/?ref=eda</field>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="PARTREV">B</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/ADS1115IRUGT/Texas+Instruments/view-part/?ref=snap</field>
+        <field name="MP">ADS1115IRUGT</field>
+        <field name="Description_1">16-bit, 860-SPS, 4-channel, delta-sigma ADC with PGA, oscillator, VREF, comparator and I2C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">Texas Instruments</field>
+        <field name="LCSC Part">C701611</field>
+      </fields>
+      <pins>
+        <pin num="1" name="ADDR" type="input"/>
+        <pin num="2" name="ALERT/RDY" type="output"/>
+        <pin num="3" name="GND" type="power_in"/>
+        <pin num="4" name="AIN0" type="input"/>
+        <pin num="5" name="AIN1" type="input"/>
+        <pin num="6" name="AIN2" type="input"/>
+        <pin num="7" name="AIN3" type="input"/>
+        <pin num="8" name="VDD" type="power_in"/>
+        <pin num="9" name="SDA" type="bidirectional"/>
+        <pin num="10" name="SCL" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="Drip" part="LESD5D5.0CT1G">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">LESD5D5.0CT1G</field>
+        <field name="Footprint">LESD5D5.0CT1G:TVS_LESD5D5.0CT1G</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="MF">Leshan Radio Co.</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">0.7 mm</field>
+        <field name="Package">None</field>
+        <field name="Price">None</field>
+        <field name="Check_prices"/>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="PARTREV">O</field>
+        <field name="SnapEDA_Link"/>
+        <field name="MP">LESD5D5.0CT1G</field>
+        <field name="Description_1">Transient Voltage Suppressors for ESD Protection</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">LRC</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Drip" part="SRD-05VDC-SL-C">
+      <fields>
+        <field name="Reference">K</field>
+        <field name="Value">SRD-05VDC-SL-C</field>
+        <field name="Footprint">SRD-05VDC-SL-C:RELAY_SRD-05VDC-SL-C</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="MF">Songle Relay</field>
+        <field name="Description_1">5V Trigger Relay Module For Arduino And Raspberry Pi 5V Trigger Relay Module For Arduino And Raspberry Pi</field>
+        <field name="Package">NON STANDARD-5 Songle Relay</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda</field>
+        <field name="STANDARD">IPC-7251</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap</field>
+        <field name="MP">SRD-05VDC-SL-C</field>
+        <field name="Availability">In Stock</field>
+        <field name="MANUFACTURER">SONGLE RELAY</field>
+      </fields>
+      <pins>
+        <pin num="C1" name="" type="passive"/>
+        <pin num="C2" name="" type="passive"/>
+        <pin num="COM" name="" type="passive"/>
+        <pin num="NC" name="" type="passive"/>
+        <pin num="NO" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Drip" part="TYPE-C-31-M-12">
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">TYPE-C-31-M-12</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="SNAPEDA_PN"/>
+        <field name="Availability"/>
+        <field name="MANUFACTURER"/>
+      </fields>
+      <pins>
+        <pin num="A1" name="GND" type="power_in"/>
+        <pin num="A4" name="VBUS" type="power_in"/>
+        <pin num="A5" name="CC1" type="bidirectional"/>
+        <pin num="A6" name="DP1" type="bidirectional"/>
+        <pin num="A7" name="DN1" type="bidirectional"/>
+        <pin num="A8" name="SBU1" type="bidirectional"/>
+        <pin num="A9" name="VBUS" type="power_in"/>
+        <pin num="A12" name="GND" type="power_in"/>
+        <pin num="B1" name="GND" type="power_in"/>
+        <pin num="B4" name="VBUS" type="power_in"/>
+        <pin num="B5" name="CC2" type="bidirectional"/>
+        <pin num="B6" name="DP2" type="bidirectional"/>
+        <pin num="B7" name="DN2" type="bidirectional"/>
+        <pin num="B8" name="SBU2" type="bidirectional"/>
+        <pin num="B9" name="VBUS" type="power_in"/>
+        <pin num="B12" name="GND" type="power_in"/>
+        <pin num="S1" name="SHIELD" type="passive"/>
+        <pin num="S2" name="SHIELD" type="passive"/>
+        <pin num="S3" name="SHIELD" type="passive"/>
+        <pin num="S4" name="SHIELD" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Logic_LevelTranslator" part="TXS0102DCU">
+      <description>2-Bit Bidirectional Voltage-Level Shifter for Open-Drain and Push-Pull Application, VSSOP-8</description>
+      <docs>http://www.ti.com/lit/gpn/txs0102</docs>
+      <footprints>
+        <fp>VSSOP*2.3x2mm*P0.5mm*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">TXS0102DCU</field>
+        <field name="Footprint">Package_SO:VSSOP-8_2.3x2mm_P0.5mm</field>
+        <field name="Datasheet">http://www.ti.com/lit/gpn/txs0102</field>
+        <field name="Description">2-Bit Bidirectional Voltage-Level Shifter for Open-Drain and Push-Pull Application, VSSOP-8</field>
+      </fields>
+      <pins>
+        <pin num="1" name="B2" type="bidirectional"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="VCCA" type="power_in"/>
+        <pin num="4" name="A2" type="bidirectional"/>
+        <pin num="5" name="A1" type="bidirectional"/>
+        <pin num="6" name="OE" type="input"/>
+        <pin num="7" name="VCCB" type="power_in"/>
+        <pin num="8" name="B1" type="bidirectional"/>
+      </pins>
+    </libpart>
+    <libpart lib="RF_Module" part="ESP32-C3-WROOM-02">
+      <description>802.11 b/g/n Wi­Fi and Bluetooth 5 module, ESP32­C3 SoC, RISC­V microprocessor, On-board antenna</description>
+      <docs>https://www.espressif.com/sites/default/files/documentation/esp32-c3-wroom-02_datasheet_en.pdf</docs>
+      <footprints>
+        <fp>ESP32?C3*WROOM?02*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">ESP32-C3-WROOM-02</field>
+        <field name="Footprint">RF_Module:ESP32-C3-WROOM-02</field>
+        <field name="Datasheet">https://www.espressif.com/sites/default/files/documentation/esp32-c3-wroom-02_datasheet_en.pdf</field>
+        <field name="Description">802.11 b/g/n Wi­Fi and Bluetooth 5 module, ESP32­C3 SoC, RISC­V microprocessor, On-board antenna</field>
+      </fields>
+      <pins>
+        <pin num="1" name="3V3" type="power_in"/>
+        <pin num="2" name="EN" type="input"/>
+        <pin num="3" name="IO4" type="bidirectional"/>
+        <pin num="4" name="IO5" type="bidirectional"/>
+        <pin num="5" name="IO6" type="bidirectional"/>
+        <pin num="6" name="IO7" type="bidirectional"/>
+        <pin num="7" name="IO8" type="bidirectional"/>
+        <pin num="8" name="IO9" type="bidirectional"/>
+        <pin num="9" name="GND" type="power_in"/>
+        <pin num="10" name="IO10" type="bidirectional"/>
+        <pin num="11" name="IO20/RXD" type="bidirectional"/>
+        <pin num="12" name="IO21/TXD" type="bidirectional"/>
+        <pin num="13" name="IO18" type="bidirectional"/>
+        <pin num="14" name="IO19" type="bidirectional"/>
+        <pin num="15" name="IO3" type="bidirectional"/>
+        <pin num="16" name="IO2" type="bidirectional"/>
+        <pin num="17" name="IO1" type="bidirectional"/>
+        <pin num="18" name="IO0" type="bidirectional"/>
+        <pin num="19" name="GND" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Regulator_Linear" part="AMS1117">
+      <description>1A Low Dropout regulator, positive, adjustable output, SOT-223</description>
+      <docs>http://www.advanced-monolithic.com/pdf/ds1117.pdf</docs>
+      <footprints>
+        <fp>SOT?223*TabPin2*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">AMS1117</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-223-3_TabPin2</field>
+        <field name="Datasheet">http://www.advanced-monolithic.com/pdf/ds1117.pdf</field>
+        <field name="Description">1A Low Dropout regulator, positive, adjustable output, SOT-223</field>
+      </fields>
+      <pins>
+        <pin num="1" name="ADJ" type="input"/>
+        <pin num="2" name="VO" type="power_out"/>
+        <pin num="3" name="VI" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="Regulator_Switching" part="LM2575-5.0BT">
+      <description>Fixed 5.0V 52kHz Simple 1A Buck Regulator, TO-220-5</description>
+      <docs>https://lcsc.com/product-detail/PMIC-AC-DC-Converters_TI_LM2575SX-5-0-NOPB_LM2575SX-5-0-NOPB_C12061.html</docs>
+      <footprints>
+        <fp>TO?220*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">VREG1</field>
+        <field name="Value">LM2575T-5.0</field>
+        <field name="Footprint">easyeda2kicad:TO-263-5_L10.2-W8.9-P1.70-TL</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/PMIC-AC-DC-Converters_TI_LM2575SX-5-0-NOPB_LM2575SX-5-0-NOPB_C12061.html</field>
+        <field name="Description">Fixed 5.0V 52kHz Simple 1A Buck Regulator, TO-220-5</field>
+        <field name="LCSC Part">C12061</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VIN" type="power_in"/>
+        <pin num="2" name="OUT" type="output"/>
+        <pin num="3" name="GND" type="power_in"/>
+        <pin num="4" name="FB" type="input"/>
+        <pin num="5" name="~{ON}/OFF" type="input"/>
+        <pin num="6" name="TAB(GND)" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="Switch" part="SW_Push">
+      <description>Push button switch, generic, two pins</description>
+      <docs>https://www.lcsc.com/product-detail/Pushbutton-Switches_G-Switch-PS-1049SVD-4PN_C5446862.html</docs>
+      <fields>
+        <field name="Reference">SW1</field>
+        <field name="Value">SW_Push</field>
+        <field name="Footprint">easyeda2kicad:SW-SMD_4P-L10.0-W10.0-P6.00-LS12.2</field>
+        <field name="Datasheet">https://www.lcsc.com/product-detail/Pushbutton-Switches_G-Switch-PS-1049SVD-4PN_C5446862.html</field>
+        <field name="Description">Push button switch, generic, two pins</field>
+        <field name="LCSC Part">C5446862</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+        <pin num="3" name="3" type="passive"/>
+        <pin num="4" name="4" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Transistor_BJT" part="BC337">
+      <description>0.8A Ic, 45V Vce, NPN Transistor, TO-92</description>
+      <docs>https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</docs>
+      <footprints>
+        <fp>TO?92*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q3</field>
+        <field name="Value">BC337</field>
+        <field name="Footprint">easyeda2kicad:TO-92-3_L4.8-W3.7-P2.54-R</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Transistors-NPN-PNP_BLUE-ROCKET-BC337_C328602.html</field>
+        <field name="Description">0.8A Ic, 45V Vce, NPN Transistor, TO-92</field>
+        <field name="LCSC Part">C328602</field>
+      </fields>
+      <pins>
+        <pin num="1" name="E" type="passive"/>
+        <pin num="2" name="B" type="input"/>
+        <pin num="3" name="C" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="easyeda2kicad" part="WS2812B-2020">
+      <docs>https://lcsc.com/product-detail/Light-Emitting-Diodes-LED_Worldsemi-WS2812B-2020_C965555.html</docs>
+      <fields>
+        <field name="Reference">LED</field>
+        <field name="Value">WS2812B-2020</field>
+        <field name="Footprint">easyeda2kicad:LED-SMD_4P-L2.0-W2.0-TL_WS2812B-2020</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Light-Emitting-Diodes-LED_Worldsemi-WS2812B-2020_C965555.html</field>
+        <field name="Description"/>
+        <field name="LCSC Part">C965555</field>
+      </fields>
+      <pins>
+        <pin num="1" name="DO" type="unspecified"/>
+        <pin num="2" name="GND" type="unspecified"/>
+        <pin num="3" name="DI" type="unspecified"/>
+        <pin num="4" name="VDD" type="unspecified"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Connector">
+      <uri>/app/extensions/Library/symbols//Connector.kicad_sym</uri>
+    </library>
+    <library logical="Connector_Generic">
+      <uri>/app/extensions/Library/symbols//Connector_Generic.kicad_sym</uri>
+    </library>
+    <library logical="Device">
+      <uri>/app/extensions/Library/symbols//Device.kicad_sym</uri>
+    </library>
+    <library logical="Diode">
+      <uri>/app/extensions/Library/symbols//Diode.kicad_sym</uri>
+    </library>
+    <library logical="Drip">
+      <uri>/home/nathaniel/.var/app/org.kicad.KiCad/data/kicad/9.0/symbols/Drip.kicad_sym</uri>
+    </library>
+    <library logical="Logic_LevelTranslator">
+      <uri>/app/extensions/Library/symbols//Logic_LevelTranslator.kicad_sym</uri>
+    </library>
+    <library logical="RF_Module">
+      <uri>/app/extensions/Library/symbols//RF_Module.kicad_sym</uri>
+    </library>
+    <library logical="Regulator_Linear">
+      <uri>/app/extensions/Library/symbols//Regulator_Linear.kicad_sym</uri>
+    </library>
+    <library logical="Regulator_Switching">
+      <uri>/app/extensions/Library/symbols//Regulator_Switching.kicad_sym</uri>
+    </library>
+    <library logical="Switch">
+      <uri>/app/extensions/Library/symbols//Switch.kicad_sym</uri>
+    </library>
+    <library logical="Transistor_BJT">
+      <uri>/app/extensions/Library/symbols//Transistor_BJT.kicad_sym</uri>
+    </library>
+    <library logical="easyeda2kicad">
+      <uri>/home/nathaniel/Documents/Kicad/easyeda2kicad/easyeda2kicad.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+3.3V" class="Default">
+      <node ref="C17" pin="1" pintype="passive"/>
+      <node ref="C18" pin="1" pintype="passive"/>
+      <node ref="C21" pin="2" pintype="passive"/>
+      <node ref="C5" pin="1" pintype="passive"/>
+      <node ref="C6" pin="1" pintype="passive"/>
+      <node ref="C7" pin="2" pintype="passive"/>
+      <node ref="C8" pin="2" pintype="passive"/>
+      <node ref="J3" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="LED1" pin="4" pinfunction="VDD" pintype="unspecified"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+      <node ref="R14" pin="2" pintype="passive"/>
+      <node ref="R15" pin="2" pintype="passive"/>
+      <node ref="R16" pin="2" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+      <node ref="TP4" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U1" pin="1" pinfunction="3V3" pintype="power_in"/>
+      <node ref="U2" pin="8" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U3" pin="3" pinfunction="VCCA" pintype="power_in"/>
+      <node ref="VREG2" pin="2" pinfunction="VO" pintype="power_out"/>
+    </net>
+    <net code="2" name="+5V" class="Default">
+      <node ref="C14" pin="1" pintype="passive"/>
+      <node ref="C2" pin="1" pintype="passive"/>
+      <node ref="C22" pin="1" pintype="passive"/>
+      <node ref="C3" pin="1" pintype="passive"/>
+      <node ref="C4" pin="1" pintype="passive"/>
+      <node ref="D2" pin="1" pinfunction="K" pintype="passive"/>
+      <node ref="J4" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="L1" pin="2" pinfunction="2" pintype="passive"/>
+      <node ref="TP3" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="TP5" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U3" pin="7" pinfunction="VCCB" pintype="power_in"/>
+      <node ref="VREG1" pin="4" pinfunction="FB" pintype="input"/>
+      <node ref="VREG2" pin="3" pinfunction="VI" pintype="power_in"/>
+    </net>
+    <net code="3" name="+12V" class="Default">
+      <node ref="C1" pin="1" pintype="passive"/>
+      <node ref="D6" pin="1" pinfunction="K" pintype="passive"/>
+      <node ref="D7" pin="1" pinfunction="K" pintype="passive"/>
+      <node ref="D8" pin="1" pinfunction="K" pintype="passive"/>
+      <node ref="J1" pin="1" pintype="passive"/>
+      <node ref="J5" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="K1" pin="C1" pintype="passive"/>
+      <node ref="K1" pin="COM" pintype="passive"/>
+      <node ref="K2" pin="C1" pintype="passive"/>
+      <node ref="K2" pin="COM" pintype="passive"/>
+      <node ref="K3" pin="C1" pintype="passive"/>
+      <node ref="K3" pin="COM" pintype="passive"/>
+      <node ref="TP2" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="VREG1" pin="1" pinfunction="VIN" pintype="power_in"/>
+    </net>
+    <net code="4" name="ADC Alert" class="Default">
+      <node ref="R16" pin="1" pintype="passive"/>
+      <node ref="U1" pin="17" pinfunction="IO1" pintype="bidirectional"/>
+      <node ref="U2" pin="2" pinfunction="ALERT/RDY" pintype="output"/>
+    </net>
+    <net code="5" name="CHIP_PU" class="Default">
+      <node ref="C13" pin="1" pintype="passive"/>
+      <node ref="C9" pin="1" pintype="passive"/>
+      <node ref="J3" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+      <node ref="SW2" pin="3" pinfunction="3" pintype="passive"/>
+      <node ref="SW2" pin="4" pinfunction="4" pintype="passive"/>
+      <node ref="U1" pin="2" pinfunction="EN" pintype="input"/>
+    </net>
+    <net code="6" name="D+" class="Default">
+      <node ref="C10" pin="1" pintype="passive"/>
+      <node ref="D5" pin="2" pintype="passive"/>
+      <node ref="J2" pin="A6" pinfunction="DP1" pintype="bidirectional"/>
+      <node ref="J2" pin="B6" pinfunction="DP2" pintype="bidirectional"/>
+      <node ref="U1" pin="14" pinfunction="IO19" pintype="bidirectional"/>
+    </net>
+    <net code="7" name="D-" class="Default">
+      <node ref="C11" pin="1" pintype="passive"/>
+      <node ref="D4" pin="2" pintype="passive"/>
+      <node ref="J2" pin="A7" pinfunction="DN1" pintype="bidirectional"/>
+      <node ref="J2" pin="B7" pinfunction="DN2" pintype="bidirectional"/>
+      <node ref="U1" pin="13" pinfunction="IO18" pintype="bidirectional"/>
+    </net>
+    <net code="8" name="Flow Sensor Data" class="Default">
+      <node ref="TP10" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U1" pin="10" pinfunction="IO10" pintype="bidirectional"/>
+      <node ref="U3" pin="5" pinfunction="A1" pintype="bidirectional"/>
+    </net>
+    <net code="9" name="Flow Sensor Enable" class="Default">
+      <node ref="J3" pin="5" pinfunction="Pin_5" pintype="passive"/>
+      <node ref="R6" pin="2" pintype="passive"/>
+      <node ref="U1" pin="11" pinfunction="IO20/RXD" pintype="bidirectional"/>
+      <node ref="U3" pin="6" pinfunction="OE" pintype="input"/>
+    </net>
+    <net code="10" name="GND" class="Default">
+      <node ref="C1" pin="2" pintype="passive"/>
+      <node ref="C10" pin="2" pintype="passive"/>
+      <node ref="C11" pin="2" pintype="passive"/>
+      <node ref="C12" pin="2" pintype="passive"/>
+      <node ref="C13" pin="2" pintype="passive"/>
+      <node ref="C14" pin="2" pintype="passive"/>
+      <node ref="C17" pin="2" pintype="passive"/>
+      <node ref="C18" pin="2" pintype="passive"/>
+      <node ref="C2" pin="2" pintype="passive"/>
+      <node ref="C20" pin="2" pintype="passive"/>
+      <node ref="C21" pin="1" pintype="passive"/>
+      <node ref="C22" pin="2" pintype="passive"/>
+      <node ref="C3" pin="2" pintype="passive"/>
+      <node ref="C4" pin="2" pintype="passive"/>
+      <node ref="C5" pin="2" pintype="passive"/>
+      <node ref="C6" pin="2" pintype="passive"/>
+      <node ref="C7" pin="1" pintype="passive"/>
+      <node ref="C8" pin="1" pintype="passive"/>
+      <node ref="C9" pin="2" pintype="passive"/>
+      <node ref="D1" pin="2" pinfunction="A" pintype="passive"/>
+      <node ref="D3" pin="1" pintype="passive"/>
+      <node ref="D4" pin="1" pintype="passive"/>
+      <node ref="D5" pin="1" pintype="passive"/>
+      <node ref="J1" pin="2" pintype="passive"/>
+      <node ref="J1" pin="3" pintype="passive"/>
+      <node ref="J2" pin="A1" pinfunction="GND" pintype="power_in"/>
+      <node ref="J2" pin="A12" pinfunction="GND" pintype="power_in"/>
+      <node ref="J2" pin="B1" pinfunction="GND" pintype="power_in"/>
+      <node ref="J2" pin="B12" pinfunction="GND" pintype="power_in"/>
+      <node ref="J2" pin="S1" pinfunction="SHIELD" pintype="passive"/>
+      <node ref="J2" pin="S2" pinfunction="SHIELD" pintype="passive"/>
+      <node ref="J2" pin="S3" pinfunction="SHIELD" pintype="passive"/>
+      <node ref="J2" pin="S4" pinfunction="SHIELD" pintype="passive"/>
+      <node ref="J3" pin="6" pinfunction="Pin_6" pintype="passive"/>
+      <node ref="J4" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="J6" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J7" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J8" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="LED1" pin="2" pinfunction="GND" pintype="unspecified"/>
+      <node ref="Q1" pin="1" pinfunction="E" pintype="passive"/>
+      <node ref="Q2" pin="1" pinfunction="E" pintype="passive"/>
+      <node ref="Q3" pin="1" pinfunction="E" pintype="passive"/>
+      <node ref="R10" pin="2" pintype="passive"/>
+      <node ref="R12" pin="2" pintype="passive"/>
+      <node ref="R3" pin="2" pintype="passive"/>
+      <node ref="R4" pin="2" pintype="passive"/>
+      <node ref="R5" pin="2" pintype="passive"/>
+      <node ref="R6" pin="1" pintype="passive"/>
+      <node ref="R8" pin="2" pintype="passive"/>
+      <node ref="SW1" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="SW1" pin="2" pinfunction="2" pintype="passive"/>
+      <node ref="SW2" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="SW2" pin="2" pinfunction="2" pintype="passive"/>
+      <node ref="TP1" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U1" pin="19" pinfunction="GND" pintype="passive"/>
+      <node ref="U1" pin="9" pinfunction="GND" pintype="power_in"/>
+      <node ref="U2" pin="1" pinfunction="ADDR" pintype="input"/>
+      <node ref="U2" pin="3" pinfunction="GND" pintype="power_in"/>
+      <node ref="U3" pin="2" pinfunction="GND" pintype="power_in"/>
+      <node ref="VREG1" pin="3" pinfunction="GND" pintype="power_in"/>
+      <node ref="VREG1" pin="5" pinfunction="~{ON}/OFF" pintype="input"/>
+      <node ref="VREG1" pin="6" pinfunction="TAB(GND)" pintype="power_in"/>
+      <node ref="VREG2" pin="1" pinfunction="ADJ" pintype="input"/>
+    </net>
+    <net code="11" name="GPIO9" class="Default">
+      <node ref="C12" pin="1" pintype="passive"/>
+      <node ref="J3" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="R2" pin="2" pintype="passive"/>
+      <node ref="SW1" pin="3" pinfunction="3" pintype="passive"/>
+      <node ref="SW1" pin="4" pinfunction="4" pintype="passive"/>
+      <node ref="U1" pin="8" pinfunction="IO9" pintype="bidirectional"/>
+    </net>
+    <net code="12" name="IO21" class="Default">
+      <node ref="J3" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="TP8" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U1" pin="12" pinfunction="IO21/TXD" pintype="bidirectional"/>
+    </net>
+    <net code="13" name="Net-(D1-K)" class="Default">
+      <node ref="D1" pin="1" pinfunction="K" pintype="passive"/>
+      <node ref="L1" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="VREG1" pin="2" pinfunction="OUT" pintype="output"/>
+    </net>
+    <net code="14" name="Net-(D2-A)" class="Default">
+      <node ref="D2" pin="2" pinfunction="A" pintype="passive"/>
+      <node ref="D3" pin="2" pintype="passive"/>
+      <node ref="J2" pin="A4" pinfunction="VBUS" pintype="power_in"/>
+      <node ref="J2" pin="A9" pinfunction="VBUS" pintype="power_in"/>
+      <node ref="J2" pin="B4" pinfunction="VBUS" pintype="power_in"/>
+      <node ref="J2" pin="B9" pinfunction="VBUS" pintype="power_in"/>
+    </net>
+    <net code="15" name="Net-(D6-A)" class="Default">
+      <node ref="D6" pin="2" pinfunction="A" pintype="passive"/>
+      <node ref="K1" pin="C2" pintype="passive"/>
+      <node ref="Q1" pin="3" pinfunction="C" pintype="passive"/>
+    </net>
+    <net code="16" name="Net-(D7-A)" class="Default">
+      <node ref="D7" pin="2" pinfunction="A" pintype="passive"/>
+      <node ref="K2" pin="C2" pintype="passive"/>
+      <node ref="Q2" pin="3" pinfunction="C" pintype="passive"/>
+    </net>
+    <net code="17" name="Net-(D8-A)" class="Default">
+      <node ref="D8" pin="2" pinfunction="A" pintype="passive"/>
+      <node ref="K3" pin="C2" pintype="passive"/>
+      <node ref="Q3" pin="3" pinfunction="C" pintype="passive"/>
+    </net>
+    <net code="18" name="Net-(J2-CC1)" class="Default">
+      <node ref="J2" pin="A5" pinfunction="CC1" pintype="bidirectional"/>
+      <node ref="R3" pin="1" pintype="passive"/>
+    </net>
+    <net code="19" name="Net-(J2-CC2)" class="Default">
+      <node ref="J2" pin="B5" pinfunction="CC2" pintype="bidirectional"/>
+      <node ref="R4" pin="1" pintype="passive"/>
+    </net>
+    <net code="20" name="Net-(J4-Pin_2)" class="Default">
+      <node ref="J4" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="U3" pin="8" pinfunction="B1" pintype="bidirectional"/>
+    </net>
+    <net code="21" name="Net-(J5-Pin_2)" class="Default">
+      <node ref="J5" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="R13" pin="2" pintype="passive"/>
+      <node ref="R5" pin="1" pintype="passive"/>
+    </net>
+    <net code="22" name="Net-(J6-Pin_1)" class="Default">
+      <node ref="J6" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="K1" pin="NO" pintype="passive"/>
+    </net>
+    <net code="23" name="Net-(J7-Pin_1)" class="Default">
+      <node ref="J7" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="K2" pin="NO" pintype="passive"/>
+    </net>
+    <net code="24" name="Net-(J8-Pin_1)" class="Default">
+      <node ref="J8" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="K3" pin="NO" pintype="passive"/>
+    </net>
+    <net code="25" name="Net-(Q1-B)" class="Default">
+      <node ref="Q1" pin="2" pinfunction="B" pintype="input"/>
+      <node ref="R7" pin="2" pintype="passive"/>
+      <node ref="R8" pin="1" pintype="passive"/>
+    </net>
+    <net code="26" name="Net-(Q2-B)" class="Default">
+      <node ref="Q2" pin="2" pinfunction="B" pintype="input"/>
+      <node ref="R10" pin="1" pintype="passive"/>
+      <node ref="R9" pin="2" pintype="passive"/>
+    </net>
+    <net code="27" name="Net-(Q3-B)" class="Default">
+      <node ref="Q3" pin="2" pinfunction="B" pintype="input"/>
+      <node ref="R11" pin="2" pintype="passive"/>
+      <node ref="R12" pin="1" pintype="passive"/>
+    </net>
+    <net code="28" name="Net-(U1-IO0)" class="Default">
+      <node ref="TP6" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U1" pin="18" pinfunction="IO0" pintype="bidirectional"/>
+    </net>
+    <net code="29" name="Net-(U1-IO8)" class="Default">
+      <node ref="TP7" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U1" pin="7" pinfunction="IO8" pintype="bidirectional"/>
+    </net>
+    <net code="30" name="Net-(U3-A2)" class="Default">
+      <node ref="TP11" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U3" pin="4" pinfunction="A2" pintype="bidirectional"/>
+    </net>
+    <net code="31" name="Net-(U3-B2)" class="Default">
+      <node ref="TP12" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U3" pin="1" pinfunction="B2" pintype="bidirectional"/>
+    </net>
+    <net code="32" name="Pressure Sensor Voltage" class="Default">
+      <node ref="C20" pin="1" pintype="passive"/>
+      <node ref="R13" pin="1" pintype="passive"/>
+      <node ref="TP9" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U2" pin="4" pinfunction="AIN0" pintype="input"/>
+    </net>
+    <net code="33" name="RGB" class="Default">
+      <node ref="LED1" pin="3" pinfunction="DI" pintype="unspecified"/>
+      <node ref="U1" pin="3" pinfunction="IO4" pintype="bidirectional"/>
+    </net>
+    <net code="34" name="Relay1" class="Default">
+      <node ref="R7" pin="1" pintype="passive"/>
+      <node ref="U1" pin="4" pinfunction="IO5" pintype="bidirectional"/>
+    </net>
+    <net code="35" name="Relay2" class="Default">
+      <node ref="R9" pin="1" pintype="passive"/>
+      <node ref="U1" pin="5" pinfunction="IO6" pintype="bidirectional"/>
+    </net>
+    <net code="36" name="Relay3" class="Default">
+      <node ref="R11" pin="1" pintype="passive"/>
+      <node ref="U1" pin="6" pinfunction="IO7" pintype="bidirectional"/>
+    </net>
+    <net code="37" name="SCLK" class="Default">
+      <node ref="R15" pin="1" pintype="passive"/>
+      <node ref="U1" pin="16" pinfunction="IO2" pintype="bidirectional"/>
+      <node ref="U2" pin="10" pinfunction="SCL" pintype="input"/>
+    </net>
+    <net code="38" name="SDA" class="Default">
+      <node ref="R14" pin="1" pintype="passive"/>
+      <node ref="U1" pin="15" pinfunction="IO3" pintype="bidirectional"/>
+      <node ref="U2" pin="9" pinfunction="SDA" pintype="bidirectional"/>
+    </net>
+    <net code="39" name="unconnected-(J2-SBU1-PadA8)" class="Default">
+      <node ref="J2" pin="A8" pinfunction="SBU1" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="40" name="unconnected-(J2-SBU2-PadB8)" class="Default">
+      <node ref="J2" pin="B8" pinfunction="SBU2" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="41" name="unconnected-(K1-PadNC)" class="Default">
+      <node ref="K1" pin="NC" pintype="passive+no_connect"/>
+    </net>
+    <net code="42" name="unconnected-(K2-PadNC)" class="Default">
+      <node ref="K2" pin="NC" pintype="passive+no_connect"/>
+    </net>
+    <net code="43" name="unconnected-(K3-PadNC)" class="Default">
+      <node ref="K3" pin="NC" pintype="passive+no_connect"/>
+    </net>
+    <net code="44" name="unconnected-(LED1-DO-Pad1)" class="Default">
+      <node ref="LED1" pin="1" pinfunction="DO" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="45" name="unconnected-(U2-AIN1-Pad5)" class="Default">
+      <node ref="U2" pin="5" pinfunction="AIN1" pintype="input+no_connect"/>
+    </net>
+    <net code="46" name="unconnected-(U2-AIN2-Pad6)" class="Default">
+      <node ref="U2" pin="6" pinfunction="AIN2" pintype="input+no_connect"/>
+    </net>
+    <net code="47" name="unconnected-(U2-AIN3-Pad7)" class="Default">
+      <node ref="U2" pin="7" pinfunction="AIN3" pintype="input+no_connect"/>
+    </net>
+  </nets>
+</export>

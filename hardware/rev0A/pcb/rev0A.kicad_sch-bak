@@ -2539,7 +2539,7 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "D3"
+			(property "Reference" "D1"
 				(at -1.5876 2.54 90)
 				(effects
 					(font
@@ -2586,15 +2586,6 @@
 			)
 			(property "LCSC Part" "C2476"
 				(at 8.382 -8.128 90)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "JLC" ""
-				(at 0 0 90)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -2669,7 +2660,7 @@
 							)
 						)
 					)
-					(number "2"
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2687,7 +2678,7 @@
 							)
 						)
 					)
-					(number "1"
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -12341,7 +12332,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_100uF-50V_C3352.html"
+		(property "Datasheet" "https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_Honor-Elec-RVT1H101M0810_C3352.html?s_z=n_C3352"
 			(at 113.03 49.53 0)
 			(effects
 				(font
@@ -23506,7 +23497,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_Honor-Elec-RVT1H331M1010_C2895745.html?s_z=n_C2895745"
+		(property "Datasheet" "https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_ROQANG-RVT1H331M1010_C3032175.html"
 			(at 184.15 52.07 0)
 			(effects
 				(font
@@ -23524,7 +23515,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part" "C2895745"
+		(property "LCSC Part" "C3032175"
 			(at 184.15 52.07 0)
 			(effects
 				(font

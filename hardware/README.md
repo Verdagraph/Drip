@@ -12,7 +12,6 @@ The reset button is connected to the CHIP_PU or chip power up pin on the ESP. It
 
 The boot button is connectod to GPIO9. When GPIO0 is pulled high, the chip will boot into its saved program. When its pulled low, it will enter into the USB/UART boot mode. This person (https://www.instructables.com/Build-Custom-ESP32-Boards-From-Scratch-the-Complet/) also added a pullup here and found it reduced boot errors.
 
-The RGB in use is the WS2812B-2020, but this can be any addressable RGB LED. Its recommended to connect vdd to 5v, but it also works at 3.3v and since this is jsut an indicator light its fine like this.
 
 The USBC receptable connects the positive and negative data terminals on either side together and shunts them along with the USB bus voltage with zener diodes for ESD protection and the schtokky diode on the voltage line for reverse current protection, along with a filtering capacitor. THe CC1 and CC2 lines are pulled down for USBC functinoality
 
@@ -30,3 +29,7 @@ The ADC is the ADC088S022, as the ESP ADC is not reliable. This has both the 5V 
 
 
 https://www.aliexpress.com/item/1005006568129795.html?spm=a2g0o.productlist.main.25.45f354a8S2jKQZ&algo_pvid=02c4b3cc-5f71-485b-a4de-3bd9254a7f95&algo_exp_id=02c4b3cc-5f71-485b-a4de-3bd9254a7f95-24&pdp_ext_f=%7B%22order%22%3A%2298%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21CAD%2150.61%2146.85%21%21%2135.71%2133.06%21%402101eac917449551732753582e5d94%2112000037696338130%21sea%21CA%210%21ABX&curPageLogUid=sR35G4mEGZbu&utparam-url=scene%3Asearch%7Cquery_from%3A
+
+
+Power profiles:
+ESP32c3 wroom 02: max 345A

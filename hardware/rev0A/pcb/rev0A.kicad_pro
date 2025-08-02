@@ -56,6 +56,11 @@
           "gap": 0.0,
           "via_gap": 0.0,
           "width": 0.0
+        },
+        {
+          "gap": 0.6,
+          "via_gap": 0.6,
+          "width": 0.2
         }
       ],
       "drc_exclusions": [
@@ -215,7 +220,9 @@
       "track_widths": [
         0.0,
         0.3,
-        0.6
+        0.8,
+        1.2,
+        1.4
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -541,8 +548,8 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
-      "pos_files": "",
+      "plot": "plots/",
+      "pos_files": "plots/",
       "specctra_dsn": "",
       "step": "",
       "svg": "",
@@ -635,6 +642,12 @@
         },
         {
           "group_by": false,
+          "label": "JLC",
+          "name": "JLC",
+          "show": true
+        },
+        {
+          "group_by": false,
           "label": "MANUFACTURER",
           "name": "MANUFACTURER",
           "show": false
@@ -710,6 +723,12 @@
           "label": "DNP",
           "name": "${DNP}",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "Max Current ",
+          "name": "Max Current ",
+          "show": false
         }
       ],
       "filter_string": "",
@@ -717,7 +736,7 @@
       "include_excluded_from_bom": false,
       "name": "",
       "sort_asc": true,
-      "sort_field": "Reference"
+      "sort_field": "LCSC Part"
     },
     "connection_grid_size": 50.0,
     "drawing": {

@@ -1,4 +1,4 @@
-66303202961742
+71598911221832
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -59156,34 +59156,6 @@ One digit LED 7 segment SA39-11 SC39-11 SA39-12 SC39-12
 0
 10
 10
-Drip
-IC_ADS1115IRUGT
-<b>10 Lead Platic MSOP</b><p>Source: http://www.linear.com .. LT1996
-
-0
-10
-10
-Drip
-RELAY_SRD-05VDC-SL-C
-
-
-0
-5
-5
-Drip
-logo
-
-
-0
-0
-0
-Drip
-logo_small
-
-
-0
-0
-0
 Ferrite_THT
 LairdTech_28C0236-0JW-10
 Ferrite, vertical, LairdTech 28C0236-0JW-10, https://assets.lairdtech.com/home/brandworld/files/28C0236-0JW-10.pdf, JW Miller core https://www.bourns.com/products/magnetic-products/j.w.-miller-through-hole-ferrite-beads-emi-filters
@@ -102704,6 +102676,13 @@ CAP-SMD_BD10.0-L10.3-W10.3-FD
 2
 2
 easyeda2kicad
+CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD
+
+
+0
+2
+2
+easyeda2kicad
 CONN-TH_3P-P2.50_A2501WV2-3P
 
 
@@ -102726,6 +102705,13 @@ DC-IN-TH_EJ508A
 3
 easyeda2kicad
 DO-201AD_BD5.3-L8.4-P12.50-D1.4-FD
+
+
+0
+2
+2
+easyeda2kicad
+F1812
 
 
 0
@@ -102802,6 +102788,27 @@ RES-TH_BD2.3-L6.5-P10.50-D0.5
 2
 2
 easyeda2kicad
+SC-70-6_L2.0-W1.3-P0.65-LS2.1-BR
+
+
+0
+6
+6
+easyeda2kicad
+SMA_L4.4-W2.6-LS5.0-RD
+
+
+0
+2
+2
+easyeda2kicad
+SOD-123FL_L2.8-W1.8-LS3.6-RD
+
+
+0
+2
+2
+easyeda2kicad
 SOD-123_L2.7-W1.6-LS3.7-RD
 
 
@@ -102830,7 +102837,21 @@ SOT-223-3_L6.5-W3.4-P2.30-LS7.0-BR
 4
 4
 easyeda2kicad
+SOT-223-4_L6.5-W3.5-P2.30-LS7.0-BR
+
+
+0
+4
+4
+easyeda2kicad
 SW-SMD_4P-L10.0-W10.0-P6.00-LS12.2
+
+
+0
+4
+4
+easyeda2kicad
+SW-TH_4P-L6.0-W6.0-P4.50-LS6.5
 
 
 0
