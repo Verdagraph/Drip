@@ -2,33 +2,33 @@
 #define STATES_H
 
 /**
- * @brief Describes possible finite-state-machine states.
+ * @brief Describes possible finite-state-machine states for the whole application.
 */
-typedef enum FsmStates_e {
-    STATE_MIN,
+enum VdgMainFsmState_e {
+    VDG_MAIN_FSM_MIN,
 
     /** Initialization. */
-    STATE_BOOT,
+    VDG_MAIN_FSM_BOOT,
     /** Unrecoverable error. */
-    STATE_FATAL_ERROR,
+    VDG_MAIN_FSM_FATAL_ERROR,
     /** Establishing WiFi connection. */
-    STATE_CONNECT,
+    VDG_MAIN_FSM_CONNECT,
     /** WiFi provisioning. */
-    STATE_PROVISIONING,
+    VDG_MAIN_FSM_PROVISIONING,
     /** Restarts the device. */
-    STATE_RESTART,
+    VDG_MAIN_FSM_RESTART,
     /** Main idle state. */
-    STATE_LISTEN,
+    VDG_MAIN_FSM_LISTEN,
     /** Dispensation process. */
-    STATE_DISPENSE,
+    VDG_MAIN_FSM_DISPENSE,
     /** Flow calibration process. */
-    STATE_FLOW_CALIBRATE,
+    VDG_MAIN_FSM_FLOW_CALIBRATE,
     /** Pressure calibration process. */
-    STATE_PRESSURE_CALIBRATE,
+    VDG_MAIN_FSM_PRESSURE_CALIBRATE,
     /** Tank drain process. */
-    STATE_DRAIN,
+    VDG_MAIN_FSM_DRAIN,
 
-    STATE_MAX
-} FsmStates_e;
+    VDG_MAIN_FSM_MAX
+};
 
 #endif

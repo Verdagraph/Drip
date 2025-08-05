@@ -2,10 +2,36 @@
 #define STATE_MANAGER_H
 
 #include "states.h"
+#include "messages.h"
 #include "configManager.h"
+#include "dataContainer.h"
 #include "mqttManager.h"
 #include "connectionManager.h"
 #include "valveManager.h"
+
+/**
+ * @brief Signature common to all incoming message handler functions.
+ * 
+ * @param message The message to handle
+ */
+typedef void (*VdgMessageHandleFunc_t)(VdgMessage_t &message);
+
+/**
+ * @brief Holds timing information.
+ */
+struct VdgMainFsmEventTimers_t {
+    /** The timestamp of the last time a process slice was uploaded. */
+    uint32_t lastProcessSliceUploadTimestamp;
+}
+
+/**
+ * @brief Describes an entry in a lookup table 
+ * mapping message IDs to handler functions
+ */
+struct VdgMessageHandleFuncTable_t {
+    VdgMessageId_t id;
+    VdgMessageHandleFunc_t *handlerFunction;
+};
 
 /**
  * @brief Defines main application routines and transistions between states.
@@ -15,12 +41,7 @@ public:
     /**
      * @brief Constructor.
      */
-    StateManager(
-        ConfigManager *configManager, 
-        MqttManager *mqttManager, 
-        ConnectionManager *connectionManager, 
-        ValveManager *valveManager
-    );
+    StateManager();
 
     /**
      * @brief Begins the finite state machine.
@@ -28,19 +49,41 @@ public:
     void initialize();
 
     /**
-     * @brief Executes the current state.
+     * @brief Updates the FSM.
      */
-    void handle_current_state();
+    void update();
     
 private:
     /** Current state. */
-    FsmStates_e state;
+    VdgMainFsmState_e state_;
+    VdgMainFsmEventTimers_t eventTimers_;
 
     /** Managers. */
-    ConfigManager *configManager;
-    MqttManager *mqttManager;
-    ConnectionManager *connectionManager;
-    ValveManager *valveManager;
+    DataContainer dataContainer_;
+    ConfigManager configManager_;
+    MqttManager mqttManager_;
+    ConnectionManager connectionManager_;
+    ValveManager valveManager_;
+
+    /**
+     * @brief Executes the current state.
+     */
+    void handleCurrentState();
+
+    /**
+     * @brief Handles all received messages according to the handler
+     * functions defined in a lookup table.
+     * 
+     * @details If a message is received that does not match an associated
+     * handler function, it is ignored.
+     * 
+     * @param[in] table The lookup table to use to find the handler functions.
+     * 
+     * @retval ESP_INVALID_INPUT Returned if the lookup table is invalid.
+     * @retval ESP_FAILURE Returned if an error occurred retrieving the message or handler function
+     * @retval ESP_OK Returned if all messages are handled or ignored.
+     */
+    esp_err_t handleReceivedMessages(VdgMessageHandleFuncTable_t *table);
 
     /** State handlers. */
 
@@ -94,55 +137,76 @@ private:
      */
     void drain();
 
-    /** Received MQTT message handlers. */
+    /** 
+     * Received MQTT message handlers. 
+     */
 
     /**
      * @brief Handles state change for a dispense request.
      * 
-     * @param message MQTT received message.
+     * @param[in] message MQTT received message.
      * @return esp_err_t Return code.
      */
-    esp_err_t handleDispenseRequest(MqttRxMessage_t *message);
+    void handleDispenseRequest(VdgMessage_t &message);
 
     /**
-     * @brief Handles state change for a config change request.
+     * @brief Handles state change for a deactivation request.
      * 
-     * @param message MQTT received message.
+     * @param[in] message MQTT received message.
      * @return esp_err_t Return code.
      */
-    esp_err_t handleConfigChangeRequest(MqttRxMessage_t *message);
+    void handleDeactivateRequest(VdgMessage_t &message);
 
     /**
-     * @brief Handles state change for a flow calibrate request.
+     * @brief Handles state change for a restart request.
      * 
-     * @param message MQTT received message.
-     * @return esp_err_t Return code.
+     * @param[in] message MQTT received message.
      */
-    esp_err_t handleFlowCalibrateRequest(MqttRxMessage_t *message);
+    void handleRestartRequest(VdgMessage_t &message);
+
+    /**
+     * @brief Handles state change for a flow calibrate request
+     * when in the state VDG_MAIN_FSM_LISTEN.
+     * 
+     * @param[in] message MQTT received message.
+     */
+    void handleFlowCalibrateRequestListen(VdgMessage_t message);
+
+    /**
+     * @brief Handles state change for a flow calibrate request
+     * when in the state VDG_MAIN_FSM_FLOW_CALIBRATE.
+     * 
+     * @param[in] message MQTT received message.
+     */
+    void handleFlowCalibrateRequestFlowCalibration(VdgMessage_t message);
 
     /**
      * @brief Handles state change for a pressure calibrate request.
      * 
-     * @param message MQTT received message.
-     * @return esp_err_t Return code.
+     * @param[in] message MQTT received message.
      */
-    esp_err_t handlePressureCalibrateRequest(MqttRxMessage_t *message);
+    void handlePressureCalibrateRequest(VdgMessage_t &message);
 
     /**
      * @brief Handles state change for a drain request.
      * 
-     * @param message MQTT received message.
-     * @return esp_err_t Return code.
+     * @param[in] message MQTT received message.
      */
-    esp_err_t handleDrainRequest(MqttRxMessage_t *message);
+    void handleDrainRequest(VdgMessage_t &message);
 
     /**
      * @brief Handles state change for a pressure poll request.
      * 
-     * @param message MQTT received message.
-     * @return esp_err_t Return code.
+     * @param[in] message MQTT received message.
      */
-    esp_err_t handlePressurePollRequest(MqttRxMessage_t *message);
+    void handlePressurePollRequest(VdgMessage_t &message);
+
+    /**
+     * @brief Handles state change for a config change request.
+     * 
+     * @param[in] message MQTT received message.
+     */
+    void handleConfigChangeRequest(VdgMessage_t &message);
 };
 
 #endif

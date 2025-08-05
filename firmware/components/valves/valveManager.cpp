@@ -8,7 +8,7 @@ static const char* TAG = "ValveManager";
  * @brief Constructor.
  */
 ValveManager::ValveManager() {
-    state = VALVES_IDLE;
+    currentProcess_ = VDG_VALVES_MIN;
     dispenseTarget = {};
     dispenseProcess = {};
     dispenseSummary = {};
@@ -23,6 +23,7 @@ ValveManager::ValveManager() {
  * @return esp_err_t Return code. 
  */
 esp_err_t ValveManager::initialize() {
+    currentProcess_ = VDG_VALVES_IDLE;
     return ESP_OK;
 }
 
@@ -34,7 +35,7 @@ esp_err_t ValveManager::initialize() {
  * @param process Overwritten with the initial process variables.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::beginDispenstation(DispenseTarget_t &target, ValveStates_e &state, DispenseProcess_t &process) {
+esp_err_t ValveManager::beginDispenseProcess(DispenseTarget_t &target, ValveStates_e &state, DispenseProcess_t &process) {
     return ESP_OK;
 }
 
@@ -46,7 +47,7 @@ esp_err_t ValveManager::beginDispenstation(DispenseTarget_t &target, ValveStates
  * @param summary Overwritten with the current process summary.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::loopDispense(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
+esp_err_t ValveManager::updateDispenseProcess(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
     return ESP_OK;
 }
 
@@ -58,7 +59,7 @@ esp_err_t ValveManager::loopDispense(ValveStates_e &state, DispenseProcess_t &pr
  * @param summary Overwritten with the current process summary.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::endDispense(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
+esp_err_t ValveManager::endDispenseProcess(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
     return ESP_OK;
 }
 
@@ -70,7 +71,7 @@ esp_err_t ValveManager::endDispense(ValveStates_e &state, DispenseProcess_t &pro
  * @param process Overwritten with the initial process variables.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::beginDrain(DrainTarget_t &target, ValveStates_e &state, DrainProcess_t &process) {
+esp_err_t ValveManager::beginDrainProcess(DrainTarget_t &target, ValveStates_e &state, DrainProcess_t &process) {
     return ESP_OK;
 }
 
@@ -82,7 +83,7 @@ esp_err_t ValveManager::beginDrain(DrainTarget_t &target, ValveStates_e &state, 
  * @param summary Overwritten with the current process summary.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::loopDrain(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
+esp_err_t ValveManager::updateDrainProcesss(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
     return ESP_OK;
 }
 
@@ -94,6 +95,6 @@ esp_err_t ValveManager::loopDrain(ValveStates_e &state, DrainProcess_t &process,
  * @param summary Overwritten with the current process summary.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::endDrain(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
+esp_err_t ValveManager::endDrainProcess(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
     return ESP_OK;
 }

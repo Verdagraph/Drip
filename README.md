@@ -52,11 +52,11 @@ Possible improvements, in no particular order:
 
 ## PCB Design
 
-![PCB Screenshot](docs/pcb.png)
+![PCB Screenshot](docs/images/design/pcb.png)
 
 ## Firmware Design
 
-![FSM Screenshot](docs/fsm.excalidraw.png)
+![FSM Screenshot](docs/images/design/fsm.excalidraw.png)
 
 # Contributing
 

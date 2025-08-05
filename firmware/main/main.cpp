@@ -17,19 +17,13 @@
  * @param pvParameters Allows parameters to be passed from the main function. Currently unused. 
  */
 void vMainTask(void *pvParameters) {
-    /** Initialize managers. */
-    ConfigManager configManager = ConfigManager();
-    MqttManager mqttManager = MqttManager();
-    ConnectionManager connectionManager = ConnectionManager();
-    ValveManager valveManager = ValveManager();
-    StateManager stateManager = StateManager(&configManager, &mqttManager, &connectionManager, &valveManager);
-
     /** Initialize the FSM. */
+    StateManager stateManager = StateManager();
     stateManager.initialize();
     
     /** Run the FSM. */
     while (true) {
-        stateManager.handle_current_state();
+        stateManager.handleCurrentState();
     }
 
     /** Should not reach here. */

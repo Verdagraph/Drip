@@ -4,8 +4,6 @@
 #include "messages.h"
 #include "valveManager.h"
 
-#define RX_PAYLOAD_MAX_BYTES 512
-
 /**
  * @brief Handles transmitting and receiving MQTT messages.
  */
@@ -42,47 +40,23 @@ public:
      * @param Pointer to the message object.
      * @return esp_err_t Return code.
      */
-    esp_err_t getNextMessage(MqttRxMessage_t* message);
+    esp_err_t getNextMessage(VdgMessage_t* message);
 
-    /**
-     * @brief Transmit an info log.
-     * 
-     * @param Log message.
-     * @return esp_err_t Return code.
-     */
-    esp_err_t txInfo(const char* tag, const char *message);
-
-    /**
-     * @brief Transmit a warning log.
-     * 
-     * @param Log message.
-     * @return esp_err_t Return code.
-     */
-    esp_err_t txWarning(const char* tag, const char *message);
-
-    /**
-     * @brief Transmit an error log.
-     * 
-     * @param Log message.
-     * @return esp_err_t Return code.
-     */
-    esp_err_t txError(const char* tag, const char *message);
+    esp_err_t uploadLogs();
 
     /**
      * @brief Transmits a time slice of the dispense process realtime variables.
      * 
-     * @param slice The variables.
      * @return esp_err_t Return code.
      */
-    esp_err_t txDispenseSlice(DispenseProcess_t &slice);
+    esp_err_t uploadDispenseSlice();
 
     /**
      * @brief Transmits a summary of the dispense process variables.
      * 
-     * @param summary The variables.
      * @return esp_err_t Return code. 
      */
-    esp_err_t txDispenseSummary(DispenseSummary_t &summary);
+    esp_err_t uploadDispenseSummary();
 
     
 private:

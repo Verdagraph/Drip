@@ -2,116 +2,140 @@
 #define FLOW_MANAGER_H
 
 /**
- * @brief Describes the possible states of the flow sensor.
+ * @brief Describes the current process of the flow sensor.
  */
-typedef enum FlowSensorStates_e {
-    /** Default state. */
-    FLOW_SENSOR_UNKNOWN,
-    FLOW_SENSOR_IDLE,
-    FLOW_SENSOR_DISPENSING,
-    FLOW_SENSOR_CALIBRATION_DISPENSING,
-    FLOW_SENSOR_CALIBRATION_WAITING_FOR_MEASUREMENT
-} FlowSensorStates_e;
+enum VdgFlowSensorState_e {
+    VDG_FLOW_SENSOR_MIN,
+
+    /** No process is ongoing. */
+    VDG_FLOW_SENSOR_IDLE,
+    /** The flow sensor is currently measuring flow. */
+    VDG_FLOW_SENSOR_MEASURING,
+    /** The flow sensor is currently measuring flow for a calibration process step. */
+    VDG_FLOW_SENSOR_MEASURING_CALIBRATION,
+    /** The flow sensor is currently waiting for a calibration feedback. */
+    VDG_FLOW_SENSOR_WAITING_FOR_FEEDBACK,
+
+    VDG_FLOW_SENSOR_MAX
+};
 
 /**
- * @brief Describes the target of a current flow sensor calibration process.
- * 
+ * @brief Describes the target of a current flow sensor calibration step.
  */
-typedef struct FlowCalibrateTarget_t {
-    float targetVolume = 0;
-    uint32_t timeout = 0;
-} FlowCalibrateTarget_t;
+struct VdgFlowCalibrationTarget_t {
+    /** The target output volume in liters */
+    float targetVolume = 0.0f;
+    /** The maximum duration of the calibration step in miliseconds. */
+    uint32_t timeout = 0U;
+};
 
 /**
- * @brief Describes the input by the user for a flow sensor calibration process.,
+ * @brief Describes the input by the user for a flow sensor calibration step.
  * 
  */
-typedef struct FlowCalibrateMeasurement_t {
-    float measuredVolume = 0;
-    bool conclude = 0;
+struct VdgFlowCalibrationMeasurement_t {
+    /** The volume measured by the user. */
+    float measuredVolume = 0.0f;
+    /** If true, the calibration will conclude. */
+    bool conclude = true;
 };
 
 /**
  * @brief Describes the realtime variables of a flow sensor calibration process.
  */
-typedef struct FlowCalibrateProcess_t {
-    uint32_t time = 0;
-    uint32_t pulses = 0;
-    float tankLevel = 0;
-} FlowCalibrateProcess_t;
+struct VdgFlowCalibrationProcessSlice_t {
+    /** The current time of the process in miliseconds. */
+    uint32_t timeMs = 0U;
+    /** The number of pulses recorded by the sensor. */
+    uint32_t pulses = 0U;
+};
 
 /**
  * @brief Describes a summary of the process variables for a whole flow sensor calibration process.
  */
-typedef struct FlowCalibrateSummary_t {
-    uint32_t pulsesPerLiter = 0;
-    uint16_t calibrationPointsCount = 0;
-} FlowCalibrateSummary_t;
+struct FlowCalibrationSummary_t {
+    /** The new value for the number of pulses the flow sensor returns. */
+    uint32_t pulsesPerLiter = 0U;
+    /** The number of points used in the calibration process. */
+    uint16_t calibrationPointsCount = 0U;
+};
 
 /**
- * @brief Handles the dispensation and draining process.
+ * @brief Holds all calibration process related data.
  */
-class FlowManager {
+struct VdgFlowCalibrationProcessData_t {
+    VdgFlowCalibrationTarget_t target;
+    VdgFlowCalibrationMeasurement_t measurement;
+    VdgFlowCalibrationProcessSlice_t slice;
+    FlowCalibrationSummary_t summary;
+}
+
+/**
+ * @brief Handles the calibration of the flow sensor.
+ */
+class FlowSensorManager {
 public:
     /**
      * @brief Constructor.
      */
-    FlowManager();
+    FlowSensorManager();
 
     /**
-     * @brief Begin the FlowManager.
+     * @brief Begin the FlowSensorManager.
      * 
      * @return esp_err_t Return code. 
      */
     esp_err_t initialize();
 
     /**
-     * @brief Begins a calibration process.
-     * 
-     * @param target Target for the process.
-     * @param state Overwritten with the initial state of the process.
-     * @param process Overwritten with the initial process variables.
+     * @brief Begins a normal measurement process.
+     *
+     * @param[out] state Output parameter for the current state after this function.
+     *
      * @return esp_err_t Return code.
      */
-    esp_err_t beginCalibration(FlowCalibrateTarget_t &target, FlowSensorStates_e &state, FlowCalibrateProcess_t &process);
+    esp_err_t beginMeasurement(VdgFlowSensorState_e &state);
 
     /**
-     * @brief Updates the calibration process.
+     * @brief Begins a calibration process.
      * 
-     * @param state Overwritten with the final state.
-     * @param process Overwritten with the final process variables.
-     * @param summary Overwritten with the final process summary.
+     * @param[in] target Target for the process.
+     * @param[out] state Output parameter for the current state after this function.
+     *
      * @return esp_err_t Return code.
      */
-    esp_err_t loopCalibration(FlowSensorStates_e &state, FlowCalibrateProcess_t &process, FlowCalibrateSummary_t &summary);
+    esp_err_t beginCalibration(VdgFlowCalibrationTarget_t target, VdgFlowSensorState_e &state);
+
+    /**
+     * @brief Updates the current process.
+     * 
+     * @param[out] state Output parameter for the current state after this function.
+     *
+     * @return esp_err_t Return code.
+     */
+    esp_err_t updateProcess(VdgFlowSensorState_e &state);
 
     /**
      * @brief Accepts a measurement into the calibration process.
      * 
-     * @param state Overwritten with the final state.
-     * @param measurement The new measurement.
-     * @param target The new target.
+     * @param[out] state Output parameter for the current state after this function.
+     * @param[in] measurement The new measurement.
      * @param process Overwritten with the final process variables.
      * @return esp_err_t Return code.
      */
-    esp_err_t inputCalibration(FlowSensorStates_e &state, FlowCalibrateMeasurement_t &measurement, FlowCalibrateTarget_t &target, FlowCalibrateProcess_t &process);
+    esp_err_t inputCalibration(VdgFlowSensorState_e &state, VdgFlowCalibrationMeasurement_t measurement);
 
     /**
-     * @brief Ends the calibration process.
+     * @brief Ends the current process.
      * 
-     * @param state Overwritten with the state.
-     * @param process Overwritten with the final process variables.
-     * @param summary Overwritten with the final process summary.
+     * @param[out] state Output parameter for the current state after this function.
+     *
      * @return esp_err_t Return code.
      */
-    esp_err_t endCalibration(FlowSensorStates_e &state, FlowCalibrateProcess_t &process, FlowCalibrateSummary_t &summary);
-
+    esp_err_t endProcess(FlowSensorStates_e &state);
 
 private:
     FlowSensorStates_e state;
-    FlowCalibrateTarget_t calibrationTarget;
-    FlowCalibrateProcess_t calibrationProcess;
-    FlowCalibrateSummary_t calibrationSummary;
 };
 
 #endif
