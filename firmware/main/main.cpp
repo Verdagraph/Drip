@@ -23,7 +23,7 @@ void vMainTask(void *pvParameters) {
     
     /** Run the FSM. */
     while (true) {
-        stateManager.handleCurrentState();
+        stateManager.update();
     }
 
     /** Should not reach here. */

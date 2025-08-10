@@ -27,7 +27,7 @@ enum VdgOpenValveState_e {
     VDG_VALVE_OPEN_TANK_DISPENSE,
     VDG_VALVE_OPEN_TANK_DRAIN,
     VDG_VALVE_OPEN_SOURCE_DISPENSE
-}
+};
 
 /**
  * Dispense process definitions.
@@ -121,7 +121,7 @@ struct VdgDispenseProcessData_t {
     VdgDispenseProcessTarget_t target;
     VdgDispenseProcessSlice_t slice;
     VdgDispenseProcessSummary_t summary;
-}
+};
 
 /**
  * Drain process definitions.
@@ -172,7 +172,7 @@ struct VdgDrainProcessTarget_t {
 /** 
  * @brief Describes the realtime variables of a dispensation process.
  */
-struct VdgDrainProcess_t {
+struct VdgDrainProcessSlice_t {
     /** Current time in miliseconds. */
     uint32_t timeMs = 0U;
     /** Current tank level in meters. */
@@ -184,7 +184,7 @@ struct VdgDrainProcess_t {
 /**
  * @brief Describes a summary of the process variables for a whole drain process.
  */
-struct VdgDrainSummary_t {
+struct VdgDrainProcessSummary_t {
     /** Total time of the process in milseconds. */
     uint32_t durationMs = 0U;
     /** The initial and final tank level in meters. */
@@ -203,7 +203,7 @@ struct VdgDrainProcessData_t {
     VdgDrainProcessTarget_t target;
     VdgDrainProcessSlice_t slice;
     VdgDrainProcessSummary_t summary;
-}
+};
 
 /**
  * @brief Handles the dispensation and draining process.
@@ -230,7 +230,7 @@ public:
      * 
      * @return esp_err_t Return code.
      */
-    esp_err_t beginDispenseProcess(VdgDispenseTarget_t target, VdgValveProcess_e &process);
+    esp_err_t beginDispenseProcess(VdgDispenseProcessTarget_t target, VdgValveProcess_e &process);
     
     /**
      * @brief Begins a drain process.
@@ -240,7 +240,7 @@ public:
      * 
      * @return esp_err_t Return code.
      */
-    esp_err_t beginDrainProcess(DrainTarget_t &target, VdgValveProcess_e &process);
+    esp_err_t beginDrainProcess(VdgDrainProcessTarget_t &target, VdgValveProcess_e &process);
     
     /**
      * @brief Updates the current process.

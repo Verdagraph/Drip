@@ -37,10 +37,10 @@ public:
     /**
      * @brief Pull the next incoming MQTT message from the queue.
      * 
-     * @param Pointer to the message object.
+     * @param message Output parameter for the message object.
      * @return esp_err_t Return code.
      */
-    esp_err_t getNextMessage(VdgMessage_t* message);
+    esp_err_t getNextMessage(VdgMessage_t message);
 
     esp_err_t uploadLogs();
 
@@ -62,8 +62,8 @@ public:
 private:
     /** If true, the manager has checked for messages at least once. */
     bool _checkedForMessages;
-    MqttRxMessage_t rxMessage;
-    char rxPayload[RX_PAYLOAD_MAX_BYTES]; 
+    //MqttRxMessage_t rxMessage;
+    //char rxPayload[RX_PAYLOAD_MAX_BYTES]; 
 
 };
 

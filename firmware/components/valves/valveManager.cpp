@@ -8,13 +8,8 @@ static const char* TAG = "ValveManager";
  * @brief Constructor.
  */
 ValveManager::ValveManager() {
+    openValve_ = VDG_VALVE_OPEN_NONE;
     currentProcess_ = VDG_VALVES_MIN;
-    dispenseTarget = {};
-    dispenseProcess = {};
-    dispenseSummary = {};
-    drainTarget = {};
-    drainProcess = {};
-    drainSummary = {};
 }
 
 /**
@@ -23,6 +18,7 @@ ValveManager::ValveManager() {
  * @return esp_err_t Return code. 
  */
 esp_err_t ValveManager::initialize() {
+    openValve_ = VDG_VALVE_OPEN_NONE;
     currentProcess_ = VDG_VALVES_IDLE;
     return ESP_OK;
 }
@@ -30,71 +26,45 @@ esp_err_t ValveManager::initialize() {
 /**
  * @brief Begins a dispensation process.
  * 
- * @param target Target for the process.
- * @param state Overwritten with the initial state of the dispensation process.
- * @param process Overwritten with the initial process variables.
- * @return esp_err_t Return code.
- */
-esp_err_t ValveManager::beginDispenseProcess(DispenseTarget_t &target, ValveStates_e &state, DispenseProcess_t &process) {
-    return ESP_OK;
-}
-
-/**
- * @brief Updates the dispensation process.
+ * @param[in] target Target for the process.
+ * @param[out] process Output parameter for the current process after this function.
  * 
- * @param state Overwritten with the current state.
- * @param process Overwritten with the current process variables.
- * @param summary Overwritten with the current process summary.
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::updateDispenseProcess(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
-    return ESP_OK;
-}
-
-/**
- * @brief Ends the dispensation process.
- * 
- * @param state Overwritten with the state.
- * @param process Overwritten with the current process variables.
- * @param summary Overwritten with the current process summary.
- * @return esp_err_t Return code.
- */
-esp_err_t ValveManager::endDispenseProcess(ValveStates_e &state, DispenseProcess_t &process, DispenseSummary_t &summary) {
+esp_err_t ValveManager::beginDispenseProcess(VdgDispenseProcessTarget_t target, VdgValveProcess_e &process) {
     return ESP_OK;
 }
 
 /**
  * @brief Begins a drain process.
  * 
- * @param target Target for the process.
- * @param state Overwritten with the initial state of the drain process.
- * @param process Overwritten with the initial process variables.
+ * @param[in] target Target for the process.
+ * @param[out] process Output parameter for the current process after this function.
+ * 
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::beginDrainProcess(DrainTarget_t &target, ValveStates_e &state, DrainProcess_t &process) {
+esp_err_t ValveManager::beginDrainProcess(VdgDrainProcessTarget_t &target, VdgValveProcess_e &process){
     return ESP_OK;
 }
 
 /**
- * @brief Updates the drain process.
+ * @brief Updates the current process.
  * 
- * @param state Overwritten with the current state.
- * @param process Overwritten with the current process variables.
- * @param summary Overwritten with the current process summary.
+ * @param[out] process Output parameter for the current process after this function.
+ * 
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::updateDrainProcesss(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
+esp_err_t ValveManager::updateProcess(VdgValveProcess_e &process){
     return ESP_OK;
 }
 
 /**
- * @brief Ends the drain process.
+ * @brief Ends the current process.
  * 
- * @param state Overwritten with the state.
- * @param process Overwritten with the current process variables.
- * @param summary Overwritten with the current process summary.
+ * @param[out] process Output parameter for the current process after this function.
+ * 
  * @return esp_err_t Return code.
  */
-esp_err_t ValveManager::endDrainProcess(ValveStates_e &state, DrainProcess_t &process, DrainSummary_t &summary) {
+esp_err_t ValveManager::endProcess(VdgValveProcess_e &process){
     return ESP_OK;
 }

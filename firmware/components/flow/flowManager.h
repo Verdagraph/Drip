@@ -2,21 +2,19 @@
 #define FLOW_MANAGER_H
 
 /**
- * @brief Describes the current process of the flow sensor.
+ * @brief Describes the current process of the flow sensor calibration.
  */
-enum VdgFlowSensorState_e {
-    VDG_FLOW_SENSOR_MIN,
+enum VdgFlowSensorCalibrationState_e {
+    VDG_FLOW_SENSOR_CALIBRATION_MIN,
 
-    /** No process is ongoing. */
-    VDG_FLOW_SENSOR_IDLE,
+    /** No calibration is ongoing. */
+    VDG_FLOW_SENSOR_CALIBRATION_IDLE,
     /** The flow sensor is currently measuring flow. */
-    VDG_FLOW_SENSOR_MEASURING,
-    /** The flow sensor is currently measuring flow for a calibration process step. */
-    VDG_FLOW_SENSOR_MEASURING_CALIBRATION,
+    VDG_FLOW_SENSOR_CALIBRATION_MEASURING,
     /** The flow sensor is currently waiting for a calibration feedback. */
-    VDG_FLOW_SENSOR_WAITING_FOR_FEEDBACK,
+    VDG_FLOW_SENSOR_CALIBRATION_WAITING_FOR_FEEDBACK,
 
-    VDG_FLOW_SENSOR_MAX
+    VDG_FLOW_SENSOR_CALIBRATION_MAX
 };
 
 /**
@@ -45,9 +43,11 @@ struct VdgFlowCalibrationMeasurement_t {
  */
 struct VdgFlowCalibrationProcessSlice_t {
     /** The current time of the process in miliseconds. */
-    uint32_t timeMs = 0U;
+    uint32_t timeTicks = 0U;
     /** The number of pulses recorded by the sensor. */
     uint32_t pulses = 0U;
+    /** The tick count in the process where the last dispense process ended. */
+    uint32_t timeTicksLastDispenseEnded = 0U;
 };
 
 /**
@@ -68,7 +68,7 @@ struct VdgFlowCalibrationProcessData_t {
     VdgFlowCalibrationMeasurement_t measurement;
     VdgFlowCalibrationProcessSlice_t slice;
     FlowCalibrationSummary_t summary;
-}
+};
 
 /**
  * @brief Handles the calibration of the flow sensor.
@@ -88,15 +88,6 @@ public:
     esp_err_t initialize();
 
     /**
-     * @brief Begins a normal measurement process.
-     *
-     * @param[out] state Output parameter for the current state after this function.
-     *
-     * @return esp_err_t Return code.
-     */
-    esp_err_t beginMeasurement(VdgFlowSensorState_e &state);
-
-    /**
      * @brief Begins a calibration process.
      * 
      * @param[in] target Target for the process.
@@ -104,16 +95,7 @@ public:
      *
      * @return esp_err_t Return code.
      */
-    esp_err_t beginCalibration(VdgFlowCalibrationTarget_t target, VdgFlowSensorState_e &state);
-
-    /**
-     * @brief Updates the current process.
-     * 
-     * @param[out] state Output parameter for the current state after this function.
-     *
-     * @return esp_err_t Return code.
-     */
-    esp_err_t updateProcess(VdgFlowSensorState_e &state);
+    esp_err_t beginCalibration(VdgFlowCalibrationTarget_t target, VdgFlowSensorCalibrationState_e &state);
 
     /**
      * @brief Accepts a measurement into the calibration process.
@@ -123,7 +105,7 @@ public:
      * @param process Overwritten with the final process variables.
      * @return esp_err_t Return code.
      */
-    esp_err_t inputCalibration(VdgFlowSensorState_e &state, VdgFlowCalibrationMeasurement_t measurement);
+    esp_err_t inputCalibration(VdgFlowSensorCalibrationState_e &state, VdgFlowCalibrationMeasurement_t measurement);
 
     /**
      * @brief Ends the current process.
@@ -132,10 +114,10 @@ public:
      *
      * @return esp_err_t Return code.
      */
-    esp_err_t endProcess(FlowSensorStates_e &state);
+    esp_err_t endProcess(VdgFlowSensorCalibrationState_e &state);
 
 private:
-    FlowSensorStates_e state;
+    VdgFlowSensorCalibrationState_e state;
 };
 
 #endif

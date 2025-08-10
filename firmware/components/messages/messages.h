@@ -2,6 +2,8 @@
 #define MQTT_MESSAGES_H
 
 #include "config.h"
+#include "dataContainer.h"
+#include "valveManager.h"
 
 typedef uint8_t VdgMessageId_t;
 
@@ -14,26 +16,26 @@ typedef uint8_t VdgMessageId_t;
 
 #define VDG_MSG_RX_DISPENSE_ACTIVATE  2U
 #define VDG_MSG_RX_DEACTIVATE         3U
-#define VDG_MSG_RX_RESTART            4U,
-#define VDG_MSG_RX_CHANGE_CONFIG      5U,
-#define VDG_MSG_RX_FLOW_CALIBRATE     6U,
-#define VDG_MSG_RX_PRESSURE_CALIBRATE 7U,
-#define VDG_MSG_RX_DRAIN              8U,
-#define VDG_MSG_RX_PRESSURE_POLL      9U,
+#define VDG_MSG_RX_RESTART            4U
+#define VDG_MSG_RX_CHANGE_CONFIG      5U
+#define VDG_MSG_RX_FLOW_CALIBRATE     6U
+#define VDG_MSG_RX_PRESSURE_CALIBRATE 7U
+#define VDG_MSG_RX_DRAIN              8U
+#define VDG_MSG_RX_PRESSURE_POLL      9U
 
 /** Maximum message ID in the RX range. */
 #define VDG_MSG_RX_MAX                99U
 /** Minimum message ID in the TX range. */
 #define VDG_MSG_TX_MIN                100U
 
-#define VDG_MSG_TX_DISPENSE_SLICE     101U,
-#define VDG_MSG_TX_DISPENSE_SUMMARY   102U,
-#define VDG_MSG_TX_INFO_LOG           103U,
-#define VDG_MSG_TX_WARNING_LOG        104U,
-#define VDG_MSG_TX_ERROR_LOG          105U,
-#define VDG_MSG_TX_READ_CONFIG        106U,
-#define VDG_MSG_TX_DRAIN_SUMMARY      107U,
-#define VDG_MSG_TX_PRESSURE           108U,
+#define VDG_MSG_TX_DISPENSE_SLICE     101U
+#define VDG_MSG_TX_DISPENSE_SUMMARY   102U
+#define VDG_MSG_TX_INFO_LOG           103U
+#define VDG_MSG_TX_WARNING_LOG        104U
+#define VDG_MSG_TX_ERROR_LOG          105U
+#define VDG_MSG_TX_READ_CONFIG        106U
+#define VDG_MSG_TX_DRAIN_SUMMARY      107U
+#define VDG_MSG_TX_PRESSURE           108U
 
 /** Maximum message ID in the TX range. */
 #define VDG_MSG_TX_MAX                199U
@@ -46,9 +48,9 @@ typedef uint8_t VdgMessageId_t;
  */
 struct VdgMessage_t {
     /** ID of the message. */
-    VdgMessageId_t messageId;
+    VdgMessageId_t id;
     /** A pointer to the raw message payload. */
-    uint8_t payload[VDG_MSG_MAX_PAYLOAD_BYTES];
+    uint8_t *payload;
     /** The number of bytes in the payload. */
     size_t payloadLen;
 };
@@ -112,7 +114,7 @@ typedef struct MqttTxDispenseSummaryMessage_t {
  * @brief Info, warning, and error logs.
  */
 typedef struct MqttTxLogMessage_t {
-    char message[MAX_LOG_MESSAGE_BYTES];
+    char message[VDG_LOG_MESSAGE_BUFFER_BYTES];
 } MqttTxLogMessage_t;
 
 /**

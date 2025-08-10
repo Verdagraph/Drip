@@ -3,14 +3,15 @@
 
 #include "esp_err.h"
 #include "valveManager.h"
+#include "flowManager.h"
 
 /** The maximum number of characters in each log message. */
-#define VDG_LOG_MESSAGE_BUFFER_BYTES 128U;
+#define VDG_LOG_MESSAGE_BUFFER_BYTES 128U
 
 /** The number of info, warning, and error logs to buffer before upload. */
-#define VDG_LOG_MAX_INFO_LOGS 5U;
-#define VDG_LOG_MAX_WARNING_LOGS 5U;
-#define VDG_LOG_MAX_ERROR_LOGS 5U;
+#define VDG_LOG_MAX_INFO_LOGS 5U
+#define VDG_LOG_MAX_WARNING_LOGS 5U
+#define VDG_LOG_MAX_ERROR_LOGS 5U
 
 /**
  * @brief Describes a type of log message.
@@ -22,7 +23,7 @@ enum VdgLogMessageType_e {
     VDG_LOG_WARNING,
     /** For failures. */
     VDG_LOG_ERROR,
-}
+};
 
 /**
  * @brief Describes a log message.
@@ -36,18 +37,19 @@ struct VdgLogMessage_t {
     char message[VDG_LOG_MESSAGE_BUFFER_BYTES];
     /** Unix timestamp the message was logged at. */
     uint32_t timestamp;
-}
+};
 
 struct VdgMeasurementData_t {
+    /** Raw measurement data. */
     float flowSensorPulses;
-    float pressureSensorPressure;
-}
+    float pressureSensorVoltage;
 
-struct VdgDerivedMeasurementData_t {
+    /** Derived data. */
     float volumeOutput;
-    float tanklevel;
+    float tankPressure;
+    float tankLevel;
     float tankVolume;
-}
+};
 
 /**
  * @brief Stores state common to multiple managers.
@@ -65,6 +67,29 @@ public:
      * @return esp_err_t Return code.
      */
     esp_err_t initialize();
+
+    /**
+     * Measurement data.
+     */
+    esp_err_t getMeasurementData(VdgMeasurementData_t &data);
+    esp_err_t getDerivedMeasurementData(VdgMeasurementData_t &data);
+    esp_err_t setPressureSensorVoltage(float voltage);
+    esp_err_t incrementFlowSensorPulses();
+    esp_err_t clearFlowSensorPulses();
+
+    /**
+     * Process data.
+     */
+    esp_err_t getDispenseProcessData(VdgDispenseProcessData_t &data);
+    esp_err_t setDispenseProcessData(VdgDispenseProcessData_t data);
+    esp_err_t getDrainProcessData(VdgDispenseProcessData_t &data);
+    esp_err_t setDrainProcessData(VdgDispenseProcessData_t data);
+    esp_err_t getFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t &data);
+    esp_err_t setFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t data);
+
+    /**
+     * Logging.
+     */
 
     /**
      * @brief Retrieves the number of stored logs.
@@ -119,14 +144,19 @@ public:
      */
     esp_err_t getNextLog(VdgLogMessage_t &message);
 
-    esp_err_t getDispenseProcessData(VdgDispenseProcessData_t &data);
-    esp_err_t setDispenseProcessData(VdgDispenseProcessData_t data);
-    esp_err_t getDrainProcessData(VdgDispenseProcessData_t &data);
-    esp_err_t setDrainProcessData(VdgDispenseProcessData_t data);
-    esp_err_t getFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t &data);
-    esp_err_t setFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t data);
+
+
 
 private:
+
+    /** Measurement data. */
+    VdgMeasurementData_t measurementData_;
+
+    /** Process data. */
+    VdgDispenseProcessData_t dispenseProcess_;
+    VdgDrainProcessData_t drainProcess_;
+    VdgFlowCalibrationProcessData_t flowCalibrationProcess_;
+
     /** Logging. */
     size_t numInfoLogs;
     size_t numWarningLogs;
@@ -134,16 +164,6 @@ private:
     VdgLogMessage_t infoLogs_[VDG_LOG_MAX_INFO_LOGS];
     VdgLogMessage_t warningLogs_[VDG_LOG_MAX_WARNING_LOGS];
     VdgLogMessage_t errorLogs_[VDG_LOG_MAX_ERROR_LOGS];
-
-    /** Measurement data. */
-    VdgMeasurementData_t measurementData_;
-    VdgDerivedMeasurementData_t derivedMeasurementData_;
-    bool derivedMeasurementDataCacheValid;
-
-    /** Process data. */
-    VdgDispenseProcessData_t dispenseProcess_;
-    VdgDrainProcessData_t drainProcess_;
-    VdgFlowCalibrationProcessData_t flowCalibrationProcess_;
 };
 
 #endif

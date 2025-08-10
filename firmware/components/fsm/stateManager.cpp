@@ -3,12 +3,17 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "esp_system.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/portmacro.h"
+#include "freertos/task.h"
 
+#include "messages.h"
+#include "utils.h"
 #include "configManager.h"
 #include "mqttManager.h"
 #include "connectionManager.h"
 #include "valveManager.h"
-#include "messages.h"
+#include "flowManager.h"
 
 #include "stateManager.h"
 
@@ -18,7 +23,7 @@ static const char* TAG = "StateManager";
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the listen state.
  */
-static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableListenState[] = {
+const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableListenState[] = {
     {VDG_MSG_RX_DISPENSE_ACTIVATE, &StateManager::handleDispenseRequest},
     {VDG_MSG_RX_RESTART, &StateManager::handleRestartRequest},
     {VDG_MSG_RX_CHANGE_CONFIG, &StateManager::handleConfigChangeRequest},
@@ -33,7 +38,7 @@ static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableListenState[] = {
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the dispense state.
  */
-static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableDispenseState[] = {
+const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDispenseState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_MAX, nullptr}
 };
@@ -42,7 +47,7 @@ static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableDispenseState[] = {
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the flow sensor calibration state.
  */
-static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableFlowCalibrateState[] = {
+const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableFlowCalibrateState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_FLOW_CALIBRATE, &StateManager::handleFlowCalibrateRequestFlowCalibration},
     {VDG_MSG_RX_MAX, nullptr}
@@ -52,7 +57,7 @@ static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableFlowCalibrateState[]
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the pressure sensor calibration state.
  */
-static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTablePressureCalibrateState[] = {
+const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTablePressureCalibrateState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_PRESSURE_CALIBRATE, &StateManager::handlePressureCalibrateRequest},
     {VDG_MSG_RX_MAX, nullptr}
@@ -62,7 +67,7 @@ static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTablePressureCalibrateSta
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the drain state.
  */
-static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableDrainState[] = {
+const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDrainState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_MAX, nullptr}
 };
@@ -78,17 +83,17 @@ static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableDrainState[] = {
  * @retval ESP_INVALID_INPUT Returned if the lookup table is invalid.
  * @retval ESP_OK Returned regardless of if a handler function is found or not.  
  */
-static esp_err_t getHandlerFunctionFromMessageId(
-    VdgMessageHandleFuncTable_t *table, 
+esp_err_t StateManager::getHandlerFunctionFromMessageId(
+    const VdgMessageHandleFuncTable_t *table, 
     VdgMessageId_t id, 
-    VdgMessageHandleFunc_t *&handlerFunction) {
+    VdgMessageHandleFunc_t &handlerFunction) {
     size_t index = 0U;
 
     handlerFunction = nullptr;
 
     /** Validate table. */
     if (table == nullptr) {
-        return ESP_INVALID_INPUT;
+        return ESP_ERR_INVALID_ARG;
     }
 
     while (table[index].id != VDG_MSG_RX_MAX) {
@@ -108,7 +113,7 @@ static esp_err_t getHandlerFunctionFromMessageId(
  * @brief Constructor
  */
 StateManager::StateManager() {
-    state = VDG_MAIN_FSM_MIN;
+    state_ = VDG_MAIN_FSM_MIN;
 }
 
 /**
@@ -120,8 +125,9 @@ void StateManager::initialize() {
     mqttManager_ = MqttManager();
     connectionManager_ = ConnectionManager();
     valveManager_ = ValveManager();
+    flowSensorManager_ = FlowSensorManager();
     
-    state = VDG_MAIN_FSM_BOOT;
+    state_ = VDG_MAIN_FSM_BOOT;
 }
 
 /**
@@ -143,7 +149,7 @@ void StateManager::update() {
  * @brief Executes the current state.
  */
 void StateManager::handleCurrentState() {
-    switch (state) {
+    switch (state_) {
         case VDG_MAIN_FSM_BOOT:
             boot();
             break;
@@ -176,7 +182,7 @@ void StateManager::handleCurrentState() {
             break;
         default:
             dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "State machine set to invalid state.");
-            state = STATE_FATAL_ERROR;
+            state_ = VDG_MAIN_FSM_FATAL_ERROR;
             break;
     }
 }
@@ -194,14 +200,14 @@ void StateManager::handleCurrentState() {
  * @retval ESP_FAILURE Returned if an error occurred retrieving the message or handler function
  * @retval ESP_OK Returned if all messages are handled or ignored.
  */
-esp_err_t StateManager::handleReceivedMessages(VdgMessageHandleFuncTable_t *table) {
+esp_err_t StateManager::handleReceivedMessages(const VdgMessageHandleFuncTable_t *table) {
     VdgMessage_t message = {};
-    VdgMessageHandleFunc_t *handlerFunction = nullptr;
-    ESP_ERR_T err = ESP_OK;
+    VdgMessageHandleFunc_t handlerFunction = nullptr;
+    esp_err_t err = ESP_OK;
 
     /** Validate table input. */
     if (table == nullptr) {
-        return ESP_INVALID_INPUT;
+        return ESP_ERR_INVALID_ARG;
     }
 
     /** Check for new MQTT messages. */
@@ -211,26 +217,26 @@ esp_err_t StateManager::handleReceivedMessages(VdgMessageHandleFuncTable_t *tabl
         err = mqttManager_.getNextMessage(message);
         if (err != ESP_OK) {
             dataContainer_.logError(err, TAG, "Failed to retrieve MQTT message.");
-            return ESP_FAILURE;
+            return ESP_FAIL;
         }
 
         /** Retrieve handler function. */
         err = getHandlerFunctionFromMessageId(table, message.id, handlerFunction);
         if (err != ESP_OK) {
             dataContainer_.logError(err, TAG, "Failed to retrieve message handler function.");
-            return ESP_FAILURE;
+            return ESP_FAIL;
         }
 
         /** Ignore messages without a handler function. */
         if (handlerFunction == nullptr) {
-            return;
+            continue;
         }
 
         /** Execute handler function */
-        (*handlerFunction)(message);    
+        (this->*handlerFunction)(message);    
     }
 
-    return ESP_OK
+    return ESP_OK;
 }
 
 /**
@@ -250,11 +256,11 @@ void StateManager::boot() {
     if (err != ESP_OK) goto err;
 
 
-    state = VDG_MAIN_FSM_CONNECT;
+    state_ = VDG_MAIN_FSM_CONNECT;
     return;
 
 err:
-    state = VDG_MAIN_FSM_FATAL_ERROR;
+    state_ = VDG_MAIN_FSM_FATAL_ERROR;
     return;
 }
 
@@ -281,16 +287,16 @@ void StateManager::connect() {
 
     /** Continue if connected or provision WiFi & MQTT if not. */
     if (connected == true) {
-        state = VDG_MAIN_FSM_LISTEN;
+        state_ = VDG_MAIN_FSM_LISTEN;
         return;
 
     } else {
-        state = VDG_MAIN_FSM_PROVISIONING;
+        state_ = VDG_MAIN_FSM_PROVISIONING;
         return;
     }
 
 err:
-    state = VDG_MAIN_FSM_FATAL_ERROR;
+    state_ = VDG_MAIN_FSM_FATAL_ERROR;
     return;
 }
 
@@ -311,12 +317,12 @@ void StateManager::accessPoint() {
 
     /** Move forward once connected. */
     if (connectionManager_.isConnected() == true) {
-        state = VDG_MAIN_FSM_LISTEN;
+        state_ = VDG_MAIN_FSM_LISTEN;
         return;
     }
 
 err:
-    state = VDG_MAIN_FSM_FATAL_ERROR;
+    state_ = VDG_MAIN_FSM_FATAL_ERROR;
     return;
 }
 
@@ -334,7 +340,7 @@ void StateManager::restart() {
     esp_restart();
 
     /** Should not reach here. */
-    state = VDG_MAIN_FSM_FATAL_ERROR;
+    state_ = VDG_MAIN_FSM_FATAL_ERROR;
     return;
 }
 
@@ -345,8 +351,8 @@ void StateManager::listen() {
     esp_err_t err = ESP_OK;
     
     /** Handle received messages. */
-    ret = handleReceivedMessages(vdgMessageHandleFuncTableListenState);
-    if (ret != ESP_OK) {
+    err = handleReceivedMessages(vdgMessageHandleFuncTableListenState);
+    if (err != ESP_OK) {
         return;
     }
 }
@@ -356,24 +362,23 @@ void StateManager::listen() {
  */
 void StateManager::dispense() {
     esp_err_t err = ESP_OK;
+    TickType_t currentTicks = 0U;
     VdgValveProcess_e valveProcess = VDG_VALVES_MIN;
-    VdgFlowSensorState_e flowSensorState = VDG_FLOW_SENSOR_MIN;
+    VdgFlowSensorCalibrationState_e flowSensorState = VDG_FLOW_SENSOR_CALIBRATION_MIN;
 
     /** Handle received messages. */
-    ret = handleReceivedMessages(vdgMessageHandleFuncTableDispenseState);
-    if (ret != ESP_OK) {
+    err = handleReceivedMessages(vdgMessageHandleFuncTableDispenseState);
+    if (err != ESP_OK) {
         return;
     }
+
+    /** Get current time. */
+    currentTicks = xTaskGetTickCount();
 
     /** Update process state. */
     err = valveManager_.updateProcess(valveProcess);
     if (err != ESP_OK) {
         dataContainer_.logError(err, TAG, "Failed to update valve dispense process.");
-        goto exit;
-    }
-    err = flowSensorManager_.updateProcess(flowSensorState);
-    if ( (err != ESP_OK) || (flowSensorState != VDG_FLOW_SENSOR_MEASURING) ) {
-        dataContainer_.logError(err, TAG, "Failed to update valve dispense process - flow sensor.");
         goto exit;
     }
     
@@ -383,7 +388,7 @@ void StateManager::dispense() {
         /** Error state. */
         default:
         case VDG_VALVES_MIN:
-        case VDG_VALVES_MAX
+        case VDG_VALVES_MAX:
         case VDG_VALVES_DRAIN:
             dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "ValveManager in an invalid state.");
             goto exit;
@@ -392,15 +397,16 @@ void StateManager::dispense() {
         /** Continuing to dispense. */
         case VDG_VALVES_DISPENSE:
 
-            if ( (currentTime - eventTimers_.lastProcessSliceUploadTimestamp) > PROCESS_SLICE_UPLOAD_MS_DEFAULT) {
+            if ( (  - eventTimers_.lastProcessSliceUploadTicks) >=
+                pdMS_TO_TICKS(PROCESS_SLICE_UPLOAD_MS_DEFAULT) ) {
                 err = mqttManager_.uploadDispenseSlice();
                 if (err != ESP_OK) {
                     dataContainer_.logError(err, TAG, "Failed to upload dispense slice.");
                 }
 
-                eventTimers_.lastProcessSliceUploadTimestamp = currentTime;
-                break;
+                eventTimers_.lastProcessSliceUploadTicks = currentTicks;
             }
+            break;
             
             
         /** Dispense has concluded. */
@@ -411,13 +417,9 @@ void StateManager::dispense() {
 
 exit:
     /** End the process. */
-    err = valveManager_.endProcess(valvesProcess);
-    if ( (err != ESP_OK) || (valveState != VDG_VALVES_IDLE) ) {
+    err = valveManager_.endProcess(valveProcess);
+    if ( (err != ESP_OK) || (valveProcess != VDG_VALVES_IDLE) ) {
         dataContainer_.logError(err, TAG, "Failed to deactivate dispensation.");
-    }
-    err = flowSensorManager_.endProcess(flowSensorState);
-    if ( (err != ESP_OK) || (flowSensorState != VDG_FLOW_SENSOR_IDLE) ) {
-        dataContainer_.logError(err, TAG, "Failed to deactivate flow sensor.");
     }
     
     /** Report the final variables. */
@@ -431,7 +433,7 @@ exit:
     }
 
     dataContainer_.logInfo(ESP_OK, TAG, "Concluded dispense process.");
-    state = VDG_MAIN_FSM_LISTEN;
+    state_ = VDG_MAIN_FSM_LISTEN;
     return;
 }
 
@@ -441,13 +443,21 @@ exit:
 void StateManager::flowCalibrate() {
     esp_err_t err = ESP_OK;
     VdgValveProcess_e valveProcess = VDG_VALVES_MIN;
-    VdgFlowSensorState_e flowSensorState = VDG_FLOW_SENSOR_MIN;
+    VdgFlowSensorCalibrationState_e calibrationState = VDG_FLOW_SENSOR_CALIBRATION_MIN;
+    VdgFlowCalibrationProcessData_t processData = {};
     bool saveConfig = false;
 
     /** Handle received messages. */
-    ret = handleReceivedMessages(vdgMessageHandleFuncTableDispenseState);
-    if (ret != ESP_OK) {
+    err = handleReceivedMessages(vdgMessageHandleFuncTableDispenseState);
+    if (err != ESP_OK) {
         return;
+    }
+
+    /** Retrieve process data. */
+    err = dataContainer_.getFlowCalibrationProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(err, TAG, "Failed to retrieve flow calibration process data.");
+        goto exit;
     }
 
     /** Update process state. */
@@ -456,53 +466,48 @@ void StateManager::flowCalibrate() {
         dataContainer_.logError(err, TAG, "Failed to update flow calibration process - valve dispense.");
         goto exit;
     }
-    err = flowSensorManager_.updateProcess(flowSensorState);
-    if ( err != ESP_OK) {
-        dataContainer_.logError(err, TAG, "Failed to update flow calibration process - flow sensor.");
-        goto exit;
-    }
-    
-    /** Handle state transition based on calibration status. */
-    switch (flowSensorState) {
+
+    /** Handle state transition based on valve status. */
+    switch (valveProcess) {
 
         /** Error state. */
         default:
-        case FLOW_SENSOR_UNKNOWN:
-        case FLOW_SENSOR_DISPENSING:
-            mqttManager->txError(TAG, "FlowManager in an invalid state.");
+        case VDG_VALVES_MIN:
+        case VDG_VALVES_DRAIN:
+        case VDG_VALVES_MAX:
+            dataContainer_.logError(err, TAG, "ValveManager in an invalid state.");
             goto exit;
             break;
         
-        /** Continuing to dispense or waiting for measurement. */
-        case FLOW_SENSOR_CALIBRATION_DISPENSING:
-            break
+        /** Continuing to dispense. */
+        case VDG_VALVES_DISPENSE:
+            break;
 
-        /** Waiting for measurement. */
-        case FLOW_SENSOR_CALIBRATION_WAITING_FOR_MEASUREMENT:
+        /** Finished dispensing. */
+        case VDG_VALVES_IDLE:
             break;
             
-        /** Calibration has concluded. */
-        case FLOW_SENSOR_IDLE:
-            saveConfig = true;
-            goto exit;
-            break;
     }
 
 exit:
     /** End the process. */
-    err = flowManager->endCalibration(flowState, calibrationProcess, calibrationSummary);
-    if ( (err != ESP_OK) || (flowState != FLOW_SENSOR_IDLE) ) {
-        mqttManager->txError(TAG, "Failed to deactivate dispensation.");
+    err = flowSensorManager_.endProcess(calibrationState);
+    if ( (err != ESP_OK) || (calibrationState != VDG_FLOW_SENSOR_CALIBRATION_IDLE) ) {
+        dataContainer_.logError(err, TAG, "Failed to deactivate calibration.");
+    }
+    err = valveManager_.endProcess(valveProcess);
+    if ( (err != ESP_OK) || (valveProcess != VDG_VALVES_IDLE) ) {
+        dataContainer_.logError(err, TAG, "Failed to deactivate dispensation.");
     }
 
     if (saveConfig) {
-        mqttManager->txInfo(TAG, "Saved flow sensor calibration data:...");
+        dataContainer_.logError(err, TAG, "Saved flow sensor calibration data:...");
 
         /** TODO: Set and persist the config. */
     }
 
-    mqttManager->txInfo(TAG, "Concluded calibration process.");
-    state = STATE_LISTEN;
+    dataContainer_.logInfo(err, TAG, "Concluded calibration process.");
+    state_ = VDG_MAIN_FSM_LISTEN;
     return;
 }
 
@@ -525,11 +530,11 @@ void StateManager::drain() {
  * 
  * @param[in] message MQTT received message.
  */
-void StateManager::handleDispenseRequest(VdgMessage_t &message) {
+void StateManager::handleDispenseRequest(VdgMessage_t message) {
     esp_err_t err = ESP_OK;
     char log[VDG_LOG_MESSAGE_BUFFER_BYTES];
     VdgDispenseActivateCommand_t *command = nullptr;
-    VdgFlowSensorState_e flowSensorState = VDG_FLOW_SENSOR_MIN;
+    VdgFlowSensorCalibrationState_e flowSensorState = VDG_FLOW_SENSOR_CALIBRATION_MIN;
     VdgValveProcess_e valveProcess = VDG_VALVES_MIN;
 
     /** Validate state. */
@@ -540,38 +545,48 @@ void StateManager::handleDispenseRequest(VdgMessage_t &message) {
 
     /** Validate inputs. */
     if (message.payload == nullptr) {
-        dataContainer_.logError(ESP_ERR_INVALID_INPUT, TAG, "Dispense handler called with null message payload.");
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Dispense handler called with null message payload.");
         return;
     }
     
     /** Typecast the payload. */
     command = reinterpret_cast<VdgDispenseActivateCommand_t*>(message.payload);
 
-    /** Begin flow sensor measurement. */
-    err = flowSensorManger_.beginMeasurement(flowSensorState);
-    if ( (err != ESP_OK) || (flowSensorState != VDG_FLOW_SENSOR_MEASURING) ) {
-        dataContainer_.logError(ret, TAG, "Failed to begin flow sensor measurement process.");
-        goto err;
-    }
-
     /** Begin the dispensation process. */
-    err = valveManager_.beginDispensation(*command, valveProcess);
+    err = valveManager_.beginDispenseProcess(*command, valveProcess);
     if ( (err != ESP_OK) || (valveProcess != VDG_VALVES_DISPENSE) ) {
-        dataContainer_.logError(ret, TAG, "Failed to begin dispense process.");
+        dataContainer_.logError(err, TAG, "Failed to begin dispense process.");
         goto err;
     }
 
     /** Log info. */
-    snprintf(log, 
-        sizeof(log), 
-        "Beginning dispense process with a target volume: %.2f liters, time: %d min, timeout: %d min", 
-        payload->targetVolume, 
-        payload->MS_TO_S(targetTime), 
-        payload->MS_TO_S(timeout)
-    );
+    switch (command->targetType) {
+        case VDG_DISPENSE_PROCESS_TARGET_TIME:
+            snprintf(log, 
+                sizeof(log), 
+                "Beginning dispense process with a target volume: %.2f liters, timeout: %.2f seconds", 
+                command->target, 
+                MS_TO_S(command->timeoutMs)
+            );
+            break;
+
+        case VDG_DISPENSE_PROCESS_TARGET_VOLUME:
+            snprintf(log, 
+                sizeof(log), 
+                "Beginning dispense process with a target time: %.2f seconds, timeout: %.2f seconds", 
+                command->target, 
+                MS_TO_S(command->timeoutMs)
+            );
+            break;
+
+        default:
+            dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Invalid value of VdgDispenseProcessTargetType_e.");
+            return;
+    }
+
     dataContainer_.logInfo(ESP_OK, TAG, log);
 
-    state = STATE_DISPENSE;
+    state_ = VDG_MAIN_FSM_DISPENSE;
 
     return ESP_OK;
 
@@ -587,11 +602,11 @@ err:
  * 
  * @param[in] message MQTT received message.
  */
-void StateManager::handleFlowCalibrateRequestListen(VdgMessage_t &message) {
+void StateManager::handleFlowCalibrateRequestListen(VdgMessage_t message) {
     esp_err_t err = ESP_OK;
     char log[128];
     VdgFlowCalibrationUpdateCommand_t *command = nullptr;
-    VdgFlowSensorState_e flowSensorState = VDG_FLOW_SENSOR_MIN;
+    VdgFlowSensorCalibrationState_e flowSensorState = VDG_FLOW_SENSOR_CALIBRATION_MIN;
     VdgValveProcess_e valveProcess = VDG_VALVES_MIN;
     VdgDispenseProcessTarget_t dispenseTarget = {};
 
@@ -603,7 +618,7 @@ void StateManager::handleFlowCalibrateRequestListen(VdgMessage_t &message) {
 
     /** Validate inputs. */
     if (message.payload == nullptr) {
-        dataContainer_.logError(ESP_ERR_INVALID_INPUT, TAG, "Flow calibration handler called with null message payload.");
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Flow calibration handler called with null message payload.");
         return;
     }
     
@@ -636,7 +651,7 @@ void StateManager::handleFlowCalibrateRequestListen(VdgMessage_t &message) {
     );
     dataContainer_.logInfo(ESP_OK, TAG, log);
 
-    state = STATE_FLOW_CALIBRATE;
+    state_ = STATE_FLOW_CALIBRATE;
     return ESP_OK;
 
 err:
@@ -651,12 +666,12 @@ err:
  * 
  * @param[in] message MQTT received message.
  */
-void StateManager::handleFlowCalibrateRequestFlowCalibration(VdgMessage_t &message) {
+void StateManager::handleFlowCalibrateRequestFlowCalibration(VdgMessage_t message) {
     esp_err_t err = ESP_OK;
     char log[128];
     VdgFlowCalibrationUpdateCommand_t *command = nullptr;
     VdgValveProcess_e valveProcess = VDG_VALVES_MIN;
-    VdgFlowSensorState_e flowSensorState = VDG_FLOW_SENSOR_MIN; 
+    VdgFlowSensorCalibrationState_e flowSensorState = VDG_FLOW_SENSOR_CALIBRATION_MIN; 
 
     /** Validate state. */
     if (state_ != VDG_MAIN_FSM_FLOW_CALIBRATE) {
@@ -666,7 +681,7 @@ void StateManager::handleFlowCalibrateRequestFlowCalibration(VdgMessage_t &messa
 
     /** Validate inputs. */
     if (message.payload == nullptr) {
-        dataContainer_.logError(ESP_ERR_INVALID_INPUT, TAG, "Flow calibration handler called with null message payload.");
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Flow calibration handler called with null message payload.");
         return;
     }
     
@@ -676,17 +691,17 @@ void StateManager::handleFlowCalibrateRequestFlowCalibration(VdgMessage_t &messa
     /** Handle state transition based on flow sensor status. */
     if ()
     switch (flowState) {
-        case VDG_FLOW_SENSOR_WAITING_FOR_FEEDBACK:
+        case VDG_FLOW_SENSOR_CALIBRATION_WAITING_FOR_FEEDBACK:
             break;
 
         case VDG_FLOW_SENSOR_MEASURING_CALIBRATION:
             dataContainer_.logWarning(ret, TAG, "Flow sensor calibration update not accepted: dispensation ongoing.");
             goto err;
 
-        case VDG_FLOW_SENSOR_MIN:
-        case VDG_FLOW_SENSOR_MAX:
-        case VDG_FLOW_SENSOR_IDLE:
-        case VDG_FLOW_SENSOR_MEASURING:
+        case VDG_FLOW_SENSOR_CALIBRATION_MIN:
+        case VDG_FLOW_SENSOR_CALIBRATION_MAX:
+        case VDG_FLOW_SENSOR_CALIBRATION_IDLE:
+        case VDG_FLOW_SENSOR_CALIBRATION_MEASURING:
             dataContainer_.logError(ret, TAG, "Flow sensor calibration in invalid state.");
             goto err;
 
@@ -722,7 +737,7 @@ err:
  * @param message MQTT received message.
  * @return esp_err_t Return code.
  */
-esp_err_t StateManager::handlePressureCalibrateRequest(VdgMessage_t *message) {
+void StateManager::handlePressureCalibrateRequest(VdgMessage_t message) {
     return ESP_OK;
 }
 
@@ -732,8 +747,8 @@ esp_err_t StateManager::handlePressureCalibrateRequest(VdgMessage_t *message) {
  * @param message MQTT received message.
  * @return esp_err_t Return code.
  */
-esp_err_t StateManager::handleDrainRequest(VdgMessage_t *message) {
-    return ESP_OK
+void StateManager::handleDrainRequest(VdgMessage_t message) {
+    return ESP_OK;
 }
 
 /**
@@ -742,8 +757,8 @@ esp_err_t StateManager::handleDrainRequest(VdgMessage_t *message) {
  * @param message MQTT received message.
  * @return esp_err_t Return code.
  */
-esp_err_t StateManager::handlePressurePollRequest(VdgMessage_t *message) {
-    return ESP_OK
+void StateManager::handlePressurePollRequest(VdgMessage_t message) {
+    return ESP_OK;
 }
 
 /**
@@ -752,6 +767,6 @@ esp_err_t StateManager::handlePressurePollRequest(VdgMessage_t *message) {
  * @param message MQTT received message.
  * @return esp_err_t Return code.
  */
-esp_err_t StateManager::handleConfigChangeRequest(VdgMessage_t *message) {
+void StateManager::handleConfigChangeRequest(VdgMessage_t message) {
     return ESP_OK;
 }
