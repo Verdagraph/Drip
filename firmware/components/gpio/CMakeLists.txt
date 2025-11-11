@@ -1,5 +1,5 @@
 idf_component_register(SRCS "gpioDriver.cpp"
 						INCLUDE_DIRS .
-						REQUIRES config esp_driver_i2c
+						REQUIRES config esp_driver_gpio esp_driver_i2c
 						PRIV_REQUIRES
 )

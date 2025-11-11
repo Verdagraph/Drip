@@ -2,10 +2,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-//#include "configManager.h"
-\\#include "mqttManager.h"
-\\#include "connectionManager.h"
-\\#include "valveManager.h"
 #include "stateManager.h"
 
 /** Main task stack size, in words (4 bytes on Esp32c3) */

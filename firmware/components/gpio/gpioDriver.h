@@ -1,5 +1,7 @@
-#ifndef FLOW_MANAGER_H
-#define FLOW_MANAGER_H
+#ifndef GPIO_DRIVER_H
+#define GPIO_DRIVER_H
+
+#include "driver/i2c_master.h"
 
 enum VdgGpioToggleState_e {
     VDG_GPIO_TOGGLE_MIN,
@@ -15,8 +17,6 @@ enum VdgI2CDevices_e {
 
     VDG_I2C_DEVICES_MAX,
 };
-
-extern GpioDriver gpioDriver;
 
 /**
  * @brief Provides access to all GPIO pins.
@@ -56,5 +56,7 @@ private:
 
     esp_err_t configureFlowSensorInterrupt();
 };
+
+extern GpioDriver gpioDriver;
 
 #endif

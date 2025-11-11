@@ -14,7 +14,7 @@ enum Valves_e {
     TANK_DRAIN
 };
 
-enum Relays_e  = {
+enum Relays_e {
     RELAYS_MIN,
     RELAY1,
     RELAY2,
@@ -34,7 +34,7 @@ struct ValveConfig_t {
     Relays_e tankDispenseRelay;
     Relays_e tankDrainRelay;
     Valves_e preferredDispenseValve;
-}
+};
 
 struct DispenseConfig_t {
     float dataResolutionLiters;
@@ -76,9 +76,8 @@ struct Config_t {
     TankConfig_t tank;
     FlowSensorConfig_t flowSensor;
     PressureSensorConfig_t pressureSensor;
-    PressureSensorCalibrationPoint_t[MAX_PRESSURE_CALIBRATION_POINTS] pressureCalibrationTable;
+    PressureSensorCalibrationPoint_t pressureCalibrationTable[MAX_PRESSURE_CALIBRATION_POINTS];
 };
-
 
 
 

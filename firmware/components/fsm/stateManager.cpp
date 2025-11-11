@@ -113,21 +113,22 @@ esp_err_t StateManager::getHandlerFunctionFromMessageId(
 /**
  * @brief Constructor
  */
-StateManager::StateManager() {
-    state_ = VDG_MAIN_FSM_MIN;
+StateManager::StateManager() : 
+state_(VDG_MAIN_FSM_MIN),
+eventTimers_(),
+configManager_(),
+dataContainer_(),
+mqttManager_(),
+wifiManager_(),
+valveManager_(configManager_, dataContainer_),
+flowSensorManager_()
+{
 }
 
 /**
  * @brief Initializes the finite state machine.
  */
 void StateManager::initialize() {
-    configManager_ = ConfigManager();
-    dataContainer_ = DataContainer();
-    mqttManager_ = MqttManager();
-    wifiManager_ = WifiManager();
-    valveManager_ = ValveManager(configManager_);
-    flowSensorManager_ = FlowSensorManager();
-    
     state_ = VDG_MAIN_FSM_BOOT;
 }
 

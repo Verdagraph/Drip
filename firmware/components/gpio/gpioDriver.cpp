@@ -53,11 +53,11 @@ esp_err_t GpioDriver::setRelay1State(VdgGpioToggleState_e state) {
 }
 
 esp_err_t GpioDriver::setRelay2State(VdgGpioToggleState_e state) {
-
+    return ESP_OK;
 }
 
 esp_err_t GpioDriver::setRelay3State(VdgGpioToggleState_e state) {
-
+    return ESP_OK;
 }
 
 esp_err_t GpioDriver::i2cWriteReadTransaction(VdgI2CDevices_e device, uint8_t *writeBuf, size_t writeBufLen, uint8_t *readBuf, size_t readBufLen, uint32_t timeoutMs) {
@@ -117,6 +117,8 @@ esp_err_t GpioDriver::configureRelayPins() {
     gpio_set_direction(VDG_GPIO_PIN_RELAY1, GPIO_MODE_OUTPUT);   
     gpio_set_direction(VDG_GPIO_PIN_RELAY2, GPIO_MODE_OUTPUT);
     gpio_set_direction(VDG_GPIO_PIN_RELAY3, GPIO_MODE_OUTPUT);
+
+    return ESP_OK;
 }
 
 esp_err_t GpioDriver::configureI2C() {

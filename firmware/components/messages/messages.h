@@ -60,7 +60,7 @@ struct VdgMessage_t {
  */
 struct MqttRxConfigMessage_t {
     Config_t config;
-} MqttRxConfigMessage_t;
+};
 
 /** 
  * @brief Dispense activate command.
@@ -92,36 +92,36 @@ struct VdgFlowCalibrationUpdateCommand_t {
 /**
  * @brief Dispense slice report.
  */
-typedef struct MqttTxDispenseSliceMessage_t {
+struct MqttTxDispenseSliceMessage_t {
     uint32_t time;
     float volume;
     float flowRate;
     float waterLevel;
     float waterVolume; 
-} MqttTxDispenseSliceMessage_t;
+};
 
 /**
  * @brief Dispense summary report.
  */
-typedef struct MqttTxDispenseSummaryMessage_t {
+struct MqttTxDispenseSummaryMessage_t {
     uint32_t duration;
     float volume;
     float tankVolume;
     uint32_t tankSwitchoverTime;
-} MqttTxDispenseSummaryMessage_t;
+};
 
 /**
  * @brief Info, warning, and error logs.
  */
-typedef struct MqttTxLogMessage_t {
+struct MqttTxLogMessage_t {
     char message[VDG_LOG_MESSAGE_BUFFER_BYTES];
-} MqttTxLogMessage_t;
+};
 
 /**
  * @brief Config report.
  */
-typedef struct MqttTxConfigMessage_t {
+struct MqttTxConfigMessage_t {
     Config_t config;
-} MqttTxConfigMessage_t;
+};
 
 #endif

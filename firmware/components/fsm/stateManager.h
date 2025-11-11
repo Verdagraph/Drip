@@ -1,16 +1,17 @@
 #ifndef STATE_MANAGER_H
 #define STATE_MANAGER_H
 
-#include "states.h"
 #include "config.h"
 #include "configManager.h"
 #include "messages.h"
 #include "configManager.h"
 #include "dataContainer.h"
+#include "wifiManager.h"
 #include "mqttManager.h"
-#include "connectionManager.h"
 #include "valveManager.h"
 #include "flowManager.h"
+
+#include "states.h"
 
 /**
  * Defines the default time in miliseconds in between uploading slices of a process.
@@ -197,10 +198,10 @@ private:
     VdgMainFsmEventTimers_t eventTimers_;
 
     /** Managers. */
-    DataContainer dataContainer_;
     ConfigManager configManager_;
+    DataContainer dataContainer_;
     MqttManager mqttManager_;
-    ConnectionManager connectionManager_;
+    WifiManager wifiManager_;
     ValveManager valveManager_;
     FlowSensorManager flowSensorManager_;
 
