@@ -72,10 +72,6 @@ public:
      * Measurement data.
      */
     esp_err_t getMeasurementData(VdgMeasurementData_t &data);
-    esp_err_t getDerivedMeasurementData(VdgMeasurementData_t &data);
-    esp_err_t setPressureSensorVoltage(float voltage);
-    esp_err_t incrementFlowSensorPulses();
-    esp_err_t clearFlowSensorPulses();
 
     /**
      * Process data.
@@ -143,9 +139,6 @@ public:
      * @return esp_err_t Return code.
      */
     esp_err_t getNextLog(VdgLogMessage_t &message);
-
-
-
 
 private:
 

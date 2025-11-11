@@ -1,60 +1,116 @@
 #include "esp_err.h"
 
-#include "connectionManager.h"
+#include "dataContainer.h"
 
-static const char* TAG = "ConnectionManager";
+static const char* TAG = "Datacontainer";
 
 /**
  * @brief Constructor.
  */
-ConnectionManager::ConnectionManager() {
-    return;
+DataContainer::DataContainer() {}
+
+/**
+ * @brief Begin the DataContainer.
+ * 
+ * @return esp_err_t Return code. 
+ */
+esp_err_t DataContainer::initialize() {
+    esp_err_t ret = ESP_OK;
+    return ret;
 }
 
 /**
- * @brief Begin the ConnectionManager.
- * 
- * @return esp_err_t Return code.
+ * Measurement data.
  */
-esp_err_t ConnectionManager::initialize() {
+esp_err_t DataContainer::getMeasurementData(VdgMeasurementData_t &data) {
     return ESP_OK;
 }
 
 /**
- * @brief If true, the ConnectionManager is currently provisioning.
- * 
- * @returns The isProvisioning flag. 
+ * Process data.
  */
-bool ConnectionManager::isProvisioning() {
-    return true;
+esp_err_t DataContainer::getDispenseProcessData(VdgDispenseProcessData_t &data) {
+    return ESP_OK;
 }
-
-/**
- * @brief If true, the ConnectionManager has successful WiFi
- * and MQTT connection.
- * 
- * @returns the isConnected flag.
- */
-bool ConnectionManager::isConnected() {
-    return true;
+esp_err_t DataContainer::setDispenseProcessData(VdgDispenseProcessData_t data) {
+    return ESP_OK;
 }
-
-/**
- * @brief Attempts to initiate a WiFi and MQTT connection.
- * Blocks until the connection is resolved or failed.
- * 
- * @param connected If set to true, the connection succeeded.
- * @return esp_err_t Return code.
- */
-esp_err_t ConnectionManager::connect(bool &connected) {
+esp_err_t DataContainer::getDrainProcessData(VdgDispenseProcessData_t &data) {
+    return ESP_OK;
+}
+esp_err_t DataContainer::setDrainProcessData(VdgDispenseProcessData_t data) {
+    return ESP_OK;
+}
+esp_err_t DataContainer::getFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t &data) {
+    return ESP_OK;
+}
+esp_err_t DataContainer::setFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t data) {
     return ESP_OK;
 }
 
 /**
- * @brief Begins the provisioning process.
+ * Logging.
+ */
+
+/**
+ * @brief Retrieves the number of stored logs.
+ * 
+ * @return size_t The number of stored logs. 
+ */
+size_t DataContainer::getNumLogs() {
+    return 0U;
+}
+
+/**
+ * @brief Logs an informational log.
+ * 
+ * @param[in] returnCode The return code, if any, associated with the log.
+ * Defaults to ESP_OK;
+ * @param[in] tag The ESP tag used for debug logging.
+ * @param[in] message The log message.
  * 
  * @return esp_err_t Return code.
  */
-esp_err_t ConnectionManager::beginProvisioning() {
+esp_err_t DataContainer::logInfo(esp_err_t returnCode, const char* tag, const char *message) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Logs a warning log.
+ * 
+ * @param[in] returnCode The return code, if any, associated with the log.
+ * Defaults to ESP_OK;
+ * @param[in] tag The ESP tag used for debug logging.
+ * @param[in] message The log message.
+ * 
+ * @return esp_err_t Return code.
+ */
+esp_err_t DataContainer::logWarning(esp_err_t returnCode, const char* tag, const char *message) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Logs an error log.
+ * 
+ * @param[in] returnCode The return code, if any, associated with the log.
+ * Defaults to ESP_FAIL;
+ * @param[in] tag The ESP tag used for debug logging.
+ * @param[in] message The log message.
+ * 
+ * @return esp_err_t Return code.
+ */
+esp_err_t DataContainer::logError(esp_err_t returnCode, const char* tag, const char *message) {
+    return ESP_OK;
+}
+
+/**
+ * @brief Gets the next available log. The log is popped from the buffer 
+ * and erased, so it must be uploaded after this.
+ * 
+ * @param[out] message Output parameter for the retrieved log.
+ * 
+ * @return esp_err_t Return code.
+ */
+esp_err_t DataContainer::getNextLog(VdgLogMessage_t &message) {
     return ESP_OK;
 }

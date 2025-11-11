@@ -58,7 +58,7 @@ struct VdgMessage_t {
 /**
  * @brief Config change command.
  */
-typedef struct MqttRxConfigMessage_t {
+struct MqttRxConfigMessage_t {
     Config_t config;
 } MqttRxConfigMessage_t;
 

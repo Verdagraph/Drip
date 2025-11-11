@@ -9,9 +9,10 @@
 
 #include "messages.h"
 #include "utils.h"
+#include "dataContainer.h"
 #include "configManager.h"
 #include "mqttManager.h"
-#include "connectionManager.h"
+#include "wifiManager.h"
 #include "valveManager.h"
 #include "flowManager.h"
 
@@ -120,11 +121,11 @@ StateManager::StateManager() {
  * @brief Initializes the finite state machine.
  */
 void StateManager::initialize() {
-    dataContainer_ = DataContainer();
     configManager_ = ConfigManager();
+    dataContainer_ = DataContainer();
     mqttManager_ = MqttManager();
-    connectionManager_ = ConnectionManager();
-    valveManager_ = ValveManager();
+    wifiManager_ = WifiManager();
+    valveManager_ = ValveManager(configManager_);
     flowSensorManager_ = FlowSensorManager();
     
     state_ = VDG_MAIN_FSM_BOOT;
@@ -249,9 +250,6 @@ void StateManager::boot() {
     err = configManager_.initialize();
     if (err != ESP_OK) goto err;
 
-    err = connectionManager_.initialize();
-    if (err != ESP_OK) goto err;
-
     err = mqttManager_.initialize();
     if (err != ESP_OK) goto err;
 
@@ -276,54 +274,32 @@ void StateManager::fatalError() {
  */
 void StateManager::connect() {
     esp_err_t err = ESP_OK;
-    bool connected = false;
     
-    /** Attempt connection. */
-    err = connectionManager_.connect(connected);
-    if (err != ESP_OK) {
-        dataContainer_.logError(err, TAG, "Failed to initialize connection.");
-        goto err;
-    } 
+    /** 
+     * Attempt connection. 
+     * The WifiManager handles all wifi provisioning events in the background.
+     */
+    wifiManager_.start();
 
     /** Continue if connected or provision WiFi & MQTT if not. */
-    if (connected == true) {
+    if (wifiManager_.isConnected() == true) {
         state_ = VDG_MAIN_FSM_LISTEN;
         return;
-
     } else {
         state_ = VDG_MAIN_FSM_PROVISIONING;
         return;
     }
-
-err:
-    state_ = VDG_MAIN_FSM_FATAL_ERROR;
-    return;
 }
 
 /**
  * @brief Handler for state VDG_MAIN_FSM_PROVISIONING.
  */
 void StateManager::accessPoint() {
-    esp_err_t err = ESP_OK;
-
-    /** Begin provisioning. */
-    if ( (connectionManager_.isProvisioning() == false) && (connectionManager_.isConnected() == false) ) {
-        err = connectionManager_.beginProvisioning();
-        if (err != ESP_OK) {
-            dataContainer_.logError(err, TAG, "Failed to initialize provisioning.");
-            goto err;
-        } 
-    }
-
     /** Move forward once connected. */
-    if (connectionManager_.isConnected() == true) {
+    if (wifiManager_.isConnected() == true) {
         state_ = VDG_MAIN_FSM_LISTEN;
         return;
     }
-
-err:
-    state_ = VDG_MAIN_FSM_FATAL_ERROR;
-    return;
 }
 
 /**
@@ -397,7 +373,7 @@ void StateManager::dispense() {
         /** Continuing to dispense. */
         case VDG_VALVES_DISPENSE:
 
-            if ( (  - eventTimers_.lastProcessSliceUploadTicks) >=
+            if ( (currentTicks - eventTimers_.lastProcessSliceUploadTicks) >=
                 pdMS_TO_TICKS(PROCESS_SLICE_UPLOAD_MS_DEFAULT) ) {
                 err = mqttManager_.uploadDispenseSlice();
                 if (err != ESP_OK) {
@@ -491,10 +467,6 @@ void StateManager::flowCalibrate() {
 
 exit:
     /** End the process. */
-    err = flowSensorManager_.endProcess(calibrationState);
-    if ( (err != ESP_OK) || (calibrationState != VDG_FLOW_SENSOR_CALIBRATION_IDLE) ) {
-        dataContainer_.logError(err, TAG, "Failed to deactivate calibration.");
-    }
     err = valveManager_.endProcess(valveProcess);
     if ( (err != ESP_OK) || (valveProcess != VDG_VALVES_IDLE) ) {
         dataContainer_.logError(err, TAG, "Failed to deactivate dispensation.");
@@ -564,18 +536,18 @@ void StateManager::handleDispenseRequest(VdgMessage_t message) {
         case VDG_DISPENSE_PROCESS_TARGET_TIME:
             snprintf(log, 
                 sizeof(log), 
-                "Beginning dispense process with a target volume: %.2f liters, timeout: %.2f seconds", 
+                "Beginning dispense process with a target volume: %.2f liters, timeout: %ld miliseconds", 
                 command->target, 
-                MS_TO_S(command->timeoutMs)
+                command->timeoutMs
             );
             break;
 
         case VDG_DISPENSE_PROCESS_TARGET_VOLUME:
             snprintf(log, 
                 sizeof(log), 
-                "Beginning dispense process with a target time: %.2f seconds, timeout: %.2f seconds", 
+                "Beginning dispense process with a target time: %.2f seconds, timeout: %ld miliseconds", 
                 command->target, 
-                MS_TO_S(command->timeoutMs)
+                command->timeoutMs
             );
             break;
 
@@ -587,12 +559,29 @@ void StateManager::handleDispenseRequest(VdgMessage_t message) {
     dataContainer_.logInfo(ESP_OK, TAG, log);
 
     state_ = VDG_MAIN_FSM_DISPENSE;
-
-    return ESP_OK;
+    return;
 
 err:
-    flowSensorManager_.endProcess(flowSensorState);
     valveManager_.endProcess(valveProcess);
+    return;
+}
+
+/**
+ * @brief Handles state change for a deactivation request.
+ * 
+ * @param[in] message MQTT received message.
+ * @return esp_err_t Return code.
+ */
+void StateManager::handleDeactivateRequest(VdgMessage_t message) {
+    return;
+}
+
+/**
+ * @brief Handles state change for a restart request.
+ * 
+ * @param[in] message MQTT received message.
+ */
+void StateManager::handleRestartRequest(VdgMessage_t message) {
     return;
 }
 
@@ -626,8 +615,8 @@ void StateManager::handleFlowCalibrateRequestListen(VdgMessage_t message) {
     command = reinterpret_cast<VdgFlowCalibrationUpdateCommand_t*>(message.payload);
 
     /** Begin the calibration process. */
-    err = flowSensorManager_.beginCalibration(*command, flowSensorState, calibrateProcess);
-    if ( (err != ESP_OK) || (flowSensorState != VDG_FLOW_SENSOR_MEASURING_CALIBRATION) ) {
+    //err = flowSensorManager_.beginCalibration(flowSensorState);
+    if ( (err != ESP_OK) || (flowSensorState != VDG_FLOW_SENSOR_CALIBRATION_MEASURING) ) {
         dataContainer_.logError(err, TAG, "Failed to begin flow calibration process.");
         goto err;
     }
@@ -645,17 +634,16 @@ void StateManager::handleFlowCalibrateRequestListen(VdgMessage_t message) {
     /** Log info. */    
     snprintf(log, 
         sizeof(log), 
-        "Beginning calibration process with a target volume: %.2f liters, timeout: %d min", 
-        payload->targetVolume, 
-        payload->MS_TO_MIN(timeout)
+        "Beginning calibration process with a target volume: %.2f liters, timeout: %ld ms", 
+        command->targetVolume, 
+        command->timeoutMs
     );
     dataContainer_.logInfo(ESP_OK, TAG, log);
 
-    state_ = STATE_FLOW_CALIBRATE;
-    return ESP_OK;
+    state_ = VDG_MAIN_FSM_FLOW_CALIBRATE;
+    return;
 
 err:
-    flowSensorManager_.endProcess(flowSensorState);
     valveManager_.endProcess(valveProcess);
     return;
 }
@@ -688,47 +676,16 @@ void StateManager::handleFlowCalibrateRequestFlowCalibration(VdgMessage_t messag
     /** Typecast the payload. */
     command = reinterpret_cast<VdgFlowCalibrationUpdateCommand_t*>(message.payload);
 
-    /** Handle state transition based on flow sensor status. */
-    if ()
-    switch (flowState) {
-        case VDG_FLOW_SENSOR_CALIBRATION_WAITING_FOR_FEEDBACK:
-            break;
+    valveManager_.getCurrentProcess(valveProcess);
 
-        case VDG_FLOW_SENSOR_MEASURING_CALIBRATION:
-            dataContainer_.logWarning(ret, TAG, "Flow sensor calibration update not accepted: dispensation ongoing.");
-            goto err;
+    /** Retrieve valve status. */
 
-        case VDG_FLOW_SENSOR_CALIBRATION_MIN:
-        case VDG_FLOW_SENSOR_CALIBRATION_MAX:
-        case VDG_FLOW_SENSOR_CALIBRATION_IDLE:
-        case VDG_FLOW_SENSOR_CALIBRATION_MEASURING:
-            dataContainer_.logError(ret, TAG, "Flow sensor calibration in invalid state.");
-            goto err;
+    /** Handle state transition based on valve status. */
+    //switch (valveProcess) {}
 
-        default:
-            mqttManager->txError(TAG, "Unrecognized value of FlowSensorStates_e.");
-            goto err;
-    }
 
-    /** Update the calibration. */
-    flowSensorManager_.inputCalibration(flowSensorState, )
-
-    snprintf(message, 
-        sizeof(message), 
-        "Beginning calibration process with a target volume: %.2f liters, timeout: %d min", 
-        payload->targetVolume, 
-        payload->timeout / (1000 * 60)
-    );
-    mqttManager->txInfo(TAG, message);
-    state = STATE_FLOW_CALIBRATE;
-    break;
-
-    return ESP_OK;
-
-err:
-    flowSensorManager_.endProcess(flowSensorState);
-    valveManager_.endProcess(valveProcess);
     return;
+
 }
 
 /**
@@ -738,7 +695,7 @@ err:
  * @return esp_err_t Return code.
  */
 void StateManager::handlePressureCalibrateRequest(VdgMessage_t message) {
-    return ESP_OK;
+    return;
 }
 
 /**
@@ -748,7 +705,7 @@ void StateManager::handlePressureCalibrateRequest(VdgMessage_t message) {
  * @return esp_err_t Return code.
  */
 void StateManager::handleDrainRequest(VdgMessage_t message) {
-    return ESP_OK;
+    return;
 }
 
 /**
@@ -758,7 +715,7 @@ void StateManager::handleDrainRequest(VdgMessage_t message) {
  * @return esp_err_t Return code.
  */
 void StateManager::handlePressurePollRequest(VdgMessage_t message) {
-    return ESP_OK;
+    return;
 }
 
 /**
@@ -768,5 +725,59 @@ void StateManager::handlePressurePollRequest(VdgMessage_t message) {
  * @return esp_err_t Return code.
  */
 void StateManager::handleConfigChangeRequest(VdgMessage_t message) {
+    return;
+}
+
+/**
+ * @brief Initializes and mounts the LittleFS filesystem.
+ * 
+ * @details Taken from https://github.com/Ariif0/ESPIDF-WiFi-Configuration/blob/main/include/Application.h
+ *
+ * Registers the LittleFS driver with the Virtual File System (VFS) using the
+ * base path defined in config.h, enabling file operations on the storage partition.
+ */
+esp_err_t StateManager::initializeFilesystem() {
+    ESP_LOGI(TAG, "Initializing LittleFS...");
+    esp_vfs_littlefs_conf_t conf = {
+        .base_path = LFS_BASE_PATH,            
+        .partition_label = LFS_PARTITION_LABEL, 
+        .partition = NULL,                     
+        .format_if_mount_failed = true,        
+        .read_only = false,                    
+        .dont_mount = false,                   
+        .grow_on_mount = false,                
+    };
+
+    esp_err_t ret = esp_vfs_littlefs_register(&conf);
+
+    if (ret != ESP_OK)
+    {
+        if (ret == ESP_FAIL)
+        {
+            ESP_LOGE(TAG, "Failed to mount or format filesystem");
+        }
+        else if (ret == ESP_ERR_NOT_FOUND)
+        {
+            ESP_LOGE(TAG, "Failed to find LittleFS partition. Ensure '%s' exists in partition_custom.csv", LFS_PARTITION_LABEL);
+        }
+        else
+        {
+            ESP_LOGE(TAG, "Failed to initialize LittleFS (%s)", esp_err_to_name(ret));
+        }
+        return ret;
+    }
+
+    size_t total = 0, used = 0;
+    ret = esp_littlefs_info(conf.partition_label, &total, &used);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to retrieve LittleFS partition info (%s)", esp_err_to_name(ret));
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
+    }
+    ESP_LOGI(TAG, "LittleFS successfully mounted at path: %s", LFS_BASE_PATH);
+
     return ESP_OK;
 }

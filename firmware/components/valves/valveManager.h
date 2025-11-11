@@ -1,6 +1,11 @@
 #ifndef VALVE_MANAGER_H
 #define VALVE_MANAGER_H
 
+#include "config.h"
+#include "configManager.h"
+#include "gpioDriver.h"
+#include "dataContainer.h"
+
 #define VDG_DRAIN_PROCESS_MAX_TIMEOUT_MIN 120
 
 /**
@@ -213,7 +218,7 @@ public:
     /**
      * @brief Constructor.
      */
-    ValveManager();
+    ValveManager(ConfigManager &configManager);
 
     /**
      * @brief Begin the ValveManager.
@@ -260,9 +265,16 @@ public:
      */
     esp_err_t endProcess(VdgValveProcess_e &process);
 
+    esp_err_t getCurrentProcess(VdgValveProcess_e &process);
+
 private:
+    ConfigManager configManager;
+    DataContainer dataContainer;
+
     VdgOpenValveState_e openValve_;
     VdgValveProcess_e currentProcess_;
+
+    esp_err_t setValveState(Valves_e valve, VdgGpioToggleState_e state);
 
     /**
      * @brief Closes the currently open valve.

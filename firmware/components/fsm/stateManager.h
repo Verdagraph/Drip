@@ -2,6 +2,8 @@
 #define STATE_MANAGER_H
 
 #include "states.h"
+#include "config.h"
+#include "configManager.h"
 #include "messages.h"
 #include "configManager.h"
 #include "dataContainer.h"
@@ -229,6 +231,8 @@ private:
      * @retval ESP_OK Returned if all messages are handled or ignored.
      */
     esp_err_t handleReceivedMessages(const VdgMessageHandleFuncTable_t *table);
+
+    esp_err_t initializeFilesystem();
 
 };
 

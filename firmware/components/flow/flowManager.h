@@ -18,16 +18,6 @@ enum VdgFlowSensorCalibrationState_e {
 };
 
 /**
- * @brief Describes the target of a current flow sensor calibration step.
- */
-struct VdgFlowCalibrationTarget_t {
-    /** The target output volume in liters */
-    float targetVolume = 0.0f;
-    /** The maximum duration of the calibration step in miliseconds. */
-    uint32_t timeout = 0U;
-};
-
-/**
  * @brief Describes the input by the user for a flow sensor calibration step.
  * 
  */
@@ -64,7 +54,6 @@ struct FlowCalibrationSummary_t {
  * @brief Holds all calibration process related data.
  */
 struct VdgFlowCalibrationProcessData_t {
-    VdgFlowCalibrationTarget_t target;
     VdgFlowCalibrationMeasurement_t measurement;
     VdgFlowCalibrationProcessSlice_t slice;
     FlowCalibrationSummary_t summary;
@@ -90,12 +79,11 @@ public:
     /**
      * @brief Begins a calibration process.
      * 
-     * @param[in] target Target for the process.
      * @param[out] state Output parameter for the current state after this function.
      *
      * @return esp_err_t Return code.
      */
-    esp_err_t beginCalibration(VdgFlowCalibrationTarget_t target, VdgFlowSensorCalibrationState_e &state);
+    esp_err_t beginCalibration(VdgFlowSensorCalibrationState_e &state);
 
     /**
      * @brief Accepts a measurement into the calibration process.
