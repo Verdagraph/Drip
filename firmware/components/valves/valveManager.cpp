@@ -104,6 +104,23 @@ esp_err_t ValveManager::beginDrainProcess(VdgDrainProcessTarget_t &target, VdgVa
  * @return esp_err_t Return code.
  */
 esp_err_t ValveManager::updateProcess(VdgValveProcess_e &process){
+    switch(currentProcess_) {
+        case VDG_VALVES_IDLE:
+            return ESP_OK;
+            break;
+        case VDG_VALVES_DISPENSE:
+
+            /** Handle timeout. */
+
+            /** Handle low flow. */
+
+            break;
+        case VDG_VALVES_DRAIN:
+            break;
+        default:
+            break;
+    }
+
     return ESP_OK;
 }
 

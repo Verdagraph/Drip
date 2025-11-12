@@ -49,7 +49,7 @@ struct TankConfig_t {
     float dimension1;
     float dimension2;
     float dimension3;
-    uint16_t tank_timeout;
+    uint16_t tankTimeout;
 };
 
 struct FlowSensorConfig_t {
