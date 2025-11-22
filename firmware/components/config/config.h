@@ -1,7 +1,12 @@
+/**
+ * @file config.h
+ * @brief All persistent and mutable configuration values.
+ */
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define MAX_PRESSURE_CALIBRATION_POINTS 50
+#include "consts.h"
 
 enum TankShapes_e {
     TANK_RECTANGLE,
@@ -23,7 +28,8 @@ enum Relays_e {
 };
 
 struct SystemConfig_t {
-    uint32_t sleepInterval;
+    uint32_t sleepIntervalMs;
+    uint32_t processSliceUploadIntervalMs;
 };
 
 struct ValveConfig_t {
@@ -41,10 +47,12 @@ struct DispenseConfig_t {
 };
 
 struct SourceConfig_t {
+    bool enabled;
     float staticFlowRate;
 };
 
 struct TankConfig_t {
+    bool enabled;
     TankShapes_e shape;
     float dimension1;
     float dimension2;
@@ -53,6 +61,7 @@ struct TankConfig_t {
 };
 
 struct FlowSensorConfig_t {
+    bool enabled;
     float defaultPulsesPerLiter;
     float minFlowRate;
     float calibrationTimeout;
@@ -60,6 +69,7 @@ struct FlowSensorConfig_t {
 };
 
 struct PressureSensorConfig_t {
+    bool enabled;
     float reportMode;
 };
 
@@ -67,6 +77,7 @@ struct PressureSensorCalibrationPoint_t {
     uint16_t analogVoltage;
     uint16_t volume;
 };
+
 
 struct Config_t {
     SystemConfig_t system;
@@ -79,61 +90,6 @@ struct Config_t {
     PressureSensorCalibrationPoint_t pressureCalibrationTable[MAX_PRESSURE_CALIBRATION_POINTS];
 };
 
-
-
-
-
-
-/**
- * @file config.h
- * @brief Configuration settings for Wi-Fi provisioning and storage.
- */
-
-/**
- * @defgroup WiFiProvisioning Wi-Fi Provisioning Configuration
- * @brief Configuration parameters for Wi-Fi Access Point (AP) provisioning mode.
- * @{
- */
-
-/** @brief SSID for the provisioning Access Point. */
-#define PROV_AP_SSID "ESP32-Provisioning"
-
-/** @brief Password for the provisioning Access Point (minimum 8 characters). */
-#define PROV_AP_PASS "password123"
-
-/** @brief Maximum number of clients that can connect to the Access Point. */
-#define PROV_AP_MAX_CONN 1
-
-/** @} */
-
-/**
- * @defgroup NVSConfig Non-Volatile Storage (NVS) Configuration
- * @brief Configuration for storing Wi-Fi credentials in NVS.
- * @{
- */
-
-/** @brief Namespace used for NVS storage. */
-#define NVS_NAMESPACE "storage"
-
-/** @brief Key for storing Wi-Fi SSID in NVS. */
-#define NVS_KEY_WIFI_SSID "wifi_ssid"
-
-/** @brief Key for storing Wi-Fi password in NVS. */
-#define NVS_KEY_WIFI_PASS "wifi_pass"
-
-/** @} */
-
-/**
- * @defgroup LittleFSConfig LittleFS Configuration
- * @brief Configuration for LittleFS filesystem.
- * @{
- */
-
-/** @brief Label for the storage partition defined in partition_custom.csv. */
-#define LFS_PARTITION_LABEL "storage"
-
-/** @brief Base path for mounting the LittleFS filesystem. */
-#define LFS_BASE_PATH "/littlefs"
 
 
 #endif

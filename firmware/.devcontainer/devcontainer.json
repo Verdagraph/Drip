@@ -13,6 +13,7 @@
 			},
 			"extensions": [
 				"espressif.esp-idf-extension",
+				"espressif.esp-idf-web",
 				"ms-vscode.cmake-tools",
 				"ms-vscode.cpptools"
 			]

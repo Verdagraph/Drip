@@ -44,13 +44,6 @@ public:
      */
     esp_err_t persist();
 
-    /**
-     * @brief Refreshes the in-memory config object to the non-volatile values. 
-     * 
-     * @return esp_err_t Return code.
-     */
-    esp_err_t refresh();
-
 private:
     Config_t config;
     PressureSensorCalibrationPoint_t pressureCalibration[MAX_PRESSURE_CALIBRATION_POINTS];
