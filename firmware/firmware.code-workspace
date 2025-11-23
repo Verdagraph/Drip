@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../firmware"
+		},
+		{
+			"name": "Drip",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

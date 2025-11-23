@@ -46,7 +46,6 @@ public:
 
 private:
     Config_t config;
-    PressureSensorCalibrationPoint_t pressureCalibration[MAX_PRESSURE_CALIBRATION_POINTS];
 };
 
 #endif

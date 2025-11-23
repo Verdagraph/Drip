@@ -48,12 +48,3 @@ esp_err_t ConfigManager::setConfig(Config_t &config) {
 esp_err_t ConfigManager::persist() {
     return ESP_OK;
 }
-
-/**
- * @brief Refreshes the in-memory config object to the non-volatile values. 
- * 
- * @return esp_err_t Return code.
- */
-esp_err_t ConfigManager::refresh() {
-    return ESP_OK;
-}

@@ -7,41 +7,50 @@
 #define CONFIG_H
 
 #include "consts.h"
+#include "enums.h"
 
-enum TankShapes_e {
-    TANK_RECTANGLE,
-    TANK_CYLINDER
-};
-
-enum Valves_e {
-    SOURCE_DISPENSE,
-    TANK_DISPENSE,
-    TANK_DRAIN
-};
-
-enum Relays_e {
-    RELAYS_MIN,
-    RELAY1,
-    RELAY2,
-    RELAY3,
-    RELAYS_MAX
-};
-
+/**
+ * @brief General system configuration.
+ */
 struct SystemConfig_t {
-    uint32_t sleepIntervalMs;
-    uint32_t processSliceUploadIntervalMs;
+    /** 
+     * @brief The duration to wait in between checking for 
+     * new messages in the idle state in miliseconds. 
+     * Set to zero for no delay. 
+     * */
+    uint32_t sleepIntervalMs = 1000U;
+    /** 
+     * @brief The interval in miliseconds between uploads of process slice data messages 
+     * In the dispense and drain processes.
+     */
+    uint32_t processSliceUploadIntervalMs = 100U;
 };
 
+/**
+ * @brief Valve configuration.
+ */
 struct ValveConfig_t {
-    bool sourceDispenseEnabled;
-    bool tankDispenseEnabled;
-    bool tankDrainEnabled;
-    Relays_e sourceDispenseRelay;
-    Relays_e tankDispenseRelay;
-    Relays_e tankDrainRelay;
-    Valves_e preferredDispenseValve;
+    /** @brief If true, the source dispense valve is being used. */
+    bool sourceDispenseEnabled = true;
+    /** @brief If true, the tank dispense valve is being used. */
+    bool tankDispenseEnabled = true;
+    /** @brief If true, the tank drain valve is being used. */
+    bool tankDrainEnabled = true;
+    /** @brief The relay of the source dispense valve. Set to RELAY_NONE when unconfigured. */
+    Relays_e sourceDispenseRelay = RELAY1;
+    /** @brief The relay of the tank dispense valve. Set to RELAY_NONE when unconfigured. */
+    Relays_e tankDispenseRelay = RELAY2;
+    /** @brief The relay of the tank drain valve. Set to RELAY_NONE when unconfigured. */
+    Relays_e tankDrainRelay = RELAY3;
+    /** 
+     * @brief Sets a preference between SOURCE_DISPENSE and TANK_DISPENSE. 
+     * If TANK_DISPENSE, the tank will always be used first in dispensation.
+     * If SOURCE_DISPENSE, the source will always be used first in dispensation.
+     */
+    Valves_e preferredDispenseValve = TANK_DISPENSE;
 };
 
+/** */
 struct DispenseConfig_t {
     float dataResolutionLiters;
 };
@@ -71,6 +80,7 @@ struct FlowSensorConfig_t {
 struct PressureSensorConfig_t {
     bool enabled;
     float reportMode;
+    PressureSensorCalibrationPoint_t pressureCalibrationTable[MAX_PRESSURE_CALIBRATION_POINTS];
 };
 
 struct PressureSensorCalibrationPoint_t {
@@ -87,7 +97,6 @@ struct Config_t {
     TankConfig_t tank;
     FlowSensorConfig_t flowSensor;
     PressureSensorConfig_t pressureSensor;
-    PressureSensorCalibrationPoint_t pressureCalibrationTable[MAX_PRESSURE_CALIBRATION_POINTS];
 };
 
 

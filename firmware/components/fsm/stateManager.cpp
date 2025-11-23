@@ -24,7 +24,7 @@ static const char* TAG = "StateManager";
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the listen state.
  */
-const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableListenState[] = {
+constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableListenState[] = {
     {VDG_MSG_RX_DISPENSE_ACTIVATE, &StateManager::handleDispenseRequest},
     {VDG_MSG_RX_RESTART, &StateManager::handleRestartRequest},
     {VDG_MSG_RX_CHANGE_CONFIG, &StateManager::handleConfigChangeRequest},
@@ -39,7 +39,7 @@ const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableListenS
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the dispense state.
  */
-const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDispenseState[] = {
+constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDispenseState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_MAX, nullptr}
 };
@@ -48,7 +48,7 @@ const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDispens
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the flow sensor calibration state.
  */
-const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableFlowCalibrateState[] = {
+constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableFlowCalibrateState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_FLOW_CALIBRATE, &StateManager::handleFlowCalibrateRequestFlowCalibration},
     {VDG_MSG_RX_MAX, nullptr}
@@ -58,7 +58,7 @@ const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableFlowCal
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the pressure sensor calibration state.
  */
-const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTablePressureCalibrateState[] = {
+constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTablePressureCalibrateState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_PRESSURE_CALIBRATE, &StateManager::handlePressureCalibrateRequest},
     {VDG_MSG_RX_MAX, nullptr}
@@ -68,7 +68,7 @@ const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTablePressur
  * @brief Lookup table mapping received messages to handler functions
  * for messages received in the drain state.
  */
-const VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDrainState[] = {
+constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDrainState[] = {
     {VDG_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
     {VDG_MSG_RX_MAX, nullptr}
 };
@@ -90,12 +90,12 @@ esp_err_t StateManager::getHandlerFunctionFromMessageId(
     VdgMessageHandleFunc_t &handlerFunction) {
     size_t index = 0U;
 
-    handlerFunction = nullptr;
-
     /** Validate table. */
     if (table == nullptr) {
         return ESP_ERR_INVALID_ARG;
     }
+    
+    handlerFunction = nullptr;
 
     while (table[index].id != VDG_MSG_RX_MAX) {
         if (table[index].id == id) {

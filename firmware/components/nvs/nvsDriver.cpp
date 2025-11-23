@@ -1,4 +1,5 @@
 #include "esp_err.h"
+#include "esp_log.h"
 
 #include "nvsDriver.h"
 
@@ -23,12 +24,12 @@ esp_err_t NvsDriver::initialize() {
     ESP_LOGI(TAG, "Initializing NVS...");
     
     err = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_LOGW(TAG, "NVS formatting required...");
         ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    } else if (ret != ESP_OK) {
-        return ret;
+        err = nvs_flash_init();
+    } else if (err != ESP_OK) {
+        return err;
     }
 
     ESP_LOGI(TAG, "NVS successfully initialized.");
