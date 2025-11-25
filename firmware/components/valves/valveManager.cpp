@@ -11,8 +11,8 @@ ValveManager::ValveManager(ConfigManager &configManager, DataContainer &dataCont
     configManager_ = configManager;
     dataContainer_ = dataContainer;
 
-    openValve_ = VDG_VALVE_OPEN_NONE;
-    currentProcess_ = VDG_VALVES_MIN;
+    openValve_ = DRIP_VALVE_OPEN_NONE;
+    currentProcess_ = DRIP_VALVES_MIN;
 }
 
 /**
@@ -21,8 +21,8 @@ ValveManager::ValveManager(ConfigManager &configManager, DataContainer &dataCont
  * @return esp_err_t Return code. 
  */
 esp_err_t ValveManager::initialize() {
-    openValve_ = VDG_VALVE_OPEN_NONE;
-    currentProcess_ = VDG_VALVES_IDLE;
+    openValve_ = DRIP_VALVE_OPEN_NONE;
+    currentProcess_ = DRIP_VALVES_IDLE;
     return ESP_OK;
 }
 
@@ -51,7 +51,7 @@ esp_err_t ValveManager::beginDispenseProcess(VdgDispenseProcessTarget_t &target,
     
 
     
-    processData.state = VDG_DISPENSE_FSM_INIT;
+    processData.state = DRIP_DISPENSE_FSM_INIT;
     processData.target = target;
 
 
@@ -61,14 +61,14 @@ esp_err_t ValveManager::beginDispenseProcess(VdgDispenseProcessTarget_t &target,
             if (err != ESP_OK) {
                 return err;
             }
-            processData.state = VDG_DISPENSE_FSM_SOURCE_DISPENSE;
+            processData.state = DRIP_DISPENSE_FSM_SOURCE_DISPENSE;
             break;
         case TANK_DISPENSE:
             err = openTankDispenseValve();
             if (err != ESP_OK) {
                 return err;
             }
-            processData.state = VDG_DISPENSE_FSM_TANK_DISPENSE;
+            processData.state = DRIP_DISPENSE_FSM_TANK_DISPENSE;
             break;
         default:
             return ESP_ERR_INVALID_STATE;
@@ -79,7 +79,7 @@ esp_err_t ValveManager::beginDispenseProcess(VdgDispenseProcessTarget_t &target,
 
 
     
-    currentProcess_ = VDG_VALVES_DISPENSE;
+    currentProcess_ = DRIP_VALVES_DISPENSE;
     process = currentProcess_;
     return ESP_OK;
 }
@@ -105,17 +105,17 @@ esp_err_t ValveManager::beginDrainProcess(VdgDrainProcessTarget_t &target, VdgVa
  */
 esp_err_t ValveManager::updateProcess(VdgValveProcess_e &process){
     switch(currentProcess_) {
-        case VDG_VALVES_IDLE:
+        case DRIP_VALVES_IDLE:
             return ESP_OK;
             break;
-        case VDG_VALVES_DISPENSE:
+        case DRIP_VALVES_DISPENSE:
 
             /** Handle timeout. */
 
             /** Handle low flow. */
 
             break;
-        case VDG_VALVES_DRAIN:
+        case DRIP_VALVES_DRAIN:
             break;
         default:
             break;
@@ -140,7 +140,7 @@ esp_err_t ValveManager::getCurrentProcess(VdgValveProcess_e &process){
     return ESP_OK;
 }
 
-esp_err_t ValveManager::setValveState(Valves_e valve, VdgGpioToggleState_e state) {
+esp_err_t ValveManager::setValveState(Valves_e valve, DripGpioToggleState_e state) {
     Config_t config = {};
     Relays_e relay = RELAYS_MIN;
     esp_err_t err = ESP_OK;
@@ -198,19 +198,19 @@ esp_err_t ValveManager::closeValves() {
     }
 
     if (config.valves.sourceDispenseEnabled) {
-        err = setValveState(SOURCE_DISPENSE, VDG_GPIO_TOGGLE_OFF);
+        err = setValveState(SOURCE_DISPENSE, DRIP_GPIO_TOGGLE_OFF);
         if (err != ESP_OK) {
             //log error
         }
     }
     if (config.valves.tankDispenseEnabled) {
-        err = setValveState(TANK_DISPENSE, VDG_GPIO_TOGGLE_OFF);
+        err = setValveState(TANK_DISPENSE, DRIP_GPIO_TOGGLE_OFF);
         if (err != ESP_OK) {
             //log error
         }
     }
     if (config.valves.tankDrainEnabled) {
-        err = setValveState(TANK_DRAIN, VDG_GPIO_TOGGLE_OFF);
+        err = setValveState(TANK_DRAIN, DRIP_GPIO_TOGGLE_OFF);
         if (err != ESP_OK) {
             //log error
         }
@@ -235,7 +235,7 @@ esp_err_t ValveManager::openSourceDispenseValve() {
     }
     
     if (config.valves.sourceDispenseEnabled) {
-        err = setValveState(SOURCE_DISPENSE, VDG_GPIO_TOGGLE_ON);
+        err = setValveState(SOURCE_DISPENSE, DRIP_GPIO_TOGGLE_ON);
         if (err != ESP_OK) {
             //log error
         }
@@ -254,7 +254,7 @@ esp_err_t ValveManager::openTankDispenseValve() {
     esp_err_t err = ESP_OK;
 
     if (config.valves.tankDispenseEnabled) {
-        err = setValveState(TANK_DISPENSE, VDG_GPIO_TOGGLE_ON);
+        err = setValveState(TANK_DISPENSE, DRIP_GPIO_TOGGLE_ON);
         if (err != ESP_OK) {
             //log error
         }
@@ -273,7 +273,7 @@ esp_err_t ValveManager::openTankDrainValve() {
     esp_err_t err = ESP_OK;
 
     if (config.valves.tankDrainEnabled) {
-        err = setValveState(TANK_DRAIN, VDG_GPIO_TOGGLE_ON);
+        err = setValveState(TANK_DRAIN, DRIP_GPIO_TOGGLE_ON);
         if (err != ESP_OK) {
             //log error
         }

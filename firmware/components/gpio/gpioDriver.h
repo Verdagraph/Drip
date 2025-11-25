@@ -3,19 +3,19 @@
 
 #include "driver/i2c_master.h"
 
-enum VdgGpioToggleState_e {
-    VDG_GPIO_TOGGLE_MIN,
-    VDG_GPIO_TOGGLE_ON,
-    VDG_GPIO_TOGGLE_OFF,
-    VDG_GPIO_TOGGLE_MAX,
+enum DripGpioToggleState_e {
+    DRIP_GPIO_TOGGLE_MIN,
+    DRIP_GPIO_TOGGLE_ON,
+    DRIP_GPIO_TOGGLE_OFF,
+    DRIP_GPIO_TOGGLE_MAX,
 };
 
-enum VdgI2CDevices_e {
-    VDG_I2C_DEVICES_MIN,
+enum DripI2CDevices_e {
+    DRIP_I2C_DEVICES_MIN,
 
-    VDG_I2C_DEVICES_ADC,
+    DRIP_I2C_DEVICES_ADC,
 
-    VDG_I2C_DEVICES_MAX,
+    DRIP_I2C_DEVICES_MAX,
 };
 
 /**
@@ -35,12 +35,12 @@ public:
      */
     esp_err_t initialize();
     
-    esp_err_t setRelay1State(VdgGpioToggleState_e state);
-    esp_err_t setRelay2State(VdgGpioToggleState_e state);
-    esp_err_t setRelay3State(VdgGpioToggleState_e state);
+    esp_err_t setRelay1State(DripGpioToggleState_e state);
+    esp_err_t setRelay2State(DripGpioToggleState_e state);
+    esp_err_t setRelay3State(DripGpioToggleState_e state);
 
-    esp_err_t i2cWriteReadTransaction(VdgI2CDevices_e device, uint8_t *writeBuf, size_t writeBufLen, uint8_t *readBuf, size_t readBufLen, uint32_t timeoutMs);
-    esp_err_t i2cWriteTransaction(VdgI2CDevices_e device, uint8_t *writeBuf, size_t writeBufLen, uint32_t timeoutMs);
+    esp_err_t i2cWriteReadTransaction(DripI2CDevices_e device, uint8_t *writeBuf, size_t writeBufLen, uint8_t *readBuf, size_t readBufLen, uint32_t timeoutMs);
+    esp_err_t i2cWriteTransaction(DripI2CDevices_e device, uint8_t *writeBuf, size_t writeBufLen, uint32_t timeoutMs);
     
     
     

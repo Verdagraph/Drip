@@ -4,9 +4,9 @@
 #include "nvs_flash.h"
 
 enum VdgNvsBlocks {
-    VDG_NVS_BLOCK_MIN,
-    VDG_NVS_BLOCK_CONFIG,
-    VDG_NVS_BLOCK_MAX
+    DRIP_NVS_BLOCK_MIN,
+    DRIP_NVS_BLOCK_CONFIG,
+    DRIP_NVS_BLOCK_MAX
 };
 
 /**

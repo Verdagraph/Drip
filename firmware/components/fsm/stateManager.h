@@ -14,11 +14,6 @@
 #include "states.h"
 
 /**
- * Defines the default time in miliseconds in between uploading slices of a process.
- */
-#define PROCESS_SLICE_UPLOAD_MS_DEFAULT 100U
-
-/**
  * Forward declarations.
  */
 class StateManager;
@@ -28,7 +23,7 @@ class StateManager;
  * 
  * @param message The message to handle
  */
-typedef void (StateManager::*VdgMessageHandleFunc_t)(VdgMessage_t message);
+typedef void (StateManager::*VdgMessageHandleFunc_t)(DripMessage_t message);
 
 /**
  * @brief Holds timing information.
@@ -43,7 +38,7 @@ struct VdgMainFsmEventTimers_t {
  * mapping message IDs to handler functions
  */
 struct VdgMessageHandleFuncTable_t {
-    VdgMessageId_t id;
+    DripMessageId_t id;
     VdgMessageHandleFunc_t handlerFunction;
 };
 
@@ -131,7 +126,7 @@ public:
      * @param[in] message MQTT received message.
      * @return esp_err_t Return code.
      */
-    void handleDispenseRequest(VdgMessage_t message);
+    void handleDispenseRequest(DripMessage_t message);
     
     /**
      * @brief Handles state change for a deactivation request.
@@ -139,62 +134,62 @@ public:
      * @param[in] message MQTT received message.
      * @return esp_err_t Return code.
      */
-    void handleDeactivateRequest(VdgMessage_t message);
+    void handleDeactivateRequest(DripMessage_t message);
     
     /**
      * @brief Handles state change for a restart request.
      * 
      * @param[in] message MQTT received message.
      */
-    void handleRestartRequest(VdgMessage_t message);
+    void handleRestartRequest(DripMessage_t message);
     
     /**
      * @brief Handles state change for a flow calibrate request
-     * when in the state VDG_MAIN_FSM_LISTEN.
+     * when in the state DRIP_MAIN_FSM_LISTEN.
      * 
      * @param[in] message MQTT received message.
      */
-    void handleFlowCalibrateRequestListen(VdgMessage_t message);
+    void handleFlowCalibrateRequestListen(DripMessage_t message);
     
     /**
      * @brief Handles state change for a flow calibrate request
-     * when in the state VDG_MAIN_FSM_FLOW_CALIBRATE.
+     * when in the state DRIP_MAIN_FSM_FLOW_CALIBRATE.
      * 
      * @param[in] message MQTT received message.
      */
-    void handleFlowCalibrateRequestFlowCalibration(VdgMessage_t message);
+    void handleFlowCalibrateRequestFlowCalibration(DripMessage_t message);
     
     /**
      * @brief Handles state change for a pressure calibrate request.
      * 
      * @param[in] message MQTT received message.
      */
-    void handlePressureCalibrateRequest(VdgMessage_t message);
+    void handlePressureCalibrateRequest(DripMessage_t message);
     
     /**
      * @brief Handles XC state change for a drain request.
      * 
      * @param[in] message MQTT received message.
      */
-    void handleDrainRequest(VdgMessage_t message);
+    void handleDrainRequest(DripMessage_t message);
     
     /**
      * @brief Handles state change for a pressure poll request.
      * 
      * @param[in] message MQTT received message.
      */
-    void handlePressurePollRequest(VdgMessage_t message);
+    void handlePressurePollRequest(DripMessage_t message);
     
     /**
      * @brief Handles state change for a config change request.
      * 
      * @param[in] message MQTT received message.
      */
-    void handleConfigChangeRequest(VdgMessage_t message);
+    void handleConfigChangeRequest(DripMessage_t message);
 
 private:
     /** Current state. */
-    VdgMainFsmState_e state_;
+    DripMainFsmState_e state_;
     VdgMainFsmEventTimers_t eventTimers_;
 
     /** Managers. */
@@ -211,7 +206,7 @@ private:
     const static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTablePressureCalibrateState[];
     const static VdgMessageHandleFuncTable_t vdgMessageHandleFuncTableDrainState[];
 
-    esp_err_t getHandlerFunctionFromMessageId(const VdgMessageHandleFuncTable_t *table, VdgMessageId_t id, VdgMessageHandleFunc_t &handlerFunction);
+    esp_err_t getHandlerFunctionFromMessageId(const VdgMessageHandleFuncTable_t *table, DripMessageId_t id, VdgMessageHandleFunc_t &handlerFunction);
 
     /**
      * @brief Executes the current state.

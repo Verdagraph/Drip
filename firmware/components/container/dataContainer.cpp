@@ -22,9 +22,19 @@ esp_err_t DataContainer::initialize() {
 /**
  * Measurement data.
  */
-esp_err_t DataContainer::getMeasurementData(VdgMeasurementData_t &data) {
+esp_err_t DataContainer::getMeasurementData(DripMeasurementData_t &data) {
     return ESP_OK;
 }
+esp_err_t DataContainer::setMeasurementData(DripMeasurementData_t data) {
+    return ESP_OK;
+}
+esp_err_t DataContainer::getDerivedData(DripDerivedData_t &data) {
+    return ESP_OK;
+}
+esp_err_t DataContainer::setDerivedData(DripDerivedData_t data) {
+    return ESP_OK;
+}
+
 
 /**
  * Process data.
@@ -35,16 +45,16 @@ esp_err_t DataContainer::getDispenseProcessData(VdgDispenseProcessData_t &data) 
 esp_err_t DataContainer::setDispenseProcessData(VdgDispenseProcessData_t data) {
     return ESP_OK;
 }
-esp_err_t DataContainer::getDrainProcessData(VdgDispenseProcessData_t &data) {
+esp_err_t DataContainer::getDrainProcessData(VdgDrainProcessData_t &data) {
     return ESP_OK;
 }
-esp_err_t DataContainer::setDrainProcessData(VdgDispenseProcessData_t data) {
+esp_err_t DataContainer::setDrainProcessData(VdgDrainProcessData_t data) {
     return ESP_OK;
 }
-esp_err_t DataContainer::getFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t &data) {
+esp_err_t DataContainer::getFlowCalibrationProcessData(DripFlowCalibrationProcessData_t &data) {
     return ESP_OK;
 }
-esp_err_t DataContainer::setFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t data) {
+esp_err_t DataContainer::setFlowCalibrationProcessData(DripFlowCalibrationProcessData_t data) {
     return ESP_OK;
 }
 
@@ -111,6 +121,6 @@ esp_err_t DataContainer::logError(esp_err_t returnCode, const char* tag, const c
  * 
  * @return esp_err_t Return code.
  */
-esp_err_t DataContainer::getNextLog(VdgLogMessage_t &message) {
+esp_err_t DataContainer::getNextLog(DripLog_t &message) {
     return ESP_OK;
 }

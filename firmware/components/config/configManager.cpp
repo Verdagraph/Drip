@@ -26,7 +26,7 @@ esp_err_t ConfigManager::initialize() {
  * @param config Overwritten with the configuration.
  * @return esp_err_t Return code.
  */
-esp_err_t ConfigManager::getConfig(Config_t &config) {
+esp_err_t ConfigManager::getConfig(DripConfig_t &config) {
     return ESP_OK;
 }
 
@@ -36,7 +36,7 @@ esp_err_t ConfigManager::getConfig(Config_t &config) {
  * @param config New config.
  * @return esp_err_t Return code.
  */
-esp_err_t ConfigManager::setConfig(Config_t &config) {
+esp_err_t ConfigManager::setConfig(DripConfig_t &config) {
     return ESP_OK;
 }
 

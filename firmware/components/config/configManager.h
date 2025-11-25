@@ -27,7 +27,7 @@ public:
      * @param config Overwritten with the configuration.
      * @return esp_err_t Return code.
      */
-    esp_err_t getConfig(Config_t &config);
+    esp_err_t getConfig(DripConfig_t &config);
 
     /**
      * @brief Updates the in-memory config object on the class instance.
@@ -35,7 +35,7 @@ public:
      * @param config New config.
      * @return esp_err_t Return code.
      */
-    esp_err_t setConfig(Config_t &config);
+    esp_err_t setConfig(DripConfig_t &config);
 
     /**
      * @brief Persists the current config to non-volatile memory.
@@ -45,7 +45,7 @@ public:
     esp_err_t persist();
 
 private:
-    Config_t config;
+    DripConfig_t config;
 };
 
 #endif

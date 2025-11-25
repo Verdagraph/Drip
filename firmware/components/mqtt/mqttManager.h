@@ -40,7 +40,7 @@ public:
      * @param message Output parameter for the message object.
      * @return esp_err_t Return code.
      */
-    esp_err_t getNextMessage(VdgMessage_t message);
+    esp_err_t getNextMessage(DripMessage_t message);
 
     esp_err_t uploadLogs();
 

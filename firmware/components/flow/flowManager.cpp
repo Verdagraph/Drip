@@ -25,7 +25,7 @@ esp_err_t initialize() {
  *
  * @return esp_err_t Return code.
  */
-esp_err_t beginCalibration(VdgFlowSensorCalibrationState_e &state) {
+esp_err_t beginCalibration(DripFlowSensorCalibrationState_e &state) {
     return ESP_OK;
 }
 
@@ -37,7 +37,7 @@ esp_err_t beginCalibration(VdgFlowSensorCalibrationState_e &state) {
  * @param process Overwritten with the final process variables.
  * @return esp_err_t Return code.
  */
-esp_err_t inputCalibration(VdgFlowSensorCalibrationState_e &state, VdgFlowCalibrationMeasurement_t measurement) {
+esp_err_t inputCalibration(DripFlowSensorCalibrationState_e &state, DripFlowCalibrationMeasurement_t measurement) {
     return ESP_OK;
 }
 
@@ -48,6 +48,6 @@ esp_err_t inputCalibration(VdgFlowSensorCalibrationState_e &state, VdgFlowCalibr
  *
  * @return esp_err_t Return code.
  */
-esp_err_t endProcess(VdgFlowSensorCalibrationState_e &state) {
+esp_err_t endProcess(DripFlowSensorCalibrationState_e &state) {
     return ESP_OK;
 }

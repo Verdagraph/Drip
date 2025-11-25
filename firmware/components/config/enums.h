@@ -1,10 +1,10 @@
 /**
- * @file symbols.h
+ * @file enums.h
  * @brief Core enumerated values.
  */
 
-#ifndef SYMBOLS_H
-#define SYMBOLS_H
+#ifndef ENUMS_H
+#define ENUMS_H
 
 /**
  * @brief Describes the supported shapes for a tank,

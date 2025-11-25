@@ -4,59 +4,59 @@
 /**
  * @brief Describes the current process of the flow sensor calibration.
  */
-enum VdgFlowSensorCalibrationState_e {
-    VDG_FLOW_SENSOR_CALIBRATION_MIN,
+enum DripFlowSensorCalibrationState_e {
+    DRIP_FLOW_SENSOR_CALIBRATION_MIN,
 
-    /** No calibration is ongoing. */
-    VDG_FLOW_SENSOR_CALIBRATION_IDLE,
-    /** The flow sensor is currently measuring flow. */
-    VDG_FLOW_SENSOR_CALIBRATION_MEASURING,
-    /** The flow sensor is currently waiting for a calibration feedback. */
-    VDG_FLOW_SENSOR_CALIBRATION_WAITING_FOR_FEEDBACK,
+    /** @brief No calibration is ongoing. */
+    DRIP_FLOW_SENSOR_CALIBRATION_IDLE,
+    /** @brief The flow sensor is currently measuring flow. */
+    DRIP_FLOW_SENSOR_CALIBRATION_MEASURING,
+    /** @brief The flow sensor is currently waiting for a calibration feedback. */
+    DRIP_FLOW_SENSOR_CALIBRATION_WAITING_FOR_FEEDBACK,
 
-    VDG_FLOW_SENSOR_CALIBRATION_MAX
+    DRIP_FLOW_SENSOR_CALIBRATION_MAX
 };
 
 /**
  * @brief Describes the input by the user for a flow sensor calibration step.
  * 
  */
-struct VdgFlowCalibrationMeasurement_t {
-    /** The volume measured by the user. */
+struct DripFlowCalibrationMeasurement_t {
+    /** @brief The volume measured by the user. */
     float measuredVolume = 0.0f;
-    /** If true, the calibration will conclude. */
+    /** @brief If true, the calibration will conclude. */
     bool conclude = true;
 };
 
 /**
  * @brief Describes the realtime variables of a flow sensor calibration process.
  */
-struct VdgFlowCalibrationProcessSlice_t {
-    /** The current time of the process in miliseconds. */
+struct DripFlowCalibrationProcessSlice_t {
+    /** @brief The current time of the process in miliseconds. */
     uint32_t timeTicks = 0U;
-    /** The number of pulses recorded by the sensor. */
+    /** @brief The number of pulses recorded by the sensor. */
     uint32_t pulses = 0U;
-    /** The tick count in the process where the last dispense process ended. */
+    /** @brief The tick count in the process where the last dispense process ended. */
     uint32_t timeTicksLastDispenseEnded = 0U;
 };
 
 /**
  * @brief Describes a summary of the process variables for a whole flow sensor calibration process.
  */
-struct FlowCalibrationSummary_t {
-    /** The new value for the number of pulses the flow sensor returns. */
+struct DripFlowCalibrationSummary_t {
+    /** @brief The new value for the number of pulses the flow sensor returns. */
     uint32_t pulsesPerLiter = 0U;
-    /** The number of points used in the calibration process. */
+    /** @brief The number of points used in the calibration process. */
     uint16_t calibrationPointsCount = 0U;
 };
 
 /**
  * @brief Holds all calibration process related data.
  */
-struct VdgFlowCalibrationProcessData_t {
-    VdgFlowCalibrationMeasurement_t measurement;
-    VdgFlowCalibrationProcessSlice_t slice;
-    FlowCalibrationSummary_t summary;
+struct DripFlowCalibrationProcessData_t {
+    DripFlowCalibrationMeasurement_t measurement;
+    DripFlowCalibrationProcessSlice_t slice;
+    DripFlowCalibrationSummary_t summary;
 };
 
 /**
@@ -83,7 +83,7 @@ public:
      *
      * @return esp_err_t Return code.
      */
-    esp_err_t beginCalibration(VdgFlowSensorCalibrationState_e &state);
+    esp_err_t beginCalibration(DripFlowSensorCalibrationState_e &state);
 
     /**
      * @brief Accepts a measurement into the calibration process.
@@ -93,7 +93,7 @@ public:
      * @param process Overwritten with the final process variables.
      * @return esp_err_t Return code.
      */
-    esp_err_t inputCalibration(VdgFlowSensorCalibrationState_e &state, VdgFlowCalibrationMeasurement_t measurement);
+    esp_err_t inputCalibration(DripFlowSensorCalibrationState_e &state, DripFlowCalibrationMeasurement_t measurement);
 
     /**
      * @brief Ends the current process.
@@ -102,10 +102,10 @@ public:
      *
      * @return esp_err_t Return code.
      */
-    esp_err_t endProcess(VdgFlowSensorCalibrationState_e &state);
+    esp_err_t endProcess(DripFlowSensorCalibrationState_e &state);
 
 private:
-    VdgFlowSensorCalibrationState_e state;
+    DripFlowSensorCalibrationState_e state;
 };
 
 #endif

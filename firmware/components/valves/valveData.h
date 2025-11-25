@@ -5,26 +5,26 @@
  * @brief Describes the current process of the manager.
  */
 enum VdgValveProcess_e {
-    VDG_VALVES_MIN,
+    DRIP_VALVES_MIN,
 
     /** No process is ongoing. */
-    VDG_VALVES_IDLE,
+    DRIP_VALVES_IDLE,
     /** The dispense process is ongoing. */
-    VDG_VALVES_DISPENSE,
+    DRIP_VALVES_DISPENSE,
     /** The drain process is ongoing. */
-    VDG_VALVES_DRAIN,
+    DRIP_VALVES_DRAIN,
 
-    VDG_VALVES_MAX
+    DRIP_VALVES_MAX
 };
 
 /**
  * @brief Describes which valve is currently open.
  */
 enum VdgOpenValveState_e {
-    VDG_VALVE_OPEN_NONE,
-    VDG_VALVE_OPEN_TANK_DISPENSE,
-    VDG_VALVE_OPEN_TANK_DRAIN,
-    VDG_VALVE_OPEN_SOURCE_DISPENSE
+    DRIP_VALVE_OPEN_NONE,
+    DRIP_VALVE_OPEN_TANK_DISPENSE,
+    DRIP_VALVE_OPEN_TANK_DRAIN,
+    DRIP_VALVE_OPEN_SOURCE_DISPENSE
 };
 
 /**
@@ -35,18 +35,18 @@ enum VdgOpenValveState_e {
  * @brief Describes possible finite-state-machine states for the dispense process.
  */
 enum VdgDispenseFsmState_e {
-    VDG_DISPENSE_FSM_MIN,
+    DRIP_DISPENSE_FSM_MIN,
 
     /** Initialization. */
-    VDG_DISPENSE_FSM_INIT,
+    DRIP_DISPENSE_FSM_INIT,
     /** The tank is currently dispensing. */
-    VDG_DISPENSE_FSM_TANK_DISPENSE,
+    DRIP_DISPENSE_FSM_TANK_DISPENSE,
     /** The source is currently dispensing. */
-    VDG_DISPENSE_FSM_SOURCE_DISPENSE,
+    DRIP_DISPENSE_FSM_SOURCE_DISPENSE,
     /** Dispensing is stopped and the summary is available. */
-    VDG_DISPENSE_FSM_STOP,
+    DRIP_DISPENSE_FSM_STOP,
 
-    VDG_DISPENSE_FSM_MAX,
+    DRIP_DISPENSE_FSM_MAX,
 };
 
 /**
@@ -54,9 +54,9 @@ enum VdgDispenseFsmState_e {
  */
 enum VdgDispenseProcessTargetType_e {
     /** The goal of the process is a volume output. */
-    VDG_DISPENSE_PROCESS_TARGET_VOLUME,
+    DRIP_DISPENSE_PROCESS_TARGET_VOLUME,
     /** The goal of the process is a duration. */
-    VDG_DISPENSE_PROCESS_TARGET_TIME
+    DRIP_DISPENSE_PROCESS_TARGET_TIME
 };
 
 /**
@@ -129,16 +129,16 @@ struct VdgDispenseProcessData_t {
  * @brief Describes possible finite-state-machine states for the drain process.
  */
 enum VdgDrainFsmState_e {
-    VDG_DRAIN_FSM_MIN,
+    DRIP_DRAIN_FSM_MIN,
     
     /** Initialization. */
-    VDG_DRAIN_FSM_INIT,
+    DRIP_DRAIN_FSM_INIT,
     /** The tank is currently being drained. */
-    VDG_DRAIN_FSM_TANK_DRAIN,
+    DRIP_DRAIN_FSM_TANK_DRAIN,
     /** Draining is stopped and the summary is available. */
-    VDG_DRAIN_FSM_STOP,
+    DRIP_DRAIN_FSM_STOP,
     
-    VDG_DRAIN_FSM_MAX,
+    DRIP_DRAIN_FSM_MAX,
 };
 
 /**
@@ -146,9 +146,9 @@ enum VdgDrainFsmState_e {
  */
 enum VdgDrainProcessTargetType_e {
     /** The goal of the process is a tank level. */
-    VDG_DRAIN_PROCESS_TARGET_LEVEL,
+    DRIP_DRAIN_PROCESS_TARGET_LEVEL,
     /** The goal of the process is a duration. */
-    VDG_DRAIN_PROCESS_TARGET_TIME
+    DRIP_DRAIN_PROCESS_TARGET_TIME
 };
 
 /** 

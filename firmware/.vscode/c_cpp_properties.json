@@ -10,6 +10,8 @@
             "includePath": [
                 "/home/nathaniel/Documents/dev/Drip/firmware/include",
                 "/home/nathaniel/Documents/dev/Drip/firmware/src",
+                "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/json-maker/src",
+                "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/tiny-json",
                 "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/esp_littlefs/src",
                 "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/esp_littlefs/src/littlefs",
                 "/home/nathaniel/.platformio/packages/framework-espidf/components/riscv/include",
@@ -192,6 +194,8 @@
                 "path": [
                     "/home/nathaniel/Documents/dev/Drip/firmware/include",
                     "/home/nathaniel/Documents/dev/Drip/firmware/src",
+                    "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/json-maker/src",
+                    "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/tiny-json",
                     "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/esp_littlefs/src",
                     "/home/nathaniel/Documents/dev/Drip/firmware/.pio/libdeps/esp32-c3-devkitc-02/esp_littlefs/src/littlefs",
                     "/home/nathaniel/.platformio/packages/framework-espidf/components/riscv/include",

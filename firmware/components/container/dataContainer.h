@@ -6,50 +6,63 @@
 #include "flowManager.h"
 
 /** The maximum number of characters in each log message. */
-#define VDG_LOG_MESSAGE_BUFFER_BYTES 128U
+constexpr size_t DRIP_LOG_MESSAGE_BUFFER_BYTES = 512U;
 
 /** The number of info, warning, and error logs to buffer before upload. */
-#define VDG_LOG_MAX_INFO_LOGS 5U
-#define VDG_LOG_MAX_WARNING_LOGS 5U
-#define VDG_LOG_MAX_ERROR_LOGS 5U
+constexpr size_t DRIP_LOG_MAX_INFO_LOGS = 10U;
+constexpr size_t DRIP_LOG_MAX_WARNING_LOGS = 10U;
+constexpr size_t DRIP_LOG_MAX_ERROR_LOGS = 10U;
 
 /**
  * @brief Describes a type of log message.
  */
-enum VdgLogMessageType_e {
-    /** For routine informational messages.  */
-    VDG_LOG_INFO,
-    /** For potential errors that do not distrupt a routine. */
-    VDG_LOG_WARNING,
-    /** For failures. */
-    VDG_LOG_ERROR,
+enum DripLogType_e {
+    /** @brief For routine informational messages.  */
+    DRIP_LOG_INFO,
+    /** @brief For potential errors that do not distrupt a routine. */
+    DRIP_LOG_WARNING,
+    /** @brief For failures. */
+    DRIP_LOG_ERROR,
 };
 
 /**
  * @brief Describes a log message.
  */
-struct VdgLogMessage_t {
-    /** The type of message. */
-    VdgLogMessageType_e type;
-    /** The return code, if any, associated with the log. */
+struct DripLog_t {
+    /** @brief The type of message. */
+    DripLogType_e type;
+    /** @brief The return code, if any, associated with the log. */
     esp_err_t returnCode;
-    /** The message associated with the log. */
-    char message[VDG_LOG_MESSAGE_BUFFER_BYTES];
-    /** Unix timestamp the message was logged at. */
+    /** @brief The message associated with the log. */
+    char message[DRIP_LOG_MESSAGE_BUFFER_BYTES];
+    /** @brief Unix timestamp the message was logged at. */
     uint32_t timestamp;
 };
 
-struct VdgMeasurementData_t {
-    /** Raw measurement data. */
-    float flowSensorPulses;
-    float pressureSensorVoltage;
-
-    /** Derived data. */
-    float volumeOutput;
-    float tankPressure;
-    float tankLevel;
-    float tankVolume;
+/**
+ * @brief Measured data of the device.
+ */
+struct DripMeasurementData_t {
+    /** @brief Current pulse count of the flow sensor. */
+    uint32_t flowSensorPulses = 0U;
+    /** @brief Current voltage of the pressure sensor. */
+    float pressureSensorVoltage = 0.0f;
 };
+
+/**
+ * @brief Data derived from the measurement data.
+ */
+struct DripDerivedData_t {
+    /** @brief The current volume output given the flow sensor pulse count. */
+    float volumeOutputLiters = 0.0f;
+    /** @brief The current tank level given the tank pressure and geometry. */
+    float tankLevel = 0.0f;
+    /** @brief The current tank volume given the tank pressure and geometry or calibration. */
+    float tankVolume = 0.0f;
+    /** @brief The current tank pressure given the pressure sensor voltage. */
+    float tankPressure = 0.0f;
+};
+
 
 /**
  * @brief Stores state common to multiple managers.
@@ -71,17 +84,20 @@ public:
     /**
      * Measurement data.
      */
-    esp_err_t getMeasurementData(VdgMeasurementData_t &data);
+    esp_err_t getMeasurementData(DripMeasurementData_t &data);
+    esp_err_t setMeasurementData(DripMeasurementData_t data);
+    esp_err_t getDerivedData(DripDerivedData_t &data);
+    esp_err_t setDerivedData(DripDerivedData_t data);
 
     /**
      * Process data.
      */
     esp_err_t getDispenseProcessData(VdgDispenseProcessData_t &data);
     esp_err_t setDispenseProcessData(VdgDispenseProcessData_t data);
-    esp_err_t getDrainProcessData(VdgDispenseProcessData_t &data);
-    esp_err_t setDrainProcessData(VdgDispenseProcessData_t data);
-    esp_err_t getFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t &data);
-    esp_err_t setFlowCalibrationProcessData(VdgFlowCalibrationProcessData_t data);
+    esp_err_t getDrainProcessData(VdgDrainProcessData_t &data);
+    esp_err_t setDrainProcessData(VdgDrainProcessData_t data);
+    esp_err_t getFlowCalibrationProcessData(DripFlowCalibrationProcessData_t &data);
+    esp_err_t setFlowCalibrationProcessData(DripFlowCalibrationProcessData_t data);
 
     /**
      * Logging.
@@ -138,25 +154,26 @@ public:
      * 
      * @return esp_err_t Return code.
      */
-    esp_err_t getNextLog(VdgLogMessage_t &message);
+    esp_err_t getNextLog(DripLog_t &message);
 
 private:
 
     /** Measurement data. */
-    VdgMeasurementData_t measurementData_;
+    DripMeasurementData_t measurementData_;
+    DripDerivedData_t derivedData_;
 
     /** Process data. */
     VdgDispenseProcessData_t dispenseProcess_;
     VdgDrainProcessData_t drainProcess_;
-    VdgFlowCalibrationProcessData_t flowCalibrationProcess_;
+    DripFlowCalibrationProcessData_t flowCalibrationProcess_;
 
     /** Logging. */
     size_t numInfoLogs;
     size_t numWarningLogs;
     size_t numErrorLogs;
-    VdgLogMessage_t infoLogs_[VDG_LOG_MAX_INFO_LOGS];
-    VdgLogMessage_t warningLogs_[VDG_LOG_MAX_WARNING_LOGS];
-    VdgLogMessage_t errorLogs_[VDG_LOG_MAX_ERROR_LOGS];
+    DripLog_t infoLogs_[DRIP_LOG_MAX_INFO_LOGS];
+    DripLog_t warningLogs_[DRIP_LOG_MAX_WARNING_LOGS];
+    DripLog_t errorLogs_[DRIP_LOG_MAX_ERROR_LOGS];
 };
 
 #endif

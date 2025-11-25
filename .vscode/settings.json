@@ -1,4 +1,8 @@
 {
     "idf.pythonInstallPath": "/usr/bin/python",
-    "cmake.sourceDirectory": "/home/nathaniel/Documents/dev/Drip/firmware"
+    "cmake.sourceDirectory": "/home/nathaniel/Documents/dev/Drip/firmware",
+    "files.associations": {
+        "compare": "cpp",
+        "cstdint": "cpp"
+    }
 }

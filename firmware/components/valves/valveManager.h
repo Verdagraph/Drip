@@ -8,7 +8,7 @@
 
 #include "valveData.h"
 
-#define VDG_DRAIN_PROCESS_MAX_TIMEOUT_MIN 120
+#define DRIP_DRAIN_PROCESS_MAX_TIMEOUT_MIN 120
 
 /**
  * @brief Handles the dispensation and draining process.
@@ -74,7 +74,7 @@ private:
     VdgOpenValveState_e openValve_;
     VdgValveProcess_e currentProcess_;
 
-    esp_err_t setValveState(Valves_e valve, VdgGpioToggleState_e state);
+    esp_err_t setValveState(Valves_e valve, DripGpioToggleState_e state);
 
     /**
      * @brief Closes the currently open valve.
