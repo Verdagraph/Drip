@@ -120,7 +120,7 @@ public:
      * 
      * @return esp_err_t Return code.
      */
-    esp_err_t logInfo(esp_err_t returnCode, const char* tag, const char *message);
+    esp_err_t logInfo(esp_err_t returnCode, const char* tag, const char *message, ...) __attribute__ ((format (printf, 4, 5)));
 
     /**
      * @brief Logs a warning log.
@@ -132,7 +132,7 @@ public:
      * 
      * @return esp_err_t Return code.
      */
-    esp_err_t logWarning(esp_err_t returnCode, const char* tag, const char *message);
+    esp_err_t logWarning(esp_err_t returnCode, const char* tag, const char *message, ...) __attribute__ ((format (printf, 4, 5)));
 
     /**
      * @brief Logs an error log.
@@ -144,7 +144,7 @@ public:
      * 
      * @return esp_err_t Return code.
      */
-    esp_err_t logError(esp_err_t returnCode, const char* tag, const char *message);
+    esp_err_t logError(esp_err_t returnCode, const char* tag, const char *message, ...) __attribute__ ((format (printf, 4, 5)));
 
     /**
      * @brief Gets the next available log. The log is popped from the buffer 
@@ -174,6 +174,8 @@ private:
     DripLog_t infoLogs_[DRIP_LOG_MAX_INFO_LOGS];
     DripLog_t warningLogs_[DRIP_LOG_MAX_WARNING_LOGS];
     DripLog_t errorLogs_[DRIP_LOG_MAX_ERROR_LOGS];
+
+    esp_err_t log(esp_err_t returnCode, const char* tag, const char *message, ...) __attribute__ ((format (printf, 4, 5)));
 };
 
 #endif

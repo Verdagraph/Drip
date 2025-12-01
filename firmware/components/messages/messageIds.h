@@ -8,11 +8,11 @@ enum class DripRxMessageId_e {
     DispenseActivate,
     Deactivate,
     Restart,
-    ChangeConfig,
+    ConfigUpdate,
     FlowCalibrate,
     PressureCalibrate,
     DrainActivate,
-    PollPressure,
+    PressurePoll,
 };
 
 /**
@@ -22,7 +22,7 @@ enum class DripTxMessageId_e {
     DispenseSlice,
     DispenseSummary,
     Log,
-    ReadConfig,
+    ConfigRead,
     DrainSummary,
     PressureReport
 };

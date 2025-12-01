@@ -1,4 +1,5 @@
 #include "cstdio"
+#include "array"
 
 #include "esp_log.h"
 #include "esp_err.h"
@@ -6,8 +7,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/portmacro.h"
 #include "freertos/task.h"
+#include "etl/const_map.h"
+#include "etl/span.h"
 
-#include "messages.h"
 #include "utils.h"
 #include "dataContainer.h"
 #include "configManager.h"
@@ -16,233 +18,199 @@
 #include "valveManager.h"
 #include "flowManager.h"
 
-#include "stateManager.h"
+#include "mainStateController.h"
 
-static const char* TAG = "StateManager";
+#define ETL_NO_STL
+
+static const char* TAG = "MainStateController";
 
 /**
- * @brief Lookup table mapping received messages to handler functions
- * for messages received in the listen state.
+ * @brief State handler map.
  */
-constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableListenState[] = {
-    {DRIP_MSG_RX_DISPENSE_ACTIVATE, &StateManager::handleDispenseRequest},
-    {DRIP_MSG_RX_RESTART, &StateManager::handleRestartRequest},
-    {DRIP_MSG_RX_CHANGE_CONFIG, &StateManager::handleConfigChangeRequest},
-    {DRIP_MSG_RX_FLOW_CALIBRATE, &StateManager::handleFlowCalibrateRequestListen},
-    {DRIP_MSG_RX_PRESSURE_CALIBRATE, &StateManager::handlePressureCalibrateRequest},
-    {DRIP_MSG_RX_DRAIN, &StateManager::handleDrainRequest},
-    {DRIP_MSG_RX_PRESSURE_POLL, &StateManager::handlePressurePollRequest},
-    {DRIP_MSG_RX_MAX, nullptr}
+constexpr StateHandlerMapPair<DripMainFsmState_e, MainStateController> stateToHandlerMapValues[] {
+    etl::pair{
+        DripMainFsmState_e::Uninitialized, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::uninitializedEntry, 
+            &MainStateController::uninitializedUpdate, 
+            &MainStateController::uninitializedExit, 
+            1U /** handlingIntervalMs. N/A, one-shot state. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::Boot, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::bootEntry, 
+            &MainStateController::bootUpdate, 
+            &MainStateController::bootExit, 
+            1U /** handlingIntervalMs. N/A, one-shot state. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::FatalError, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::fatalErrorEntry, 
+            &MainStateController::fatalErrorUpdate, 
+            &MainStateController::fatalErrorExit, 
+            1000U /** handlingIntervalMs. Idles without much need for response. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::Connect, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::connectEntry, 
+            &MainStateController::connectUpdate, 
+            &MainStateController::connectExit, 
+            10U /** handlingIntervalMs. Quick handling of connection logic. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::Provisioning, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::provisioningEntry, 
+            &MainStateController::provisioningUpdate, 
+            &MainStateController::provisioningExit, 
+            10U /** handlingIntervalMs. Quick handling of connection logic. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::Restart, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::restartEntry, 
+            &MainStateController::restartUpdate, 
+            &MainStateController::restartExit, 
+            1U /** handlingIntervalMs. N/A, one-shot state. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::Listen, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::listenEntry, 
+            &MainStateController::listenUpdate, 
+            &MainStateController::listenExit, 
+            250U /** handlingIntervalMs. Reasonably quick response time to messages. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::Dispense, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::dispenseEntry, 
+            &MainStateController::dispenseUpdate, 
+            &MainStateController::dispenseExit, 
+            100U /** handlingIntervalMs. Reasonably quick response time to dispense events. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::FlowSensorCalibrate, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::flowSensorCalibrateEntry, 
+            &MainStateController::flowSensorCalibrateUpdate, 
+            &MainStateController::flowSensorCalibrateExit, 
+            100U /** handlingIntervalMs. Reasonably quick response time to dispense events. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::Drain, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::drainEntry, 
+            &MainStateController::drainUpdate, 
+            &MainStateController::drainExit, 
+            100U /** handlingIntervalMs. Reasonably quick response time to dispense events. */
+        ),
+    }
+};
+using FsmStateMap = StateHandlerMap<DripMainFsmState_e, MainStateController>;
+constexpr FsmStateMap stateToHandlerMap { stateToHandlerMapValues };
+
+/**
+ * @brief Event handler map.
+ */
+constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController> eventToHandlerMapValues[] {
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Listen, 
+            DripRxMessageId_e::DispenseActivate
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleDispenseRequestStateListen
+        )
+    }
+};
+using FsmEventMap = EventHandlerMap<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController>;
+constexpr FsmEventMap eventToHandlerMap { eventToHandlerMapValues };
+
+
+
+
+ const DripMessageHandlingMap<7U> messageToHandlerMapStateListenold {
+    etl::pair{DripRxMessageId_e::DispenseActivate, &StateManager::handleDispenseRequest},
+    etl::pair{DripRxMessageId_e::Restart, &StateManager::handleRestartRequest},
+    etl::pair{DripRxMessageId_e::ConfigUpdate, &StateManager::handleConfigChangeRequest},
+    etl::pair{DripRxMessageId_e::FlowCalibrate, &StateManager::handleFlowCalibrateRequestListen},
+    etl::pair{DripRxMessageId_e::PressureCalibrate, &StateManager::handlePressureCalibrateRequest},
+    etl::pair{DripRxMessageId_e::DrainActivate, &StateManager::handleDrainRequest},
+    etl::pair{DripRxMessageId_e::PressurePoll, &StateManager::handlePressurePollRequest},
 };
 
 /**
- * @brief Lookup table mapping received messages to handler functions
+ * @brief Mapping between received messages and handler functions
  * for messages received in the dispense state.
  */
-constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDispenseState[] = {
-    {DRIP_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
-    {DRIP_MSG_RX_MAX, nullptr}
+/*
+const DripMessageHandlingMap<1U> messageToHandlerMapStateDispense {
+    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
 };
+*/
 
 /**
- * @brief Lookup table mapping received messages to handler functions
+ * @brief Mapping between received messages and handler functions
  * for messages received in the flow sensor calibration state.
  */
-constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableFlowCalibrateState[] = {
-    {DRIP_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
-    {DRIP_MSG_RX_FLOW_CALIBRATE, &StateManager::handleFlowCalibrateRequestFlowCalibration},
-    {DRIP_MSG_RX_MAX, nullptr}
+/*
+const DripMessageHandlingMap<2U> messageToHandlerMapStateFlowCalibrate {
+    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
+    etl::pair{DripRxMessageId_e::FlowCalibrate, &StateManager::handleFlowCalibrateRequestFlowCalibration},
 };
 
+*/
 /**
- * @brief Lookup table mapping received messages to handler functions
+ * @brief Mapping between received messages and handler functions
  * for messages received in the pressure sensor calibration state.
  */
-constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTablePressureCalibrateState[] = {
-    {DRIP_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
-    {DRIP_MSG_RX_PRESSURE_CALIBRATE, &StateManager::handlePressureCalibrateRequest},
-    {DRIP_MSG_RX_MAX, nullptr}
+/*
+const DripMessageHandlingMap<2U> messageToHandlerMapStatePressureCalibrate {
+    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
+    etl::pair{DripRxMessageId_e::PressureCalibrate, &StateManager::handlePressureCalibrateRequest},
 };
+*/
 
 /**
- * @brief Lookup table mapping received messages to handler functions
+ * @brief Mapping between received messages and handler functions
  * for messages received in the drain state.
  */
-constexpr VdgMessageHandleFuncTable_t StateManager::vdgMessageHandleFuncTableDrainState[] = {
-    {DRIP_MSG_RX_DEACTIVATE, &StateManager::handleDeactivateRequest},
-    {DRIP_MSG_RX_MAX, nullptr}
+/*
+const DripMessageHandlingMap<1U> messageToHandlerMapStateDrain {
+    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
 };
+*/
 
-/**
- * @brief Retrieves the handler function for a message ID.
- * 
- * @param[in] table The lookup table to use to find the handler function.
- * The final entry in the table must have the ID of DRIP_MSG_RX_MAX.
- * @param[in] id The message ID.
- * @param[out] handlerFunction Overwritten with a pointer to the handler function.
- * 
- * @retval ESP_INVALID_INPUT Returned if the lookup table is invalid.
- * @retval ESP_OK Returned regardless of if a handler function is found or not.  
- */
-esp_err_t StateManager::getHandlerFunctionFromMessageId(
-    const VdgMessageHandleFuncTable_t *table, 
-    DripMessageId_t id, 
-    VdgMessageHandleFunc_t &handlerFunction) {
-    size_t index = 0U;
-
-    /** Validate table. */
-    if (table == nullptr) {
-        return ESP_ERR_INVALID_ARG;
-    }
-    
-    handlerFunction = nullptr;
-
-    while (table[index].id != DRIP_MSG_RX_MAX) {
-        if (table[index].id == id) {
-            handlerFunction = table[index].handlerFunction;
-            return ESP_OK;
-        }
-
-        index++;
-    }
-
-    return ESP_OK;
-}
 
 
 /**
  * @brief Constructor
  */
-StateManager::StateManager() : 
-state_(DRIP_MAIN_FSM_MIN),
-eventTimers_(),
-configManager_(),
-dataContainer_(),
-mqttManager_(),
-wifiManager_(),
-valveManager_(configManager_, dataContainer_),
-flowSensorManager_()
-{
-}
+MainStateController::MainStateController() : 
+    eventTimers_(),
+    configManager_(),
+    dataContainer_(),
+    mqttManager_(),
+    wifiManager_(),
+    valveManager_(configManager_, dataContainer_),
+    flowSensorManager_() {}
+
 
 /**
- * @brief Initializes the finite state machine.
- */
-void StateManager::initialize() {
-    state_ = DRIP_MAIN_FSM_BOOT;
-}
-
-/**
- * @brief Updates the FSM.
- */
-void StateManager::update() {
-    esp_err_t err = ESP_OK;
-
-    handleCurrentState();
-
-    /** Upload all logs to MQTT. */
-    err = mqttManager_.uploadLogs();
-    if (err != ESP_OK) {
-        dataContainer_.logError(err, TAG, "Failed to upload logs.");
-    }
-}
-
-/**
- * @brief Executes the current state.
- */
-void StateManager::handleCurrentState() {
-    switch (state_) {
-        case DRIP_MAIN_FSM_BOOT:
-            boot();
-            break;
-        case DRIP_MAIN_FSM_FATAL_ERROR:
-            fatalError();
-            break;
-        case DRIP_MAIN_FSM_CONNECT:
-            connect();
-            break;
-        case DRIP_MAIN_FSM_PROVISIONING:
-            accessPoint();
-            break;
-        case DRIP_MAIN_FSM_RESTART:
-            restart();
-            break;
-        case DRIP_MAIN_FSM_LISTEN:
-            listen();
-            break;
-        case DRIP_MAIN_FSM_DISPENSE:
-            dispense();
-            break;
-        case DRIP_MAIN_FSM_FLOW_CALIBRATE:
-            flowCalibrate();
-            break;
-        case DRIP_MAIN_FSM_PRESSURE_CALIBRATE:
-            pressureCalibrate();
-            break;
-        case DRIP_MAIN_FSM_DRAIN:
-            drain();
-            break;
-        default:
-            dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "State machine set to invalid state.");
-            state_ = DRIP_MAIN_FSM_FATAL_ERROR;
-            break;
-    }
-}
-
-/**
- * @brief Handles all received messages according to the handler
- * functions defined in a lookup table.
- * 
- * @details If a message is received that does not match an associated
- * handler function, it is ignored.
- * 
- * @param[in] table The lookup table to use to find the handler functions.
- * 
- * @retval ESP_INVALID_INPUT Returned if the lookup table is invalid.
- * @retval ESP_FAILURE Returned if an error occurred retrieving the message or handler function
- * @retval ESP_OK Returned if all messages are handled or ignored.
- */
-esp_err_t StateManager::handleReceivedMessages(const VdgMessageHandleFuncTable_t *table) {
-    DripMessage_t message = {};
-    VdgMessageHandleFunc_t handlerFunction = nullptr;
-    esp_err_t err = ESP_OK;
-
-    /** Validate table input. */
-    if (table == nullptr) {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /** Check for new MQTT messages. */
-    while(mqttManager_.numMessagesInQueue() > 0) {
-
-        /** Get the next message from the queue. */
-        err = mqttManager_.getNextMessage(message);
-        if (err != ESP_OK) {
-            dataContainer_.logError(err, TAG, "Failed to retrieve MQTT message.");
-            return ESP_FAIL;
-        }
-
-        /** Retrieve handler function. */
-        err = getHandlerFunctionFromMessageId(table, message.id, handlerFunction);
-        if (err != ESP_OK) {
-            dataContainer_.logError(err, TAG, "Failed to retrieve message handler function.");
-            return ESP_FAIL;
-        }
-
-        /** Ignore messages without a handler function. */
-        if (handlerFunction == nullptr) {
-            continue;
-        }
-
-        /** Execute handler function */
-        (this->*handlerFunction)(message);    
-    }
-
-    return ESP_OK;
-}
-
-/**
- * @brief Handler for state DRIP_MAIN_FSM_BOOT.
+ * @brief Handler for state DripMainFsmState_e::Boot.
  */
 void StateManager::boot() {
     esp_err_t err = ESP_OK;
@@ -255,23 +223,23 @@ void StateManager::boot() {
     if (err != ESP_OK) goto err;
 
 
-    state_ = DRIP_MAIN_FSM_CONNECT;
+    state_ = DripMainFsmState_e::Connect;
     return;
 
 err:
-    state_ = DRIP_MAIN_FSM_FATAL_ERROR;
+    state_ = DripMainFsmState_e::FatalError;
     return;
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_FATAL_ERROR.
+ * @brief Handler for state DripMainFsmState_e::FatalError.
  */
 void StateManager::fatalError() {
     // Placeholder for fatal error state logic
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_CONNECT.
+ * @brief Handler for state DripMainFsmState_e::Connect.
  */
 void StateManager::connect() {
     esp_err_t err = ESP_OK;
@@ -284,27 +252,27 @@ void StateManager::connect() {
 
     /** Continue if connected or provision WiFi & MQTT if not. */
     if (wifiManager_.isConnected() == true) {
-        state_ = DRIP_MAIN_FSM_LISTEN;
+        state_ = DripMainFsmState_e::Listen;
         return;
     } else {
-        state_ = DRIP_MAIN_FSM_PROVISIONING;
+        state_ = DripMainFsmState_e::Provisioning;
         return;
     }
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_PROVISIONING.
+ * @brief Handler for state DripMainFsmState_e::Provisioning.
  */
 void StateManager::accessPoint() {
     /** Move forward once connected. */
     if (wifiManager_.isConnected() == true) {
-        state_ = DRIP_MAIN_FSM_LISTEN;
+        state_ = DripMainFsmState_e::Listen;
         return;
     }
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_RESTART.
+ * @brief Handler for state DripMainFsmState_e::Restart.
  */
 void StateManager::restart() {
     esp_err_t err = ESP_OK;
@@ -317,12 +285,12 @@ void StateManager::restart() {
     esp_restart();
 
     /** Should not reach here. */
-    state_ = DRIP_MAIN_FSM_FATAL_ERROR;
+    state_ = DripMainFsmState_e::FatalError;
     return;
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_LISTEN.
+ * @brief Handler for state DripMainFsmState_e::Listen.
  */
 void StateManager::listen() {
     esp_err_t err = ESP_OK;
@@ -337,7 +305,7 @@ void StateManager::listen() {
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_DISPENSE.
+ * @brief Handler for state DripMainFsmState_e::Dispense.
  */
 void StateManager::dispense() {
     esp_err_t err = ESP_OK;
@@ -412,12 +380,12 @@ exit:
     }
 
     dataContainer_.logInfo(ESP_OK, TAG, "Concluded dispense process.");
-    state_ = DRIP_MAIN_FSM_LISTEN;
+    state_ = DripMainFsmState_e::Listen;
     return;
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_FLOW_CALIBRATE.
+ * @brief Handler for state DripMainFsmState_e::FlowSensorCalibrate.
  */
 void StateManager::flowCalibrate() {
     esp_err_t err = ESP_OK;
@@ -482,19 +450,19 @@ exit:
     }
 
     dataContainer_.logInfo(err, TAG, "Concluded calibration process.");
-    state_ = DRIP_MAIN_FSM_LISTEN;
+    state_ = DripMainFsmState_e::Listen;
     return;
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_PRESSURE_CALIBRATE.
+ * @brief Handler for state DripMainFsmState_e::PressureSensorCalibrate.
  */
 void StateManager::pressureCalibrate() {
     // Placeholder for pressure calibrate state logic
 }
 
 /**
- * @brief Handler for state DRIP_MAIN_FSM_DRAIN.
+ * @brief Handler for state DripMainFsmState_e::Drain.
  */
 void StateManager::drain() {
     // Placeholder for drain state logic
@@ -513,7 +481,7 @@ void StateManager::handleDispenseRequest(DripMessage_t message) {
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
 
     /** Validate state. */
-    if (state_ != DRIP_MAIN_FSM_LISTEN) {
+    if (state_ != DripMainFsmState_e::Listen) {
         dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Dispense handler called in invalid state.");
         return;
     }
@@ -561,7 +529,7 @@ void StateManager::handleDispenseRequest(DripMessage_t message) {
 
     dataContainer_.logInfo(ESP_OK, TAG, log);
 
-    state_ = DRIP_MAIN_FSM_DISPENSE;
+    state_ = DripMainFsmState_e::Dispense;
     return;
 
 err:
@@ -590,7 +558,7 @@ void StateManager::handleRestartRequest(DripMessage_t message) {
 
 /**
  * @brief Handles state change for a flow calibrate request
- * when in the state DRIP_MAIN_FSM_LISTEN.
+ * when in the state DripMainFsmState_e::Listen.
  * 
  * @param[in] message MQTT received message.
  */
@@ -603,7 +571,7 @@ void StateManager::handleFlowCalibrateRequestListen(DripMessage_t message) {
     VdgDispenseProcessTarget_t dispenseTarget = {};
 
     /** Validate state. */
-    if (state_ != DRIP_MAIN_FSM_LISTEN) {
+    if (state_ != DripMainFsmState_e::Listen) {
         dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Flow calibration handler called in invalid state.");
         return;
     }
@@ -643,7 +611,7 @@ void StateManager::handleFlowCalibrateRequestListen(DripMessage_t message) {
     );
     dataContainer_.logInfo(ESP_OK, TAG, log);
 
-    state_ = DRIP_MAIN_FSM_FLOW_CALIBRATE;
+    state_ = DripMainFsmState_e::FlowSensorCalibrate;
     return;
 
 err:
@@ -653,7 +621,7 @@ err:
 
 /**
  * @brief Handles state change for a flow calibrate request
- * when in the state DRIP_MAIN_FSM_FLOW_CALIBRATE.
+ * when in the state DripMainFsmState_e::FlowSensorCalibrate.
  * 
  * @param[in] message MQTT received message.
  */
@@ -665,7 +633,7 @@ void StateManager::handleFlowCalibrateRequestFlowCalibration(DripMessage_t messa
     DripFlowSensorCalibrationState_e flowSensorState = DRIP_FLOW_SENSOR_CALIBRATION_MIN; 
 
     /** Validate state. */
-    if (state_ != DRIP_MAIN_FSM_FLOW_CALIBRATE) {
+    if (state_ != DripMainFsmState_e::FlowSensorCalibrate) {
         dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Flow calibration handler called in invalid state.");
         return;
     }
@@ -730,6 +698,62 @@ void StateManager::handlePressurePollRequest(DripMessage_t message) {
 void StateManager::handleConfigChangeRequest(DripMessage_t message) {
     return;
 }
+
+
+
+void StateManager::update() {
+    esp_err_t err = ESP_OK;
+
+    handleCurrentState();
+
+    /** Upload all logs to MQTT. */
+    err = mqttManager_.uploadLogs();
+    if (err != ESP_OK) {
+        dataContainer_.logError(err, TAG, "Failed to upload logs.");
+    }
+}
+
+
+esp_err_t StateManager::handleReceivedMessages(const DripMessageHandleFuncTable_t *table, size_t tableLen) {
+    DripRxMessage message = DripRxMessage(0);
+    VdgMessageHandleFunc_t handlerFunction = nullptr;
+    esp_err_t err = ESP_OK;
+
+    /** Validate table input. */
+    if (table == nullptr) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /** Check for new MQTT messages. */
+    while(mqttManager_.numMessagesInQueue() > 0) {
+
+        /** Get the next message from the queue. */
+        err = mqttManager_.getNextMessage(message);
+        if (err != ESP_OK) {
+            dataContainer_.logError(err, TAG, "Failed to retrieve MQTT message.");
+            return ESP_FAIL;
+        }
+
+        /** Retrieve handler function. */
+        err = getHandlerFunctionFromMessageId(table, message.id, handlerFunction);
+        if (err != ESP_OK) {
+            dataContainer_.logError(err, TAG, "Failed to retrieve message handler function.");
+            return ESP_FAIL;
+        }
+
+        /** Ignore messages without a handler function. */
+        if (handlerFunction == nullptr) {
+            continue;
+        }
+
+        /** Execute handler function */
+        (this->*handlerFunction)(message);    
+    }
+
+    return ESP_OK;
+}
+
+
 
 /**
  * @brief Initializes and mounts the LittleFS filesystem.

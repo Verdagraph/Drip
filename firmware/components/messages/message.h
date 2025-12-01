@@ -1,6 +1,7 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include "messageIds.h"
 #include "config.h"
 #include "dataContainer.h"
 #include "valveManager.h"
@@ -12,25 +13,15 @@ constexpr size_t DRIP_MSG_MAX_PAYLOAD_BYTES = 512U;
 /**
  * @brief Specifies data structure and conversion to a JSON payload
  * for a structured application message data object.
- * 
- * @tparam TData The type of struct represented. 
  */
-template <typename TData>
-class DripRxMessageContainer {
+class DripRxMessage {
 public:
 
-    DripRxMessageContainer();
+    DripRxMessage(DripRxMessageId_e id);
 
-    ~DripRxMessageContainer() = default;
+    ~DripRxMessage() = default;
 
-    /**
-     * @brief Retrieve the structured data.
-     * 
-     * @warning The isValid flag should be checked before using this.
-     * 
-     * @return TData The structured data.
-     */
-    TData data() const;
+    DripRxMessageId_e id() const;
     
     /**
      * @brief Get the isValid flag.
@@ -84,9 +75,9 @@ public:
      */
     virtual esp_err_t validate(const DataContainer &container, const DripConfig_t &config) = 0;
 
-private:
-    /** @brief The structured data. */
-    TData data_;
+protected:
+    /** @brief Message ID. */
+    DripRxMessageId_e id_;
     /** @brief True if the struct data has been populated and validated. */
     bool isValid_;
 };
@@ -102,7 +93,7 @@ template <typename TData>
 class DripTxMessageContainer {
 public:
 
-    DripTxMessageContainer();
+    DripTxMessageContainer(DripTxMessageId_e id);
 
     ~DripTxMessageContainer() = default;
     
@@ -147,7 +138,9 @@ public:
      */
     virtual esp_err_t toJson(const TData data) = 0;
 
-private:
+protected:
+    /** @brief */
+    DripTxMessageId_e id;
     /** @brief A pointer to the unstructured JSON payload. */
     uint8_t payload_[DRIP_MSG_MAX_PAYLOAD_BYTES];
     /** @brief The number of bytes in the payload. */

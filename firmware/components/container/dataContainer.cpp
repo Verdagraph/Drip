@@ -124,3 +124,7 @@ esp_err_t DataContainer::logError(esp_err_t returnCode, const char* tag, const c
 esp_err_t DataContainer::getNextLog(DripLog_t &message) {
     return ESP_OK;
 }
+
+esp_err_t DataContainer::log(DripLog_t &log) {
+    return ESP_OK;
+}

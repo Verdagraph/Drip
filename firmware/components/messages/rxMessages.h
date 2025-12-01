@@ -1,22 +1,20 @@
 #ifndef RX_MESSAGES_H
 #define RX_MESSAGES_H
 
+#include "tiny-json.h"
+
 #include "message.h"
 #include "config.h"
 #include "dataContainer.h"
 #include "valveManager.h"
 
-
-/** @brief Default; empty message payload; */
-struct DripDefaultRxMessage_t {};
-
 /** 
  * @brief Dispense activate command.
  */
-using DispenseActivateRxMessage_t = VdgDispenseProcessTarget_t;
-class DispenseActivateRxMessageContainer : public DripRxMessageContainer<DispenseActivateRxMessage_t> {
+using DispenseActivateRxMessagePayload_t = VdgDispenseProcessTarget_t;
+class DispenseActivateRxMessage : public DripRxMessage {
 public:
-    DispenseActivateRxMessageContainer() : DripRxMessageContainer<DispenseActivateRxMessage_t>() {}
+    DispenseActivateRxMessage() : DripRxMessage(DripRxMessageId_e::DispenseActivate) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -26,15 +24,21 @@ public:
     esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
         return ESP_OK;
     }
+
+    DispenseActivateRxMessagePayload_t data() {
+        return messageData;
+    }
+
+private:
+    DispenseActivateRxMessagePayload_t messageData;
 };
 
 /**
  * @brief Process deactivation command.
  */
-using DeactivateRxMessage_t = DripDefaultRxMessage_t;
-class DeactivateRxMessageContainer : public DripRxMessageContainer<DeactivateRxMessage_t> {
+class DeactivateRxMessage : public DripRxMessage {
 public:
-    DeactivateRxMessageContainer() : DripRxMessageContainer<DeactivateRxMessage_t>() {}
+    DeactivateRxMessage() : DripRxMessage(DripRxMessageId_e::Deactivate) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -49,10 +53,9 @@ public:
 /**
  * @brief Process restart command.
  */
-using RestartRxMessage_t = DripDefaultRxMessage_t;
-class RestartRxMessageContainer : public DripRxMessageContainer<RestartRxMessage_t> {
+class RestartRxMessage : public DripRxMessage {
 public:
-    RestartRxMessageContainer() : DripRxMessageContainer<RestartRxMessage_t>() {}
+    RestartRxMessage() : DripRxMessage(DripRxMessageId_e::Restart) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -67,10 +70,10 @@ public:
 /**
  * @brief Config change command.
  */
-using ConfigUpdateRxMessage_t = DripConfig_t;
-class ConfigUpdateRxMessageContainer : public DripRxMessageContainer<ConfigUpdateRxMessage_t> {
+using ConfigUpdateRxMessagePayload_t = DripConfig_t;
+class ConfigUpdateRxMessage : public DripRxMessage {
 public:
-    ConfigUpdateRxMessageContainer() : DripRxMessageContainer<ConfigUpdateRxMessage_t>() {}
+    ConfigUpdateRxMessage() : DripRxMessage(DripRxMessageId_e::ConfigUpdate) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -80,12 +83,19 @@ public:
     esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
         return ESP_OK;
     }
+
+    ConfigUpdateRxMessagePayload_t data() {
+        return messageData;
+    }
+
+private:
+    ConfigUpdateRxMessagePayload_t messageData;
 };
 
 /**
  * @brief Flow calibration dispense and measure command.
  */
-struct FlowCalibrationUpdateRxMessage_t {
+struct FlowCalibrationUpdateRxMessagePayload_t {
     /** 
      * @brief The target volume of this calibration step in liters.
      * Ignored if conclude is true.
@@ -101,9 +111,9 @@ struct FlowCalibrationUpdateRxMessage_t {
     /** @brief If true the calibration process is concluded. */
     bool conclude = false;
 };
-class FlowCalibrationUpdateRxMessageContainer : public DripRxMessageContainer<FlowCalibrationUpdateRxMessage_t> {
+class FlowCalibrationUpdateRxMessage : public DripRxMessage {
 public:
-    FlowCalibrationUpdateRxMessageContainer() : DripRxMessageContainer<FlowCalibrationUpdateRxMessage_t>() {}
+    FlowCalibrationUpdateRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrate) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -113,15 +123,24 @@ public:
     esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
         return ESP_OK;
     }
+
+    FlowCalibrationUpdateRxMessagePayload_t data() {
+        return messageData;
+    }
+
+private:
+    FlowCalibrationUpdateRxMessagePayload_t messageData;
 };
 
 /**
  * @brief Pressure calibration command. 
  */
-using PressureCalibrateRxMessage_t = DripDefaultRxMessage_t;
-class PressureCalibrateRxMessageContainer : public DripRxMessageContainer<PressureCalibrateRxMessage_t> {
+struct PressureCalibrateRxMessagePayload_t {
+
+};
+class PressureCalibrateRxMessage : public DripRxMessage {
 public:
-    PressureCalibrateRxMessageContainer() : DripRxMessageContainer<PressureCalibrateRxMessage_t>() {}
+    PressureCalibrateRxMessage() : DripRxMessage(DripRxMessageId_e::PressureCalibrate) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -131,15 +150,22 @@ public:
     esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
         return ESP_OK;
     }
+
+    PressureCalibrateRxMessagePayload_t data() {
+        return messageData;
+    }
+
+private:
+    PressureCalibrateRxMessagePayload_t messageData;
 };
 
 /** 
  * @brief Drain activate command.
  */
-using DrainActivateRxMessage_t = VdgDrainProcessTarget_t;
-class DrainActivateRxMessageContainer : public DripRxMessageContainer<DrainActivateRxMessage_t> {
+using DrainActivateRxMessagePayload_t = VdgDrainProcessTarget_t;
+class DrainActivateRxMessage : public DripRxMessage {
 public:
-    DrainActivateRxMessageContainer() : DripRxMessageContainer<DrainActivateRxMessage_t>() {}
+    DrainActivateRxMessage() : DripRxMessage(DripRxMessageId_e::DrainActivate) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -149,15 +175,21 @@ public:
     esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
         return ESP_OK;
     }
+
+    DrainActivateRxMessagePayload_t data() {
+        return messageData;
+    }
+
+private:
+    DrainActivateRxMessagePayload_t messageData;
 };
 
 /**
  * @brief Pressure poll command.
  */
-using PressurePollRxMessage_t = DripDefaultRxMessage_t;
-class DispenseActivateRxMessageContainer : public DripRxMessageContainer<PressurePollRxMessage_t> {
+class PressurePollRxMessage : public DripRxMessage {
 public:
-    DispenseActivateRxMessageContainer() : DripRxMessageContainer<PressurePollRxMessage_t>() {}
+    PressurePollRxMessage() : DripRxMessage(DripRxMessageId_e::PressurePoll) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 

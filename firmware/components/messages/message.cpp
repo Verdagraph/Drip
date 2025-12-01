@@ -1,24 +1,20 @@
 #include "message.h"
 
 /**
- * @defgroup DripRxMessageContainer Incoming Message Object
+ * @defgroup DripRxMessage Incoming Message Object
  */
 
-template <typename TData>
-DripRxMessageContainer<TData>::DripRxMessageContainer() : data_({}), isValid_(false) {}
+DripRxMessage::DripRxMessage(DripRxMessageId_e id) : id_(id), isValid_(false) {}
 
-template <typename TData>
-TData DripRxMessageContainer<TData>::data() const { 
-    return data_;
+DripRxMessageId_e DripRxMessage::id() const {
+    return id_;
 }
 
-template <typename TData>
-bool DripRxMessageContainer<TData>::isValid() const {
+bool DripRxMessage::isValid() const {
     return isValid_;
 }
 
-template <typename TData>
-esp_err_t DripRxMessageContainer<TData>::structure(
+esp_err_t DripRxMessage::structure(
     uint8_t *payload, 
     size_t payloadLen, 
     const DataContainer &container, 
@@ -53,7 +49,7 @@ esp_err_t DripRxMessageContainer<TData>::structure(
  */
 
 template <typename TData>
-DripTxMessageContainer<TData>::DripTxMessageContainer() : payload_{}, payloadLen_(0), isValid_(false) {}
+DripTxMessageContainer<TData>::DripTxMessageContainer(DripTxMessageId_e id) : id(id), payload_{}, payloadLen_(0), isValid_(false) {}
 
 template <typename TData>
 bool DripTxMessageContainer<TData>::isValid() const {

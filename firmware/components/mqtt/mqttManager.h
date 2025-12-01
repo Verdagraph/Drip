@@ -1,7 +1,7 @@
 #ifndef MQTT_MANAGER_H
 #define MQTT_MANAGER_H
 
-#include "messages.h"
+#include "message.h"
 #include "valveManager.h"
 
 /**
@@ -40,7 +40,7 @@ public:
      * @param message Output parameter for the message object.
      * @return esp_err_t Return code.
      */
-    esp_err_t getNextMessage(DripMessage_t message);
+    esp_err_t getNextMessage(DripRxMessage &message);
 
     esp_err_t uploadLogs();
 

@@ -4,31 +4,27 @@
 /**
  * @brief Describes possible finite-state-machine states for the whole application.
 */
-enum DripMainFsmState_e {
-    DRIP_MAIN_FSM_MIN,
-
+enum class DripMainFsmState_e {
+    /** @brief Pre-initialization. */
+    Uninitialized,
     /** @brief Initialization. */
-    DRIP_MAIN_FSM_BOOT,
+    Boot,
     /** @brief Unrecoverable error. */
-    DRIP_MAIN_FSM_FATAL_ERROR,
+    FatalError,
     /** @brief Establishing WiFi connection. */
-    DRIP_MAIN_FSM_CONNECT,
+    Connect,
     /** @brief WiFi provisioning. */
-    DRIP_MAIN_FSM_PROVISIONING,
+    Provisioning,
     /** @brief Restarts the device. */
-    DRIP_MAIN_FSM_RESTART,
+    Restart,
     /** @brief Main idle state. */
-    DRIP_MAIN_FSM_LISTEN,
+    Listen,
     /** @brief Dispensation process. */
-    DRIP_MAIN_FSM_DISPENSE,
+    Dispense,
     /** @brief Flow calibration process. */
-    DRIP_MAIN_FSM_FLOW_CALIBRATE,
-    /** @brief Pressure calibration process. */
-    DRIP_MAIN_FSM_PRESSURE_CALIBRATE,
+    FlowSensorCalibrate,
     /** @brief Tank drain process. */
-    DRIP_MAIN_FSM_DRAIN,
-
-    DRIP_MAIN_FSM_MAX
+    Drain,
 };
 
 #endif
