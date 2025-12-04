@@ -1,5 +1,15 @@
-#ifndef STATE_MANAGER_H
-#define STATE_MANAGER_H
+/**
+ * @file mainStateController.h
+ * @author Nathaniel King
+ * @brief Defines the main finite state machine.
+ * @date 2025-12-03
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
+#ifndef MAIN_STATE_CONTROLLER_H
+#define MAIN_STATE_CONTROLLER_H
 
 #include <etl/const_map.h>
 
@@ -35,7 +45,7 @@ public:
     /**
      * @brief Constructor.
      */
-    MainStateController();
+    MainStateController(const DataContainer &dataContainer);
 
     /**
      * @defgroup StateHandler State handlers.
@@ -120,68 +130,66 @@ public:
     /**
      * @brief Handles state change for a dispense request in the listen state.
      *
-     * @param[in] message MQTT received message.
-     * @return esp_err_t Return code.
+     * @param[in] message MQTT received message of type DispenseActivateRxMessage.
      */
-    void handleDispenseRequestStateListen(DispenseActivateRxMessage &message);
+    void handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a deactivation request in the listen state.
      *
-     * @param[in] message MQTT received message.
-     * @return esp_err_t Return code.
+     * @param[in] message MQTT received message of type DeactivateRxMessage.
      */
-    void handleDeactivateRequestStateListen(DeactivateRxMessage message);
+    void handleDeactivateRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a restart request in the listen state.
      *
-     * @param[in] message MQTT received message.
+     * @param[in] message MQTT received message of type RestartRxMessage.
      */
-    void handleRestartRequestStateListen(RestartRxMessage message);
+    void handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a config change request in the listen state.
      *
-     * @param[in] message MQTT received message.
+     * @param[in] message MQTT received message of type ConfigUpdateRxMessage.
      */
-    void handleConfigChangeRequestStateListen(ConfigUpdateRxMessage message);
+    void handleConfigChangeRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a flow calibrate request when in the listen state.
      *
-     * @param[in] message MQTT received message.
+     * @param[in] message MQTT received message of type FlowCalibrationUpdateRxMessage.
      */
-    void handleFlowCalibrateRequestStateListen(FlowCalibrationUpdateRxMessage message);
+    void handleFlowCalibrateRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a flow calibrate request when 
      * in the flow sensor calibrate state.
      *
-     * @param[in] message MQTT received message.
+     * @param[in] message MQTT received message of type FlowCalibrationUpdateRxMessage.
      */
-    void handleFlowCalibrateRequestStateFlowCalibration(FlowCalibrationUpdateRxMessage message);
+    void handleFlowCalibrateRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a pressure calibrate request when in the listen state.
      *
-     * @param[in] message MQTT received message.
+     * @param[in] message MQTT received message of type PressureCalibrateRxMessage.
      */
-    void handlePressureCalibrateRequestStateListen(PressureCalibrateRxMessage message);
+    void handlePressureCalibrateRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a drain request when in the listen state.
      *
-     * @param[in] message MQTT received message.
+     * @param[in] message MQTT received message of type DrainActivateRxMessage.
      */
-    void handleDrainRequestStateListen(DrainActivateRxMessage message);
+    void handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /**
      * @brief Handles state change for a pressure poll request when in the listen state.
      *
-     * @param[in] message MQTT received message.
+     * @param[in] message MQTT received message of type PressurePollRxMessage.
      */
-    void handlePressurePollRequestStateListen(PressurePollRxMessage message);
+    void handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
 
     /** @} */
 

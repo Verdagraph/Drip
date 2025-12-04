@@ -132,6 +132,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripRxMessageId_e::DispenseActivate
         ),
         EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            
             &MainStateController::handleDispenseRequestStateListen
         )
     }
@@ -142,64 +143,18 @@ constexpr FsmEventMap eventToHandlerMap { eventToHandlerMapValues };
 
 
 
- const DripMessageHandlingMap<7U> messageToHandlerMapStateListenold {
-    etl::pair{DripRxMessageId_e::DispenseActivate, &StateManager::handleDispenseRequest},
-    etl::pair{DripRxMessageId_e::Restart, &StateManager::handleRestartRequest},
-    etl::pair{DripRxMessageId_e::ConfigUpdate, &StateManager::handleConfigChangeRequest},
-    etl::pair{DripRxMessageId_e::FlowCalibrate, &StateManager::handleFlowCalibrateRequestListen},
-    etl::pair{DripRxMessageId_e::PressureCalibrate, &StateManager::handlePressureCalibrateRequest},
-    etl::pair{DripRxMessageId_e::DrainActivate, &StateManager::handleDrainRequest},
-    etl::pair{DripRxMessageId_e::PressurePoll, &StateManager::handlePressurePollRequest},
-};
-
-/**
- * @brief Mapping between received messages and handler functions
- * for messages received in the dispense state.
- */
-/*
-const DripMessageHandlingMap<1U> messageToHandlerMapStateDispense {
-    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
-};
-*/
-
-/**
- * @brief Mapping between received messages and handler functions
- * for messages received in the flow sensor calibration state.
- */
-/*
-const DripMessageHandlingMap<2U> messageToHandlerMapStateFlowCalibrate {
-    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
-    etl::pair{DripRxMessageId_e::FlowCalibrate, &StateManager::handleFlowCalibrateRequestFlowCalibration},
-};
-
-*/
-/**
- * @brief Mapping between received messages and handler functions
- * for messages received in the pressure sensor calibration state.
- */
-/*
-const DripMessageHandlingMap<2U> messageToHandlerMapStatePressureCalibrate {
-    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
-    etl::pair{DripRxMessageId_e::PressureCalibrate, &StateManager::handlePressureCalibrateRequest},
-};
-*/
-
-/**
- * @brief Mapping between received messages and handler functions
- * for messages received in the drain state.
- */
-/*
-const DripMessageHandlingMap<1U> messageToHandlerMapStateDrain {
-    etl::pair{DripRxMessageId_e::Deactivate, &StateManager::handleDeactivateRequest},
-};
-*/
-
-
-
 /**
  * @brief Constructor
  */
-MainStateController::MainStateController() : 
+MainStateController::MainStateController(const DataContainer &dataContainer) :
+    StateController<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController>(
+        DripMainFsmState_e::Uninitialized,
+        "MainFsm",
+        stateToHandlerMap,
+        eventToHandlerMap,
+        this,
+        dataContainer,
+    ),
     eventTimers_(),
     configManager_(),
     dataContainer_(),
@@ -210,9 +165,9 @@ MainStateController::MainStateController() :
 
 
 /**
- * @brief Handler for state DripMainFsmState_e::Boot.
+ * @brief Handlers for state uninitialized.
  */
-void StateManager::boot() {
+void MainStateController::uninitializedEntry() {
     esp_err_t err = ESP_OK;
 
     /** Initialize managers. */
@@ -229,6 +184,133 @@ void StateManager::boot() {
 err:
     state_ = DripMainFsmState_e::FatalError;
     return;
+}
+void MainStateController::uninitializedUpdate() {}
+void MainStateController::uninitializedExit() {}
+
+/**
+ * @brief Handlers for state boot.
+ */
+void MainStateController::bootEntry() {
+    return;
+}
+void MainStateController::bootUpdate() {
+    return;
+}
+void MainStateController::bootExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state fatal error.
+ */
+void MainStateController::fatalErrorEntry() {
+    return;
+}
+void MainStateController::fatalErrorUpdate() {
+    return;
+}
+void MainStateController::fatalErrorExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state connect.
+ */
+void MainStateController::connectEntry() {
+    return;
+}
+void MainStateController::connectUpdate() {
+    return;
+}
+void MainStateController::connectExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state provisioning.
+ */
+void MainStateController::provisioningEntry() {
+    return;
+}
+void MainStateController::provisioningUpdate() {
+    return;
+}
+void MainStateController::provisioningExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state restart.
+ */
+void MainStateController::restartEntry() {
+    return;
+}
+void MainStateController::restartUpdate() {
+    return;
+}
+void MainStateController::restartExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state listen.
+ */
+void MainStateController::listenEntry() {
+    return;
+}
+void MainStateController::listenUpdate() {
+    return;
+}
+void MainStateController::listenExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state dispense.
+ */
+void MainStateController::dispenseEntry() {
+    return;
+}
+void MainStateController::dispenseUpdate() {
+    return;
+}
+void MainStateController::dispenseExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state flow calibrate.
+ */
+void MainStateController::flowSensorCalibrateEntry() {
+    return;
+}
+void MainStateController::flowSensorCalibrateUpdate() {
+    return;
+}
+void MainStateController::flowSensorCalibrateExit() {
+    return;
+}
+
+/**
+ * @brief Handlers for state drain.
+ */
+void MainStateController::drainEntry() {
+    return;
+}
+void MainStateController::drainUpdate() {
+    return;
+}
+void MainStateController::drainExit() {
+    return;
+}
+
+
+/**
+ * @brief Handler for state DripMainFsmState_e::Boot.
+ */
+void StateManager::boot() {
+
 }
 
 /**

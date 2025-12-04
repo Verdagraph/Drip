@@ -233,16 +233,12 @@ using EventHandlerMap = etl::const_map<EventHandlerMapKey_t<TStateId_e, TEventId
  * @tparam TEventId_e The enumerated ID describing all possible events.
  * @tparam TEvent The type of event object passed to event handler functions.
  * @tparam TStateController Parent state controller class.
- * @tparam TStateMapSize Size of the state to handler function map.  
- * @tparam TEventMapSize Size of the event to handler function map.
  */
 template <
     typename TStateId_e, 
     typename TEventId_e, 
     typename TEvent, 
     typename TStateController,
-    typename TStateMapSize,
-    typename TEventMapSize
 >
 class StateMachine {
 public:
