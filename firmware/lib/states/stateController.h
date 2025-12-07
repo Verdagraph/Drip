@@ -32,7 +32,7 @@ public:
 
     void update();
 
-    void handleEvent(TEventId_e eventId, TEvent event);
+    void handleEvent(TEventId_e eventId, const TEvent *event);
 
 protected:
     StateMachine<TStateId_e, TEventId_e, TEvent, TStateController> machine_;

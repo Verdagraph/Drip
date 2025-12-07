@@ -12,7 +12,9 @@ enum class DripMainFsmState_e {
     /** @brief Unrecoverable error. */
     FatalError,
     /** @brief Establishing WiFi connection. */
-    Connect,
+    ConnectWifi,
+    /** @brief Establishing MQTT connection. */
+    ConnectMqtt,
     /** @brief WiFi provisioning. */
     Provisioning,
     /** @brief Restarts the device. */

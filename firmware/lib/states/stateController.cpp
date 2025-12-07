@@ -12,10 +12,10 @@ StateController<TStateId_e, TEventId_e, TEvent, TStateController>::StateControll
 
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
 void StateController<TStateId_e, TEventId_e, TEvent, TStateController>::update() {
-    return;
+    machine_.update();
 }
 
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
-void StateController<TStateId_e, TEventId_e, TEvent, TStateController>::handleEvent(TEventId_e eventId, TEvent event) {
-    return;
+void StateController<TStateId_e, TEventId_e, TEvent, TStateController>::handleEvent(TEventId_e eventId, const TEvent *event) {
+    machine_.handleEvent(eventId, event);
 }

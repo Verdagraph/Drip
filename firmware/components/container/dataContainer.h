@@ -18,13 +18,13 @@ constexpr size_t DRIP_LOG_MAX_ERROR_LOGS = 10U;
 /**
  * @brief Describes a type of log message.
  */
-enum DripLogType_e {
+enum class DripLogType_e {
     /** @brief For routine informational messages.  */
-    DRIP_LOG_INFO,
+    Info,
     /** @brief For potential errors that do not distrupt a routine. */
-    DRIP_LOG_WARNING,
+    Warning,
     /** @brief For failures. */
-    DRIP_LOG_ERROR,
+    Error,
 };
 
 /**

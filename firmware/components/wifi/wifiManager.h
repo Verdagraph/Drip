@@ -1,7 +1,7 @@
 /**
  * @file WifiManager.h
  * @brief Declaration of the WifiManager class for handling Wi-Fi connectivity.
- * @details Taken from https://github.com/Ariif0/ESPIDF-WiFi-Configuration
+ * @details Borrowed from https://github.com/Ariif0/ESPIDF-WiFi-Configuration
  */
 
 #pragma once

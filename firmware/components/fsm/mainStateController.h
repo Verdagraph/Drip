@@ -36,6 +36,8 @@ constexpr uint32_t DRIP_MAIN_FSM_WIFI_CONNECTION_WAIT_MS = 10000U;
 struct DripMainFsmEventTimers_t {
     /** @brief The timestamp that the attempted wifi connection began. */
     uint32_t wifiConnectionBeganTicks;
+    /** @brief The timestamp that the attempted mqtt connection began. */
+    uint32_t mqttConnectionBeganTicks;
     /** @brief The timestamp of the last time a process slice was uploaded. */
     uint32_t lastProcessSliceUploadTicks;
 };
@@ -49,7 +51,14 @@ public:
     /**
      * @brief Constructor.
      */
-    MainStateController(const DataContainer &dataContainer);
+    MainStateController(
+        const ConfigManager &configManager,
+        const DataContainer &dataContainer,
+        const WifiManager &wifiManager, 
+        const MqttManager &mqttManager,
+        const ValveManager &valveManager,
+        const FlowSensorManager &flowSensorManager
+    );
 
     /**
      * @defgroup StateHandler State handlers.
@@ -77,11 +86,18 @@ public:
     void fatalErrorExit();
 
     /**
-     * @brief Handlers for state connect.
+     * @brief Handlers for state connect wifi.
      */
-    void connectEntry();
-    void connectUpdate();
-    void connectExit();
+    void connectWifiEntry();
+    void connectWifiUpdate();
+    void connectWifiExit();
+
+    /**
+     * @brief Handlers for state connect mqtt.
+     */
+    void connectMqttEntry();
+    void connectMqttUpdate();
+    void connectMqttExit();
 
     /**
      * @brief Handlers for state provisioning.

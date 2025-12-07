@@ -15,11 +15,13 @@ public:
     MqttManager();
 
     /**
-     * @brief Begin the MqttManager.s
+     * @brief Begin the MqttManager.
      * 
      * @return esp_err_t Return code. 
      */
     esp_err_t initialize();
+
+    bool connected() const;
 
     /**
      * @brief Get the checkedForMessages flagged.
@@ -33,6 +35,14 @@ public:
      * the queue.
      */
     uint8_t numMessagesInQueue();
+
+    /**
+     * @brief Begins an attempt to connect to MQTT.
+     * Reinitializes any exising connection.
+     * 
+     * @return esp_err_t 
+     */
+    esp_err_t connect();
     
     /**
      * @brief Pull the next incoming MQTT message from the queue.
@@ -62,8 +72,9 @@ public:
 
     
 private:
+    bool connected_;
     /** If true, the manager has checked for messages at least once. */
-    bool _checkedForMessages;
+    bool checkedForMessages_;
     //MqttRxMessage_t rxMessage;
     //char rxPayload[RX_PAYLOAD_MAX_BYTES]; 
 

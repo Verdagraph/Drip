@@ -56,11 +56,20 @@ constexpr StateHandlerMapPair<DripMainFsmState_e, MainStateController> stateToHa
         ),
     },
     etl::pair{
-        DripMainFsmState_e::Connect, 
+        DripMainFsmState_e::ConnectWifi, 
         StateHandlerMapEntry_t<MainStateController>(
-            &MainStateController::connectEntry, 
-            &MainStateController::connectUpdate, 
-            &MainStateController::connectExit, 
+            &MainStateController::connectWifiEntry, 
+            &MainStateController::connectWifiUpdate, 
+            &MainStateController::connectWifiExit, 
+            10U /** handlingIntervalMs. Quick handling of connection logic. */
+        ),
+    },
+    etl::pair{
+        DripMainFsmState_e::ConnectMqtt, 
+        StateHandlerMapEntry_t<MainStateController>(
+            &MainStateController::connectMqttEntry, 
+            &MainStateController::connectMqttUpdate, 
+            &MainStateController::connectMqttExit, 
             10U /** handlingIntervalMs. Quick handling of connection logic. */
         ),
     },
@@ -140,27 +149,34 @@ using FsmEventMap = EventHandlerMap<DripMainFsmState_e, DripRxMessageId_e, DripR
 constexpr FsmEventMap eventToHandlerMap { eventToHandlerMapValues };
 
 
-
-
 /**
  * @brief Constructor
  */
-MainStateController::MainStateController(const DataContainer &dataContainer) :
+MainStateController::MainStateController(
+    const ConfigManager &configManager,
+    const DataContainer &dataContainer,
+    const WifiManager &wifiManager, 
+    const MqttManager &mqttManager,
+    const ValveManager &valveManager,
+    const FlowSensorManager &flowSensorManager
+) :
     StateController<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController>(
         DripMainFsmState_e::Uninitialized,
         "MainFsm",
         stateToHandlerMap,
         eventToHandlerMap,
-        this,
-        dataContainer,
+        *this,
+        dataContainer
     ),
+
     eventTimers_(),
-    configManager_(),
-    dataContainer_(),
-    mqttManager_(),
-    wifiManager_(),
-    valveManager_(configManager_, dataContainer_),
-    flowSensorManager_() {}
+    
+    configManager_(configManager),
+    dataContainer_(dataContainer),
+    mqttManager_(mqttManager),
+    wifiManager_(wifiManager),
+    valveManager_(valveManager),
+    flowSensorManager_(flowSensorManager) {}
 
 
 /**
@@ -171,18 +187,15 @@ void MainStateController::uninitializedEntry() {
 
     /** Initialize managers. */
     err = configManager_.initialize();
-    if (err != ESP_OK) goto err;
+    if (err != ESP_OK) machine_.transition(DripMainFsmState_e::FatalError);
 
     err = mqttManager_.initialize();
-    if (err != ESP_OK) goto err;
+    if (err != ESP_OK) machine_.transition(DripMainFsmState_e::FatalError);
 
-    err = machine_.transition(DripMainFsmState_e::Connect);
-    if (err != ESP_OK) goto err;
+    /** Enter boot. */
+    err = machine_.transition(DripMainFsmState_e::Boot);
+    if (err != ESP_OK) machine_.transition(DripMainFsmState_e::FatalError);
 
-    return;
-
-err:
-    machine_.transition(DripMainFsmState_e::FatalError);
     return;
 }
 void MainStateController::uninitializedUpdate() {}
@@ -194,7 +207,8 @@ void MainStateController::uninitializedExit() {}
 void MainStateController::bootEntry() {
     esp_err_t err = ESP_OK;
 
-    err = machine_.transition(DripMainFsmState_e::Connect);
+    /** Enter connection. */
+    err = machine_.transition(DripMainFsmState_e::ConnectWifi);
     if (err != ESP_OK) goto err;
 
     return;
@@ -220,11 +234,15 @@ void MainStateController::fatalErrorExit() {
 }
 
 /**
- * @brief Handlers for state connect.
+ * @brief Handlers for state connect wifi.
  */
-void MainStateController::connectEntry() {
+void MainStateController::connectWifiEntry() {
     esp_err_t err = ESP_OK;
     
+    if (wifiManager_.isConnected() ) {
+        machine_.transition(DripMainFsmState_e::ConnectMqtt);
+    }
+
     /** 
      * Attempt connection. 
      * The WifiManager handles all wifi provisioning events in the background.
@@ -235,11 +253,11 @@ void MainStateController::connectEntry() {
 
     return;
 }
-void MainStateController::connectUpdate() {
+void MainStateController::connectWifiUpdate() {
     esp_err_t err = ESP_OK;
     
     if (true == wifiManager_.isConnected()) {
-        err = machine_.transition(DripMainFsmState_e::Connect);
+        err = machine_.transition(DripMainFsmState_e::ConnectMqtt);
         if (err != ESP_OK) goto err;
         
     } else if ( (xTaskGetTickCount() - eventTimers_.wifiConnectionBeganTicks) > pdMS_TO_TICKS(DRIP_MAIN_FSM_WIFI_CONNECTION_WAIT_MS) ) {
@@ -253,7 +271,44 @@ err:
     machine_.transition(DripMainFsmState_e::FatalError);
     return;
 }
-void MainStateController::connectExit() {
+void MainStateController::connectWifiExit() {
+    return;
+}
+/**
+ * @brief Handlers for state connect mqtt.
+ */
+void MainStateController::connectMqttEntry() {
+    esp_err_t err = ESP_OK;
+    
+    if (mqttManager_.connected() ) {
+        machine_.transition(DripMainFsmState_e::Listen);
+    }
+
+    mqttManager_.connect();
+
+    eventTimers_.mqttConnectionBeganTicks = xTaskGetTickCount();
+
+    return;
+}
+void MainStateController::connectMqttUpdate() {
+    esp_err_t err = ESP_OK;
+    
+    if (true == mqttManager_.connected()) {
+        err = machine_.transition(DripMainFsmState_e::Listen);
+        if (err != ESP_OK) goto err;
+        
+    } else if ( (xTaskGetTickCount() - eventTimers_.mqttConnectionBeganTicks) > pdMS_TO_TICKS(DRIP_MAIN_FSM_WIFI_CONNECTION_WAIT_MS) ) {
+        err = machine_.transition(DripMainFsmState_e::Provisioning);
+        if (err != ESP_OK) goto err;
+    }
+
+    return;
+    
+err:
+    machine_.transition(DripMainFsmState_e::FatalError);
+    return;
+}
+void MainStateController::connectMqttExit() {
     return;
 }
 
@@ -267,7 +322,7 @@ void MainStateController::provisioningUpdate() {
     esp_err_t err = ESP_OK;
 
     /** Move forward once connected. */
-    if (wifiManager_.isConnected() == true) {
+    if (wifiManager_.isConnected() == true && mqttManager_.connected()) {
 
         err = machine_.transition(DripMainFsmState_e::Listen);
         if (err != ESP_OK) goto err;
@@ -310,6 +365,10 @@ void MainStateController::listenEntry() {
 }
 void MainStateController::listenUpdate() {
     esp_err_t err = ESP_OK;
+
+    if (false == mqttManager_.connected()) {
+        machine_.transition(DripMainFsmState_e::ConnectWifi);
+    }
 
     /** TODO Implement sleep interval. */
 }

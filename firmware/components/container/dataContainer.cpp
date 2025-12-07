@@ -88,7 +88,7 @@ size_t DataContainer::getNumLogs() {
  * 
  * @return esp_err_t Return code.
  */
-esp_err_t DataContainer::logInfo(esp_err_t returnCode, const char* tag, const char *message) {
+esp_err_t DataContainer::logInfo(esp_err_t returnCode, const char* tag, const char *message, ...) {
     return ESP_OK;
 }
 
@@ -102,7 +102,7 @@ esp_err_t DataContainer::logInfo(esp_err_t returnCode, const char* tag, const ch
  * 
  * @return esp_err_t Return code.
  */
-esp_err_t DataContainer::logWarning(esp_err_t returnCode, const char* tag, const char *message) {
+esp_err_t DataContainer::logWarning(esp_err_t returnCode, const char* tag, const char *message, ...) {
     return ESP_OK;
 }
 
@@ -116,7 +116,7 @@ esp_err_t DataContainer::logWarning(esp_err_t returnCode, const char* tag, const
  * 
  * @return esp_err_t Return code.
  */
-esp_err_t DataContainer::logError(esp_err_t returnCode, const char* tag, const char *message) {
+esp_err_t DataContainer::logError(esp_err_t returnCode, const char* tag, const char *message, ...) {
     return ESP_OK;
 }
 
@@ -132,6 +132,6 @@ esp_err_t DataContainer::getNextLog(DripLog_t &message) {
     return ESP_OK;
 }
 
-esp_err_t DataContainer::log(DripLog_t &log) {
+esp_err_t DataContainer::log(esp_err_t returnCode, const char* tag, const char *message, ...) {
     return ESP_OK;
 }

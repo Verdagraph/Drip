@@ -20,21 +20,21 @@ esp_err_t MqttManager::initialize() {
     return ESP_OK;
 }
 
-/**
- * @brief Get the checkedForMessages flagged.
- * 
- * @returns True if the first scan for messages has happened. 
- */
+bool MqttManager::connected() const {
+    return connected_;
+}
+
+
 bool MqttManager::checkedForMessages() {
     return true;
 }
 
-/**
- * @brief Returns the number of received MQTT messages in
- * the queue.
- */
 uint8_t MqttManager::numMessagesInQueue() {
     return 0;
+}
+
+esp_err_t MqttManager::connect() {
+    return ESP_OK;
 }
 
 /**
