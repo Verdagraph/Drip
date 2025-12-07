@@ -43,7 +43,11 @@ uint8_t MqttManager::numMessagesInQueue() {
  * @param message Output parameter for the message object.
  * @return esp_err_t Return code.
  */
-esp_err_t MqttManager::getNextMessage(DripRxMessage &message) {
+esp_err_t MqttManager::getNextMessage(DripRxMessage *&message) {
+    return ESP_OK;
+}
+
+esp_err_t MqttManager::freeMessage(DripRxMessage *&message) {
     return ESP_OK;
 }
 

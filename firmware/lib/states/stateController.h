@@ -34,7 +34,7 @@ public:
 
     void handleEvent(TEventId_e eventId, TEvent event);
 
-private:
+protected:
     StateMachine<TStateId_e, TEventId_e, TEvent, TStateController> machine_;
 
     virtual void preUpdate();

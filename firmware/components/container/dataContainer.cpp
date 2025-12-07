@@ -19,19 +19,26 @@ esp_err_t DataContainer::initialize() {
     return ret;
 }
 
+esp_err_t DataContainer::getConfig(DripConfig_t &config) {
+    return ESP_OK;
+}
+esp_err_t DataContainer::setConfig(const DripConfig_t &config) {
+    return ESP_OK;
+}
+
 /**
  * Measurement data.
  */
 esp_err_t DataContainer::getMeasurementData(DripMeasurementData_t &data) {
     return ESP_OK;
 }
-esp_err_t DataContainer::setMeasurementData(DripMeasurementData_t data) {
+esp_err_t DataContainer::setMeasurementData(const DripMeasurementData_t &data) {
     return ESP_OK;
 }
 esp_err_t DataContainer::getDerivedData(DripDerivedData_t &data) {
     return ESP_OK;
 }
-esp_err_t DataContainer::setDerivedData(DripDerivedData_t data) {
+esp_err_t DataContainer::setDerivedData(const DripDerivedData_t &data) {
     return ESP_OK;
 }
 

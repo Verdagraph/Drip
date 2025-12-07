@@ -13,8 +13,19 @@ enum DripFlowSensorCalibrationState_e {
     DRIP_FLOW_SENSOR_CALIBRATION_MEASURING,
     /** @brief The flow sensor is currently waiting for a calibration feedback. */
     DRIP_FLOW_SENSOR_CALIBRATION_WAITING_FOR_FEEDBACK,
+    DRIP_FLOW_SENSOR_CALIBRATION_TIMEOUT,
 
     DRIP_FLOW_SENSOR_CALIBRATION_MAX
+};
+
+/**
+ * @brief Describes a target for one calibration step.
+ */
+struct DripFlowCalibrationTarget_t {
+    /** @brief The target volume of this calibration step in liters. */
+    float targetVolume;
+    /** @brief The timeout of this calibration step in miliseconds. */
+    uint32_t timeoutMs;
 };
 
 /**

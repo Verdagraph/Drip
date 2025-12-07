@@ -20,6 +20,10 @@ StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::StateMachine(
 
     strncpy(name_, name, DRIP_FSM_NAME_MAX_LEN);
 }
+template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
+TStateId_e StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::getCurrentState() const {
+    return currentState_;
+}
 
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
 esp_err_t StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::update() {
@@ -132,7 +136,12 @@ esp_err_t StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::transi
 }
 
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
-esp_err_t StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::handleEvent(TEventId_e eventId, TEvent event) {
+esp_err_t StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::handleEvent(TEventId_e eventId, const TEvent *event) {
+    /** Ignore invalid events. */
+    if (nullptr == event) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    
     const EventHandlerKey_t key = {
         .stateId = currentState_,
         .eventId = eventId

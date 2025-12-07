@@ -25,7 +25,7 @@ public:
         return ESP_OK;
     }
 
-    DispenseActivateRxMessagePayload_t data() {
+    DispenseActivateRxMessagePayload_t data() const {
         return messageData;
     }
 
@@ -93,30 +93,30 @@ private:
 };
 
 /**
- * @brief Flow calibration dispense and measure command.
+ * @brief Flow calibration begin command.
  */
-struct FlowCalibrationUpdateRxMessagePayload_t {
-    /** 
-     * @brief The target volume of this calibration step in liters.
-     * Ignored if conclude is true.
-     */
-    float targetVolume;
-    /** 
-     * @brief The timeout of this calibration step in miliseconds. 
-     * Ignored if conclude is true.
-     */
-    uint32_t timeoutMs;
-    /** @brief The measured volume from the last calibration step if applicable. */
-    float measuredVolume;
-    /** @brief If true the calibration process is concluded. */
-    bool conclude = false;
-};
-class FlowCalibrationUpdateRxMessage : public DripRxMessage {
+class FlowCalibrateBeginRxMessage : public DripRxMessage {
 public:
-    FlowCalibrationUpdateRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrate) {}
+    FlowCalibrateBeginRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateBegin) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+        return ESP_OK;
+    }
 
+    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+        return ESP_OK;
+    }
+};
+
+/**
+ * @brief Flow calibration dispense command.
+ */
+using FlowCalibrateDispenseRxMessagePayload_t = DripFlowCalibrationTarget_t;
+class FlowCalibrateDispenseRxMessage : public DripRxMessage {
+public:
+    FlowCalibrateDispenseRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateDispense) {}
+
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
         return ESP_OK;
     }
 
@@ -124,23 +124,63 @@ public:
         return ESP_OK;
     }
 
-    FlowCalibrationUpdateRxMessagePayload_t data() {
+    FlowCalibrateDispenseRxMessagePayload_t data() {
         return messageData;
     }
 
 private:
-    FlowCalibrationUpdateRxMessagePayload_t messageData;
+    FlowCalibrateDispenseRxMessagePayload_t messageData;
+};
+
+/**
+ * @brief Flow calibration measure command.
+ */
+using FlowCalibrateMeasureRxMessagePayload_t = DripFlowCalibrationMeasurement_t;
+class FlowCalibrateMeasureRxMessage : public DripRxMessage {
+public:
+    FlowCalibrateMeasureRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateMeasure) {}
+
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+        return ESP_OK;
+    }
+
+    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+        return ESP_OK;
+    }
+
+    FlowCalibrateMeasureRxMessagePayload_t data() {
+        return messageData;
+    }
+
+private:
+    FlowCalibrateMeasureRxMessagePayload_t messageData;
+};
+
+/**
+ * @brief Flow calibration end command.
+ */
+class FlowCalibrateEndRxMessage : public DripRxMessage {
+public:
+    FlowCalibrateEndRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateEnd) {}
+
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+        return ESP_OK;
+    }
+
+    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+        return ESP_OK;
+    }
 };
 
 /**
  * @brief Pressure calibration command. 
  */
-struct PressureCalibrateRxMessagePayload_t {
+struct PressureCalibrateUpdateRxMessagePayload_t {
 
 };
-class PressureCalibrateRxMessage : public DripRxMessage {
+class PressureCalibrateUpdateRxMessage : public DripRxMessage {
 public:
-    PressureCalibrateRxMessage() : DripRxMessage(DripRxMessageId_e::PressureCalibrate) {}
+    PressureCalibrateUpdateRxMessage() : DripRxMessage(DripRxMessageId_e::PressureCalibrateUpdate) {}
 
     esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
 
@@ -151,12 +191,12 @@ public:
         return ESP_OK;
     }
 
-    PressureCalibrateRxMessagePayload_t data() {
+    PressureCalibrateUpdateRxMessagePayload_t data() {
         return messageData;
     }
 
 private:
-    PressureCalibrateRxMessagePayload_t messageData;
+    PressureCalibrateUpdateRxMessagePayload_t messageData;
 };
 
 /** 

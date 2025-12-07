@@ -43,7 +43,7 @@ constexpr size_t DRIP_FSM_NAME_MAX_LEN = 64U;
  * @tparam TStateController Parent state controller class.
  */
 template <typename TStateController>
-using StateHandlerEnterFunc = void (TStateController::*)();
+using StateHandlerEnterPtr = void (TStateController::*)();
 
 /**
  * @brief Describes a state update function defined on the StateController.
@@ -52,7 +52,7 @@ using StateHandlerEnterFunc = void (TStateController::*)();
  * @tparam TStateController Parent state controller class.
  */
 template <typename TStateController>
-using StateHandlerUpdateFunc = void (TStateController::*)();
+using StateHandlerUpdatePtr = void (TStateController::*)();
 
 /**
  * @brief Describes a state exit function defined on the StateController.
@@ -61,7 +61,7 @@ using StateHandlerUpdateFunc = void (TStateController::*)();
  * @tparam TStateController Parent state controller class.
  */
 template <typename TStateController>
-using StateHandlerExitFunc = void (TStateController::*)();
+using StateHandlerExitFuncPtr = void (TStateController::*)();
 
 /**
  * @brief Describes an event handler function defined on the StateController.
@@ -72,7 +72,7 @@ using StateHandlerExitFunc = void (TStateController::*)();
  * @tparam TStateController Parent state controller class.
  */
 template <typename TEventId_e, typename TEvent, typename TStateController>
-using StateHandlerEventFunc = void (TStateController::*)(TEventId_e eventId, const TEvent &event);
+using StateHandlerEventFuncPtr = void (TStateController::*)(TEventId_e eventId, const TEvent *event);
 
 /** @} */
 
@@ -89,18 +89,18 @@ using StateHandlerEventFunc = void (TStateController::*)(TEventId_e eventId, con
 template <typename TStateController>
 struct StateHandlerMapEntry_t {
     /** @brief The state entry function. */
-    StateHandlerEnterFunc<TStateController> entryFunc;
+    const StateHandlerEnterPtr<TStateControlaler> entryFunc;
     /** @brief The state update function. */
-    StateHandlerUpdateFunc<TStateController> updateFunc;
+    const StateHandlerUpdatePtr<TStateController> updateFunc;
     /** @brief The state exit function. */
-    StateHandlerExitFunc<TStateController> exitFunc;
+    const StateHandlerExitFuncPtr<TStateController> exitFunc;
     /** @brief An interval, in miliseconds, on which to call the update function while in this state. */
     uint32_t handlingIntervalMs;
 
     constexpr StateHandlerMapEntry_t(
-            StateHandlerEnterFunc<TStateController> entry,
-            StateHandlerUpdateFunc<TStateController> update,
-            StateHandlerExitFunc<TStateController> exit,
+            StateHandlerEnterPtr<TStateController> entry,
+            StateHandlerUpdatePtr<TStateController> update,
+            StateHandlerExitFuncPtr<TStateController> exit,
             uint32_t interval)
         : 
             entryFunc(entry), 
@@ -146,9 +146,9 @@ using StateHandlerMap = etl::const_map<TStateId_e, StateHandlerMapEntry_t<TState
 template <typename TEventId_e, typename TEvent, typename TStateController>
 struct EventHandlerMapEntry_t {
     /** @brief The event handler function. */
-    StateHandlerEventFunc<TEventId_e, TStateController, TEvent> handleFunc;
+    const StateHandlerEventFuncPtr<TEventId_e, TEvent, TStateController> handleFunc;
 
-    constexpr EventHandlerMapEntry_t(StateHandlerEventFunc<TEventId_e, TEvent, TStateController> func) : 
+    constexpr EventHandlerMapEntry_t(StateHandlerEventFuncPtr<TEventId_e, TEvent, TStateController> func) : 
             handleFunc(func) {}
 };
 
@@ -181,7 +181,7 @@ struct EventHandlerMapKey_t {
      * 
      * @returns The result of the comparison.
      */
-    bool operator < (const EventHandlerMapKey_t &other) const {
+    constexpr bool operator < (const EventHandlerMapKey_t &other) const {
         if (eventId != other.eventId) {
             return eventId < other.eventId;
         }
@@ -196,7 +196,7 @@ struct EventHandlerMapKey_t {
      * 
      * @returns The result of the comparison.
      */
-    bool operator == (const EventHandlerMapKey_t &other) const {
+    constexpr bool operator == (const EventHandlerMapKey_t &other) const {
         return (stateId == other.stateId) && (eventId == other.eventId);
     }
 };
@@ -221,7 +221,7 @@ using EventHandlerMapPair = etl::pair<EventHandlerMapKey_t<TStateId_e, TEventId_
  * @tparam TStateController Parent state controller class.
  */
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
-using EventHandlerMap = etl::const_map<EventHandlerMapKey_t<TStateId_e, TEventId_e>, EventHandlerMapEntry_t<TEventId_e, TEvent, TStateController>, DRIP_STATE_MAP_MAX_SIZE>;
+using EventHandlerMap = etl::const_map<EventHandlerMapKey_t<TStateId_e, TEventId_e>, EventHandlerMapEntry_t<TEventId_e, TEvent, TStateController>, DRIP_EVENT_MAP_MAX_SIZE>;
 
 /** @} */
 
@@ -238,7 +238,7 @@ template <
     typename TStateId_e, 
     typename TEventId_e, 
     typename TEvent, 
-    typename TStateController,
+    typename TStateController
 >
 class StateMachine {
 public:
@@ -270,6 +270,13 @@ public:
     );
 
     /**
+     * @brief Get the Current FSM state.
+     * 
+     * @return TStateId_e Current state ID.
+     */
+    TStateId_e getCurrentState() const;
+
+    /**
      * @brief Updates the current FSM state.
      * 
      * @retval ESP_OK. If the update handler function was called.
@@ -299,12 +306,11 @@ public:
      * @retval ESP_OK If the event handler function was called.
      * @retval ESP_ERR_INVALID_STATE If the event map is invalid.
      */
-    esp_err_t handleEvent(TEventId_e eventId, TEvent event);
+    esp_err_t handleEvent(TEventId_e eventId, const TEvent *event);
 
-protected:
+private:
     /** @brief The current state. */
     TStateId_e currentState_;
-private:
     /** @brief Stores the last tick at which the current state was handled. */
     TickType_t lastStateHandlingTimestampTicks_;
     /** @brief Title for the state machine. */

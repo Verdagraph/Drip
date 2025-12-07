@@ -9,9 +9,12 @@ enum class DripRxMessageId_e {
     Deactivate,
     Restart,
     ConfigUpdate,
-    FlowCalibrate,
-    PressureCalibrate,
+    FlowCalibrateBegin,
+    FlowCalibrateDispense,
+    FlowCalibrateMeasure,
+    FlowCalibrateEnd,
     DrainActivate,
+    PressureCalibrateUpdate,
     PressurePoll,
 };
 

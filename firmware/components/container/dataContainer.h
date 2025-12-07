@@ -2,6 +2,8 @@
 #define DATA_CONTAINER_H
 
 #include "esp_err.h"
+
+#include "config.h"
 #include "valveData.h"
 #include "flowManager.h"
 
@@ -37,6 +39,17 @@ struct DripLog_t {
     char message[DRIP_LOG_MESSAGE_BUFFER_BYTES];
     /** @brief Unix timestamp the message was logged at. */
     uint32_t timestamp;
+};
+
+/**
+ * @brief Indicates whether features are enabled and are functioning.
+ */
+struct DripDriverStatus_t {
+    bool sourceDispenseValveOnline;
+    bool tankDispenseValveOnline;
+    bool tankDrainValveOnline;
+    bool flowSensorOnline;
+    bool pressureSensorOnline;
 };
 
 /**
@@ -81,13 +94,16 @@ public:
      */
     esp_err_t initialize();
 
+    esp_err_t getConfig(DripConfig_t &config);
+    esp_err_t setConfig(const DripConfig_t &config);
+
     /**
      * Measurement data.
      */
     esp_err_t getMeasurementData(DripMeasurementData_t &data);
-    esp_err_t setMeasurementData(DripMeasurementData_t data);
+    esp_err_t setMeasurementData(const DripMeasurementData_t &data);
     esp_err_t getDerivedData(DripDerivedData_t &data);
-    esp_err_t setDerivedData(DripDerivedData_t data);
+    esp_err_t setDerivedData(const DripDerivedData_t &data);
 
     /**
      * Process data.
@@ -157,6 +173,8 @@ public:
     esp_err_t getNextLog(DripLog_t &message);
 
 private:
+    /** Config. */
+    DripConfig_t config_;
 
     /** Measurement data. */
     DripMeasurementData_t measurementData_;

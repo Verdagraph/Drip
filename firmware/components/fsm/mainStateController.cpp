@@ -132,7 +132,6 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripRxMessageId_e::DispenseActivate
         ),
         EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
-            
             &MainStateController::handleDispenseRequestStateListen
         )
     }
@@ -177,12 +176,13 @@ void MainStateController::uninitializedEntry() {
     err = mqttManager_.initialize();
     if (err != ESP_OK) goto err;
 
+    err = machine_.transition(DripMainFsmState_e::Connect);
+    if (err != ESP_OK) goto err;
 
-    state_ = DripMainFsmState_e::Connect;
     return;
 
 err:
-    state_ = DripMainFsmState_e::FatalError;
+    machine_.transition(DripMainFsmState_e::FatalError);
     return;
 }
 void MainStateController::uninitializedUpdate() {}
@@ -192,14 +192,19 @@ void MainStateController::uninitializedExit() {}
  * @brief Handlers for state boot.
  */
 void MainStateController::bootEntry() {
+    esp_err_t err = ESP_OK;
+
+    err = machine_.transition(DripMainFsmState_e::Connect);
+    if (err != ESP_OK) goto err;
+
+    return;
+
+err:
+    machine_.transition(DripMainFsmState_e::FatalError);
     return;
 }
-void MainStateController::bootUpdate() {
-    return;
-}
-void MainStateController::bootExit() {
-    return;
-}
+void MainStateController::bootUpdate() {}
+void MainStateController::bootExit() {}
 
 /**
  * @brief Handlers for state fatal error.
@@ -218,9 +223,34 @@ void MainStateController::fatalErrorExit() {
  * @brief Handlers for state connect.
  */
 void MainStateController::connectEntry() {
+    esp_err_t err = ESP_OK;
+    
+    /** 
+     * Attempt connection. 
+     * The WifiManager handles all wifi provisioning events in the background.
+     */
+    wifiManager_.start();
+
+    eventTimers_.wifiConnectionBeganTicks = xTaskGetTickCount();
+
     return;
 }
 void MainStateController::connectUpdate() {
+    esp_err_t err = ESP_OK;
+    
+    if (true == wifiManager_.isConnected()) {
+        err = machine_.transition(DripMainFsmState_e::Connect);
+        if (err != ESP_OK) goto err;
+        
+    } else if ( (xTaskGetTickCount() - eventTimers_.wifiConnectionBeganTicks) > pdMS_TO_TICKS(DRIP_MAIN_FSM_WIFI_CONNECTION_WAIT_MS) ) {
+        err = machine_.transition(DripMainFsmState_e::Provisioning);
+        if (err != ESP_OK) goto err;
+    }
+
+    return;
+    
+err:
+    machine_.transition(DripMainFsmState_e::FatalError);
     return;
 }
 void MainStateController::connectExit() {
@@ -234,6 +264,18 @@ void MainStateController::provisioningEntry() {
     return;
 }
 void MainStateController::provisioningUpdate() {
+    esp_err_t err = ESP_OK;
+
+    /** Move forward once connected. */
+    if (wifiManager_.isConnected() == true) {
+
+        err = machine_.transition(DripMainFsmState_e::Listen);
+        if (err != ESP_OK) goto err;
+        return;
+    }
+
+err:
+    machine_.transition(DripMainFsmState_e::FatalError);
     return;
 }
 void MainStateController::provisioningExit() {
@@ -244,14 +286,21 @@ void MainStateController::provisioningExit() {
  * @brief Handlers for state restart.
  */
 void MainStateController::restartEntry() {
+    esp_err_t err = ESP_OK;
+    
+    /** Report reset to MQTT. */
+    dataContainer_.logInfo(ESP_OK, TAG, "Device reset requested.");
+    mqttManager_.uploadLogs();
+
+    /** Reset device. */
+    esp_restart();
+
+    /** Should not reach here. */
+    machine_.transition(DripMainFsmState_e::FatalError);
     return;
 }
-void MainStateController::restartUpdate() {
-    return;
-}
-void MainStateController::restartExit() {
-    return;
-}
+void MainStateController::restartUpdate() {}
+void MainStateController::restartExit() {}
 
 /**
  * @brief Handlers for state listen.
@@ -260,7 +309,9 @@ void MainStateController::listenEntry() {
     return;
 }
 void MainStateController::listenUpdate() {
-    return;
+    esp_err_t err = ESP_OK;
+
+    /** TODO Implement sleep interval. */
 }
 void MainStateController::listenExit() {
     return;
@@ -273,132 +324,16 @@ void MainStateController::dispenseEntry() {
     return;
 }
 void MainStateController::dispenseUpdate() {
-    return;
-}
-void MainStateController::dispenseExit() {
-    return;
-}
-
-/**
- * @brief Handlers for state flow calibrate.
- */
-void MainStateController::flowSensorCalibrateEntry() {
-    return;
-}
-void MainStateController::flowSensorCalibrateUpdate() {
-    return;
-}
-void MainStateController::flowSensorCalibrateExit() {
-    return;
-}
-
-/**
- * @brief Handlers for state drain.
- */
-void MainStateController::drainEntry() {
-    return;
-}
-void MainStateController::drainUpdate() {
-    return;
-}
-void MainStateController::drainExit() {
-    return;
-}
-
-
-/**
- * @brief Handler for state DripMainFsmState_e::Boot.
- */
-void StateManager::boot() {
-
-}
-
-/**
- * @brief Handler for state DripMainFsmState_e::FatalError.
- */
-void StateManager::fatalError() {
-    // Placeholder for fatal error state logic
-}
-
-/**
- * @brief Handler for state DripMainFsmState_e::Connect.
- */
-void StateManager::connect() {
     esp_err_t err = ESP_OK;
-    
-    /** 
-     * Attempt connection. 
-     * The WifiManager handles all wifi provisioning events in the background.
-     */
-    wifiManager_.start();
-
-    /** Continue if connected or provision WiFi & MQTT if not. */
-    if (wifiManager_.isConnected() == true) {
-        state_ = DripMainFsmState_e::Listen;
-        return;
-    } else {
-        state_ = DripMainFsmState_e::Provisioning;
-        return;
-    }
-}
-
-/**
- * @brief Handler for state DripMainFsmState_e::Provisioning.
- */
-void StateManager::accessPoint() {
-    /** Move forward once connected. */
-    if (wifiManager_.isConnected() == true) {
-        state_ = DripMainFsmState_e::Listen;
-        return;
-    }
-}
-
-/**
- * @brief Handler for state DripMainFsmState_e::Restart.
- */
-void StateManager::restart() {
-    esp_err_t err = ESP_OK;
-    
-    /** Report reset to MQTT. */
-    dataContainer_.logInfo(ESP_OK, TAG, "Device reset requested.");
-    mqttManager_.uploadLogs();
-
-    /** Reset device. */
-    esp_restart();
-
-    /** Should not reach here. */
-    state_ = DripMainFsmState_e::FatalError;
-    return;
-}
-
-/**
- * @brief Handler for state DripMainFsmState_e::Listen.
- */
-void StateManager::listen() {
-    esp_err_t err = ESP_OK;
-    
-    /** Handle received messages. */
-    err = handleReceivedMessages(vdgMessageHandleFuncTableListenState);
-    if (err != ESP_OK) {
-        return;
-    }
-
-    /** TODO Implement sleep interval. */
-}
-
-/**
- * @brief Handler for state DripMainFsmState_e::Dispense.
- */
-void StateManager::dispense() {
-    esp_err_t err = ESP_OK;
+    DripConfig_t config = {};
     TickType_t currentTicks = 0U;
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
     DripFlowSensorCalibrationState_e flowSensorState = DRIP_FLOW_SENSOR_CALIBRATION_MIN;
 
-    /** Handle received messages. */
-    err = handleReceivedMessages(vdgMessageHandleFuncTableDispenseState);
-    if (err != ESP_OK) {
-        return;
+    /** Retrieve config. */
+    err = dataContainer_.getConfig(config);
+    if (ESP_OK != err) {
+        machine_.transition(DripMainFsmState_e::FatalError);
     }
 
     /** Get current time. */
@@ -427,7 +362,7 @@ void StateManager::dispense() {
         case DRIP_VALVES_DISPENSE:
 
             if ( (currentTicks - eventTimers_.lastProcessSliceUploadTicks) >=
-                pdMS_TO_TICKS(PROCESS_SLICE_UPLOAD_MS_DEFAULT) ) {
+                pdMS_TO_TICKS(config.system.processSliceUploadIntervalMs) ) {
                 err = mqttManager_.uploadDispenseSlice();
                 if (err != ESP_OK) {
                     dataContainer_.logError(err, TAG, "Failed to upload dispense slice.");
@@ -444,7 +379,14 @@ void StateManager::dispense() {
             break;
     }
 
+/** todo remove */
 exit:
+    return;
+}
+void MainStateController::dispenseExit() {
+    esp_err_t err = ESP_OK;
+    VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
+
     /** End the process. */
     err = valveManager_.endProcess(valveProcess);
     if ( (err != ESP_OK) || (valveProcess != DRIP_VALVES_IDLE) ) {
@@ -462,25 +404,22 @@ exit:
     }
 
     dataContainer_.logInfo(ESP_OK, TAG, "Concluded dispense process.");
-    state_ = DripMainFsmState_e::Listen;
+    machine_.transition(DripMainFsmState_e::Listen);
     return;
 }
 
 /**
- * @brief Handler for state DripMainFsmState_e::FlowSensorCalibrate.
+ * @brief Handlers for state flow calibrate.
  */
-void StateManager::flowCalibrate() {
+void MainStateController::flowSensorCalibrateEntry() {
+    return;
+}
+void MainStateController::flowSensorCalibrateUpdate() {
     esp_err_t err = ESP_OK;
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
     DripFlowSensorCalibrationState_e calibrationState = DRIP_FLOW_SENSOR_CALIBRATION_MIN;
     DripFlowCalibrationProcessData_t processData = {};
     bool saveConfig = false;
-
-    /** Handle received messages. */
-    err = handleReceivedMessages(vdgMessageHandleFuncTableDispenseState);
-    if (err != ESP_OK) {
-        return;
-    }
 
     /** Retrieve process data. */
     err = dataContainer_.getFlowCalibrationProcessData(processData);
@@ -519,89 +458,84 @@ void StateManager::flowCalibrate() {
     }
 
 exit:
+
+}
+void MainStateController::flowSensorCalibrateExit() {
+    esp_err_t err = ESP_OK;
+    VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
+
     /** End the process. */
     err = valveManager_.endProcess(valveProcess);
     if ( (err != ESP_OK) || (valveProcess != DRIP_VALVES_IDLE) ) {
         dataContainer_.logError(err, TAG, "Failed to deactivate dispensation.");
     }
 
-    if (saveConfig) {
-        dataContainer_.logError(err, TAG, "Saved flow sensor calibration data:...");
+    //if (saveConfig) {
+        //dataContainer_.logError(err, TAG, "Saved flow sensor calibration data:...");
 
         /** TODO: Set and persist the config. */
-    }
+    //}
 
-    dataContainer_.logInfo(err, TAG, "Concluded calibration process.");
-    state_ = DripMainFsmState_e::Listen;
+    //dataContainer_.logInfo(err, TAG, "Concluded calibration process.");
+    //state_ = DripMainFsmState_e::Listen;
     return;
 }
 
 /**
- * @brief Handler for state DripMainFsmState_e::PressureSensorCalibrate.
+ * @brief Handlers for state drain.
  */
-void StateManager::pressureCalibrate() {
-    // Placeholder for pressure calibrate state logic
+void MainStateController::drainEntry() {
+    return;
+}
+void MainStateController::drainUpdate() {
+    return;
+}
+void MainStateController::drainExit() {
+    return;
 }
 
-/**
- * @brief Handler for state DripMainFsmState_e::Drain.
- */
-void StateManager::drain() {
-    // Placeholder for drain state logic
-}
 
-/**
- * @brief Handles state change for a dispense request.
- * 
- * @param[in] message MQTT received message.
- */
-void StateManager::handleDispenseRequest(DripMessage_t message) {
+void MainStateController::handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
     esp_err_t err = ESP_OK;
-    char log[DRIP_LOG_MESSAGE_BUFFER_BYTES];
-    DripDispenseActivateCommand_t *command = nullptr;
+    const DispenseActivateRxMessage *command = nullptr;
     DripFlowSensorCalibrationState_e flowSensorState = DRIP_FLOW_SENSOR_CALIBRATION_MIN;
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
 
     /** Validate state. */
-    if (state_ != DripMainFsmState_e::Listen) {
-        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Dispense handler called in invalid state.");
-        return;
-    }
-
-    /** Validate inputs. */
-    if (message.payload == nullptr) {
-        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Dispense handler called with null message payload.");
+    if (DripMainFsmState_e::Listen != machine_.getCurrentState()) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "DispenseActivateRxMessage handler called in invalid state.");
         return;
     }
     
+    /** Validate payload. */
+    if (nullptr == message){
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Null message passed to handleDispenseRequestStateListen.");
+        return;
+    }
+    if (message->id() != DripRxMessageId_e::DispenseActivate) {
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Incorrect message type: %d passed to handleDispenseRequestStateListen.", message->id());
+        return; 
+    }
+
     /** Typecast the payload. */
-    command = reinterpret_cast<DripDispenseActivateCommand_t*>(message.payload);
+    command = reinterpret_cast<const DispenseActivateRxMessage*>(message);
+    VdgDispenseProcessTarget_t target = command->data();
 
     /** Begin the dispensation process. */
-    err = valveManager_.beginDispenseProcess(*command, valveProcess);
+    err = valveManager_.beginDispenseProcess(target, valveProcess);
     if ( (err != ESP_OK) || (valveProcess != DRIP_VALVES_DISPENSE) ) {
         dataContainer_.logError(err, TAG, "Failed to begin dispense process.");
         goto err;
     }
 
     /** Log info. */
-    switch (command->targetType) {
+    switch (target.targetType) {
         case DRIP_DISPENSE_PROCESS_TARGET_TIME:
-            snprintf(log, 
-                sizeof(log), 
-                "Beginning dispense process with a target volume: %.2f liters, timeout: %ld miliseconds", 
-                command->target, 
-                command->timeoutMs
-            );
+            dataContainer_.logInfo(ESP_OK, TAG, "Beginning dispense process with a target: %.2f seconds, timeout: %ld miliseconds", target.target, target.timeoutMs);
             break;
 
         case DRIP_DISPENSE_PROCESS_TARGET_VOLUME:
-            snprintf(log, 
-                sizeof(log), 
-                "Beginning dispense process with a target time: %.2f seconds, timeout: %ld miliseconds", 
-                command->target, 
-                command->timeoutMs
-            );
+            dataContainer_.logInfo(ESP_OK, TAG, "Beginning dispense process with a target: %.2f liters, timeout: %ld miliseconds", target.target, target.timeoutMs);
             break;
 
         default:
@@ -609,9 +543,7 @@ void StateManager::handleDispenseRequest(DripMessage_t message) {
             return;
     }
 
-    dataContainer_.logInfo(ESP_OK, TAG, log);
-
-    state_ = DripMainFsmState_e::Dispense;
+    machine_.transition(DripMainFsmState_e::Dispense);
     return;
 
 err:
@@ -619,62 +551,54 @@ err:
     return;
 }
 
-/**
- * @brief Handles state change for a deactivation request.
- * 
- * @param[in] message MQTT received message.
- * @return esp_err_t Return code.
- */
-void StateManager::handleDeactivateRequest(DripMessage_t message) {
+void MainStateController::handleDeactivateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
     return;
 }
 
-/**
- * @brief Handles state change for a restart request.
- * 
- * @param[in] message MQTT received message.
- */
-void StateManager::handleRestartRequest(DripMessage_t message) {
+void MainStateController::handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
     return;
 }
 
-/**
- * @brief Handles state change for a flow calibrate request
- * when in the state DripMainFsmState_e::Listen.
- * 
- * @param[in] message MQTT received message.
- */
-void StateManager::handleFlowCalibrateRequestListen(DripMessage_t message) {
+void MainStateController::handleConfigChangeRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+    return;
+}
+
+void MainStateController::handleFlowCalibrateBeginRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
     esp_err_t err = ESP_OK;
-    char log[128];
-    DripFlowCalibrationUpdateCommand_t *command = nullptr;
+    const FlowCalibrateBeginRxMessage *command = nullptr;
     DripFlowSensorCalibrationState_e flowSensorState = DRIP_FLOW_SENSOR_CALIBRATION_MIN;
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
     VdgDispenseProcessTarget_t dispenseTarget = {};
 
     /** Validate state. */
-    if (state_ != DripMainFsmState_e::Listen) {
-        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Flow calibration handler called in invalid state.");
-        return;
-    }
-
-    /** Validate inputs. */
-    if (message.payload == nullptr) {
-        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Flow calibration handler called with null message payload.");
+    if (DripMainFsmState_e::Listen != machine_.getCurrentState()) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "FlowCalibrateBeginRxMessage handler called in invalid state.");
         return;
     }
     
-    /** Typecast the payload. */
-    command = reinterpret_cast<DripFlowCalibrationUpdateCommand_t*>(message.payload);
+    /** Validate payload. */
+    if (nullptr == message){
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Null message passed to handleFlowCalibrateBeginRequestStateListen.");
+        return;
+    }
+    if (message->id() != DripRxMessageId_e::FlowCalibrateBegin) {
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Incorrect message type: %d passed to handleFlowCalibrateBeginRequestStateListen.", message->id());
+        return; 
+    }
+
+
 
     /** Begin the calibration process. */
     //err = flowSensorManager_.beginCalibration(flowSensorState);
+    /*
     if ( (err != ESP_OK) || (flowSensorState != DRIP_FLOW_SENSOR_CALIBRATION_MEASURING) ) {
         dataContainer_.logError(err, TAG, "Failed to begin flow calibration process.");
         goto err;
     }
+    */
 
     /** Begin valve dispensation. */
+    /*
     dispenseTarget = {};
     dispenseTarget.targetType = DRIP_DISPENSE_PROCESS_TARGET_VOLUME;
     dispenseTarget.target = command->targetVolume;
@@ -683,8 +607,10 @@ void StateManager::handleFlowCalibrateRequestListen(DripMessage_t message) {
     if ( (err != ESP_OK) || (valveProcess != DRIP_VALVES_DISPENSE) ) {
         dataContainer_.logError(err, TAG, "Failed to begin flow calibration process - dispense.");
     }
+    */
 
     /** Log info. */    
+    /*
     snprintf(log, 
         sizeof(log), 
         "Beginning calibration process with a target volume: %.2f liters, timeout: %ld ms", 
@@ -692,8 +618,9 @@ void StateManager::handleFlowCalibrateRequestListen(DripMessage_t message) {
         command->timeoutMs
     );
     dataContainer_.logInfo(ESP_OK, TAG, log);
-
+    
     state_ = DripMainFsmState_e::FlowSensorCalibrate;
+    */
     return;
 
 err:
@@ -701,35 +628,35 @@ err:
     return;
 }
 
-/**
- * @brief Handles state change for a flow calibrate request
- * when in the state DripMainFsmState_e::FlowSensorCalibrate.
- * 
- * @param[in] message MQTT received message.
- */
-void StateManager::handleFlowCalibrateRequestFlowCalibration(DripMessage_t message) {
+void MainStateController::handleFlowCalibrateDispenseRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
+    /*
     esp_err_t err = ESP_OK;
     char log[128];
     DripFlowCalibrationUpdateCommand_t *command = nullptr;
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
     DripFlowSensorCalibrationState_e flowSensorState = DRIP_FLOW_SENSOR_CALIBRATION_MIN; 
 
-    /** Validate state. */
-    if (state_ != DripMainFsmState_e::FlowSensorCalibrate) {
+    */
+    /** Validate state. 
+     * 
+     if (state_ != DripMainFsmState_e::FlowSensorCalibrate) {
         dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Flow calibration handler called in invalid state.");
         return;
     }
-
-    /** Validate inputs. */
-    if (message.payload == nullptr) {
+    */
+    
+    /** Validate inputs. 
+     * 
+     if (message.payload == nullptr) {
         dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Flow calibration handler called with null message payload.");
         return;
     }
+    command = reinterpret_cast<DripFlowCalibrationUpdateCommand_t*>(message.payload);
+    valveManager_.getCurrentProcess(valveProcess);
+    */
     
     /** Typecast the payload. */
-    command = reinterpret_cast<DripFlowCalibrationUpdateCommand_t*>(message.payload);
 
-    valveManager_.getCurrentProcess(valveProcess);
 
     /** Retrieve valve status. */
 
@@ -738,55 +665,37 @@ void StateManager::handleFlowCalibrateRequestFlowCalibration(DripMessage_t messa
 
 
     return;
-
 }
 
-/**
- * @brief Handles state change for a pressure calibrate request.
- * 
- * @param message MQTT received message.
- * @return esp_err_t Return code.
- */
-void StateManager::handlePressureCalibrateRequest(DripMessage_t message) {
+void MainStateController::handleFlowCalibrateMeasureRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
     return;
 }
 
-/**
- * @brief Handles state change for a drain request.
- * 
- * @param message MQTT received message.
- * @return esp_err_t Return code.
- */
-void StateManager::handleDrainRequest(DripMessage_t message) {
+void MainStateController::handleFlowCalibrateEndRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
     return;
 }
 
-/**
- * @brief Handles state change for a pressure poll request.
- * 
- * @param message MQTT received message.
- * @return esp_err_t Return code.
- */
-void StateManager::handlePressurePollRequest(DripMessage_t message) {
+void MainStateController::handlePressureCalibrateUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
     return;
 }
 
-/**
- * @brief Handles state change for a config change request.
- * 
- * @param message MQTT received message.
- * @return esp_err_t Return code.
- */
-void StateManager::handleConfigChangeRequest(DripMessage_t message) {
+void MainStateController::handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+    return;
+}
+
+void MainStateController::handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
     return;
 }
 
 
 
-void StateManager::update() {
+void MainStateController::preUpdate() {
+    /** Update  */
+    handleReceivedMessages();
+
+}
+void MainStateController::postUpdate() {
     esp_err_t err = ESP_OK;
-
-    handleCurrentState();
 
     /** Upload all logs to MQTT. */
     err = mqttManager_.uploadLogs();
@@ -796,56 +705,39 @@ void StateManager::update() {
 }
 
 
-esp_err_t StateManager::handleReceivedMessages(const DripMessageHandleFuncTable_t *table, size_t tableLen) {
-    DripRxMessage message = DripRxMessage(0);
-    VdgMessageHandleFunc_t handlerFunction = nullptr;
-    esp_err_t err = ESP_OK;
 
-    /** Validate table input. */
-    if (table == nullptr) {
-        return ESP_ERR_INVALID_ARG;
-    }
+esp_err_t MainStateController::handleReceivedMessages() {
+    /** TODO: Smart pointer */
+    DripRxMessage *message = nullptr;
+    esp_err_t err = ESP_OK;
 
     /** Check for new MQTT messages. */
     while(mqttManager_.numMessagesInQueue() > 0) {
 
         /** Get the next message from the queue. */
         err = mqttManager_.getNextMessage(message);
-        if (err != ESP_OK) {
+        if ( (err != ESP_OK) || (message == nullptr) ) {
             dataContainer_.logError(err, TAG, "Failed to retrieve MQTT message.");
             return ESP_FAIL;
         }
 
-        /** Retrieve handler function. */
-        err = getHandlerFunctionFromMessageId(table, message.id, handlerFunction);
+        /** Handle the message. */
+        err = machine_.handleEvent((*message).id(), message);
         if (err != ESP_OK) {
-            dataContainer_.logError(err, TAG, "Failed to retrieve message handler function.");
+            /* Invalid firmware*/
+        }
+
+        err = mqttManager_.freeMessage(message);
+        if (err != ESP_OK) {
             return ESP_FAIL;
         }
-
-        /** Ignore messages without a handler function. */
-        if (handlerFunction == nullptr) {
-            continue;
-        }
-
-        /** Execute handler function */
-        (this->*handlerFunction)(message);    
     }
 
     return ESP_OK;
 }
 
 
-
-/**
- * @brief Initializes and mounts the LittleFS filesystem.
- * 
- * @details Taken from https://github.com/Ariif0/ESPIDF-WiFi-Configuration/blob/main/include/Application.h
- *
- * Registers the LittleFS driver with the Virtual File System (VFS) using the
- * base path defined in config.h, enabling file operations on the storage partition.
- */
-esp_err_t StateManager::initializeFilesystem() {
+esp_err_t MainStateController::initializeFilesystem() {
     ESP_LOGI(TAG, "Initializing LittleFS...");
     esp_vfs_littlefs_conf_t conf = {
         .base_path = LFS_BASE_PATH,            

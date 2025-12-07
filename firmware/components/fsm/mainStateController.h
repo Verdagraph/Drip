@@ -27,12 +27,16 @@
 
 #include "states.h"
 
+/** @brief The amount of time in miliseconds to wait after beginning a WiFi connection attempt before entering the provisioning state. */
+constexpr uint32_t DRIP_MAIN_FSM_WIFI_CONNECTION_WAIT_MS = 10000U;
+
 /**
  * @brief Holds timing information.
  */
-struct VdgMainFsmEventTimers_t
-{
-    /** The timestamp of the last time a process slice was uploaded. */
+struct DripMainFsmEventTimers_t {
+    /** @brief The timestamp that the attempted wifi connection began. */
+    uint32_t wifiConnectionBeganTicks;
+    /** @brief The timestamp of the last time a process slice was uploaded. */
     uint32_t lastProcessSliceUploadTicks;
 };
 
@@ -132,70 +136,86 @@ public:
      *
      * @param[in] message MQTT received message of type DispenseActivateRxMessage.
      */
-    void handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
      * @brief Handles state change for a deactivation request in the listen state.
      *
      * @param[in] message MQTT received message of type DeactivateRxMessage.
      */
-    void handleDeactivateRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleDeactivateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
      * @brief Handles state change for a restart request in the listen state.
      *
      * @param[in] message MQTT received message of type RestartRxMessage.
      */
-    void handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
      * @brief Handles state change for a config change request in the listen state.
      *
      * @param[in] message MQTT received message of type ConfigUpdateRxMessage.
      */
-    void handleConfigChangeRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleConfigChangeRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
-     * @brief Handles state change for a flow calibrate request when in the listen state.
+     * @brief Handles state change for a flow calibrate begin request when in the listen state.
      *
-     * @param[in] message MQTT received message of type FlowCalibrationUpdateRxMessage.
+     * @param[in] message MQTT received message of type FlowCalibrationBeginRxMessage.
      */
-    void handleFlowCalibrateRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleFlowCalibrateBeginRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
-     * @brief Handles state change for a flow calibrate request when 
+     * @brief Handles state change for a flow calibrate dispense request when 
      * in the flow sensor calibrate state.
      *
-     * @param[in] message MQTT received message of type FlowCalibrationUpdateRxMessage.
+     * @param[in] message MQTT received message of type FlowCalibrationDispenseRxMessage.
      */
-    void handleFlowCalibrateRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleFlowCalibrateDispenseRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
-     * @brief Handles state change for a pressure calibrate request when in the listen state.
+     * @brief Handles state change for a flow calibrate measure request when 
+     * in the flow sensor calibrate state.
      *
-     * @param[in] message MQTT received message of type PressureCalibrateRxMessage.
+     * @param[in] message MQTT received message of type FlowCalibrationMeasureRxMessage.
      */
-    void handlePressureCalibrateRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleFlowCalibrateMeasureRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message);
+
+    /**
+     * @brief Handles state change for a flow calibrate end request when 
+     * in the flow sensor calibrate state.
+     *
+     * @param[in] message MQTT received message of type FlowCalibrationEndRxMessage.
+     */
+    void handleFlowCalibrateEndRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message);
+
+    /**
+     * @brief Handles state change for a pressure calibration update request when in the listen state.
+     *
+     * @param[in] message MQTT received message of type PressureCalibrateUpdateRxMessage.
+     */
+    void handlePressureCalibrateUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
      * @brief Handles state change for a drain request when in the listen state.
      *
      * @param[in] message MQTT received message of type DrainActivateRxMessage.
      */
-    void handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /**
      * @brief Handles state change for a pressure poll request when in the listen state.
      *
      * @param[in] message MQTT received message of type PressurePollRxMessage.
      */
-    void handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage &message);
+    void handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
 
     /** @} */
 
     
 private:
-    VdgMainFsmEventTimers_t eventTimers_;
+    DripMainFsmEventTimers_t eventTimers_;
     
     /** Managers. */
     ConfigManager configManager_;
@@ -226,7 +246,15 @@ private:
 
 
     esp_err_t handleReceivedMessages();
-    
+
+    /**
+     * @brief Initializes and mounts the LittleFS filesystem.
+     * 
+     * @details Taken from https://github.com/Ariif0/ESPIDF-WiFi-Configuration/blob/main/include/Application.h
+     *
+     * Registers the LittleFS driver with the Virtual File System (VFS) using the
+     * base path defined in config.h, enabling file operations on the storage partition.
+     */
     esp_err_t initializeFilesystem();
 };
 
