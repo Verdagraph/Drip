@@ -1,6 +1,21 @@
 #ifndef VALVE_DATA_H
 #define VALVE_DATA_H
 
+enum class DripValveManagerStateId_e {
+    Idle,
+    DispenseStart,
+    DispenseSource,
+    DispenseTank,
+    DrainTank,
+    Deactivate
+};
+
+enum class DripValveManagerEventId_e {
+    DispenseStart,
+    DrainStart,
+    Deactivate
+};
+
 /**
  * @brief Describes the current process of the manager.
  */
@@ -52,11 +67,11 @@ enum VdgDispenseFsmState_e {
 /**
  * @brief Describes a type of target for a dispense process.
  */
-enum VdgDispenseProcessTargetType_e {
+enum class DripDispenseProcessTargetType_e {
     /** The goal of the process is a volume output. */
-    DRIP_DISPENSE_PROCESS_TARGET_VOLUME,
+    Liters,
     /** The goal of the process is a duration. */
-    DRIP_DISPENSE_PROCESS_TARGET_TIME
+    Seconds
 };
 
 /**
@@ -64,7 +79,7 @@ enum VdgDispenseProcessTargetType_e {
  */
 struct VdgDispenseProcessTarget_t {
     /** The type of target. */
-    VdgDispenseProcessTargetType_e targetType;
+    DripDispenseProcessTargetType_e targetType;
     /** 
      * The target output volume in liters, 
      * or the target duration in seconds, 

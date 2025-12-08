@@ -18,26 +18,23 @@ enum TankShapes_e {
 /**
  * @brief The three supported valves.
  */
-enum Valves_e {
+enum class DripValves_e {
     /** @brief Dispense valve of a constant pressure source (eg. home water supply).  */
-    SOURCE_DISPENSE,
+    SourceDispense,
     /** @brief Dispense valve of a variable pressure tank (eg. rain barrel). */
-    TANK_DISPENSE,
+    TankDispense,
     /** @brief Drain valve of a variable pressure tank (eg. rain barrel). */
-    TANK_DRAIN
+    TankDrain
 };
 
 /**
  * @brief The three supported relays.
  * These correspond to the silkscreen on the PCB.
  */
-enum Relays_e {
-    RELAY_NONE,
-    RELAYS_MIN,
-    RELAY1,
-    RELAY2,
-    RELAY3,
-    RELAYS_MAX
+enum DripRelays_e {
+    Relay1,
+    Relay2,
+    Relay3,
 };
 
 

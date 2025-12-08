@@ -39,17 +39,17 @@ struct DripSystemConfig_t {
 template <template <typename> typename TWrap> 
 struct DripValveConfig_t {
     /** @brief The relay of the source dispense valve. Set to RELAY_NONE when unconfigured. */
-    TWrap<Relays_e> sourceDispenseRelay;
+    TWrap<DripRelays_e> sourceDispenseRelay;
     /** @brief The relay of the tank dispense valve. Set to RELAY_NONE when unconfigured. */
-    TWrap<Relays_e> tankDispenseRelay;
+    TWrap<DripRelays_e> tankDispenseRelay;
     /** @brief The relay of the tank drain valve. Set to RELAY_NONE when unconfigured. */
-    TWrap<Relays_e> tankDrainRelay;
+    TWrap<DripRelays_e> tankDrainRelay;
     /** 
      * @brief Sets a preference between SOURCE_DISPENSE and TANK_DISPENSE. 
      * If TANK_DISPENSE, the tank will always be used first in dispensation.
      * If SOURCE_DISPENSE, the source will always be used first in dispensation.
      */
-    TWrap<Valves_e> preferredDispenseValve;
+    TWrap<DripValves_e> preferredDispenseValve;
 };
 
 /**

@@ -3,6 +3,8 @@
 
 #include "driver/i2c_master.h"
 
+#include "valveData.h"
+
 enum DripGpioToggleState_e {
     DRIP_GPIO_TOGGLE_MIN,
     DRIP_GPIO_TOGGLE_ON,
@@ -35,9 +37,8 @@ public:
      */
     esp_err_t initialize();
     
-    esp_err_t setRelay1State(DripGpioToggleState_e state);
-    esp_err_t setRelay2State(DripGpioToggleState_e state);
-    esp_err_t setRelay3State(DripGpioToggleState_e state);
+
+    esp_err_t setRelayState(DripRelays_e relay, DripGpioToggleState_e state);
 
     esp_err_t i2cWriteReadTransaction(DripI2CDevices_e device, uint8_t *writeBuf, size_t writeBufLen, uint8_t *readBuf, size_t readBufLen, uint32_t timeoutMs);
     esp_err_t i2cWriteTransaction(DripI2CDevices_e device, uint8_t *writeBuf, size_t writeBufLen, uint32_t timeoutMs);

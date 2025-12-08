@@ -97,6 +97,9 @@ public:
     esp_err_t getConfig(DripConfig_t &config);
     esp_err_t setConfig(const DripConfig_t &config);
 
+    esp_err_t getDriverStatus(DripDriverStatus_t &status);
+    esp_err_t setDriverStatus(const DripDriverStatus_t &status);
+
     /**
      * Measurement data.
      */

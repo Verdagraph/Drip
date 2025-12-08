@@ -143,6 +143,114 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
         EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
             &MainStateController::handleDispenseRequestStateListen
         )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Dispense, 
+            DripRxMessageId_e::Deactivate
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Drain, 
+            DripRxMessageId_e::Deactivate
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::FlowSensorCalibrate, 
+            DripRxMessageId_e::Deactivate
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Listen, 
+            DripRxMessageId_e::Restart
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleRestartRequestStateListen
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Listen, 
+            DripRxMessageId_e::ConfigUpdate
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleConfigUpdateRequestStateListen
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Listen, 
+            DripRxMessageId_e::FlowCalibrateBegin
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleFlowCalibrateBeginRequestStateListen
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::FlowSensorCalibrate, 
+            DripRxMessageId_e::FlowCalibrateDispense
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleFlowCalibrateDispenseRequestStateFlowCalibration
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::FlowSensorCalibrate, 
+            DripRxMessageId_e::FlowCalibrateMeasure
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleFlowCalibrateMeasureRequestStateFlowCalibration
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::FlowSensorCalibrate, 
+            DripRxMessageId_e::FlowCalibrateEnd
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleFlowCalibrateEndRequestStateFlowCalibration
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Listen, 
+            DripRxMessageId_e::PressureCalibrateUpdate
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handlePressureCalibrateUpdateRequestStateListen
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Listen, 
+            DripRxMessageId_e::DrainActivate
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handleDrainRequestStateListen
+        )
+    },
+    etl::pair{
+        EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
+            DripMainFsmState_e::Listen, 
+            DripRxMessageId_e::PressurePoll
+        ),
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+            &MainStateController::handlePressurePollRequestStateListen
+        )
     }
 };
 using FsmEventMap = EventHandlerMap<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController>;
@@ -392,78 +500,65 @@ void MainStateController::dispenseUpdate() {
     /** Retrieve config. */
     err = dataContainer_.getConfig(config);
     if (ESP_OK != err) {
-        machine_.transition(DripMainFsmState_e::FatalError);
+        machine_.transition(DripMainFsmState_e::Listen);
     }
 
     /** Get current time. */
     currentTicks = xTaskGetTickCount();
 
-    /** Update process state. */
-    err = valveManager_.updateProcess(valveProcess);
-    if (err != ESP_OK) {
-        dataContainer_.logError(err, TAG, "Failed to update valve dispense process.");
-        goto exit;
-    }
+    /** Update valve state. */
+    valveManager_.update();
     
     /** Handle state transition based on dispensation status. */
-    switch (valveProcess) {
+    if (valveManager_.isDispensing() ) {
 
-        /** Error state. */
-        default:
-        case DRIP_VALVES_MIN:
-        case DRIP_VALVES_MAX:
-        case DRIP_VALVES_DRAIN:
-            dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "ValveManager in an invalid state.");
-            goto exit;
-            break;
-        
-        /** Continuing to dispense. */
-        case DRIP_VALVES_DISPENSE:
-
-            if ( (currentTicks - eventTimers_.lastProcessSliceUploadTicks) >=
-                pdMS_TO_TICKS(config.system.processSliceUploadIntervalMs) ) {
-                err = mqttManager_.uploadDispenseSlice();
-                if (err != ESP_OK) {
-                    dataContainer_.logError(err, TAG, "Failed to upload dispense slice.");
-                }
-
-                eventTimers_.lastProcessSliceUploadTicks = currentTicks;
+        if ( (currentTicks - eventTimers_.lastProcessSliceUploadTicks) >=
+            pdMS_TO_TICKS(config.system.processSliceUploadIntervalMs) ) {
+            err = mqttManager_.uploadDispenseSlice();
+            if (err != ESP_OK) {
+                dataContainer_.logError(err, TAG, "Failed to upload dispense slice.");
             }
-            break;
-            
-            
-        /** Dispense has concluded. */
-        case DRIP_VALVES_IDLE:
-            goto exit;
-            break;
-    }
 
-/** todo remove */
-exit:
-    return;
+            eventTimers_.lastProcessSliceUploadTicks = currentTicks;
+        }
+        return;
+
+    } else if (valveManager_.isIdle() ) {
+
+        machine_.transition(DripMainFsmState_e::Listen);
+        return;
+
+    } else {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "ValveManager in an invalid state.");
+        machine_.transition(DripMainFsmState_e::Listen);
+        return;
+    }
 }
 void MainStateController::dispenseExit() {
     esp_err_t err = ESP_OK;
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
+    const DeactivateRxMessage message = DeactivateRxMessage();
+    const DripRxMessage *messagePtr = reinterpret_cast<const DripRxMessage*>(&message);
 
-    /** End the process. */
-    err = valveManager_.endProcess(valveProcess);
-    if ( (err != ESP_OK) || (valveProcess != DRIP_VALVES_IDLE) ) {
-        dataContainer_.logError(err, TAG, "Failed to deactivate dispensation.");
+    /** End the process if necessary. */
+    if (true == valveManager_.isDispensing() ) {
+        valveManager_.handleEvent(DripValveManagerEventId_e::Deactivate, messagePtr);
     }
-    
+    if (false == valveManager_.isIdle() ) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to halt dispensation process via ValveManager::handleEvent");
+    }
+
     /** Report the final variables. */
     err = mqttManager_.uploadDispenseSlice();
-    if (err != ESP_OK) {
+    if (ESP_OK != err) {
         dataContainer_.logError(err, TAG, "Failed to upload dispense slice.");
     }
     err = mqttManager_.uploadDispenseSummary();
-    if (err != ESP_OK) {
+    if (ESP_OK != err) {
         dataContainer_.logError(err, TAG, "Failed to upload dispense summary.");
     }
 
     dataContainer_.logInfo(ESP_OK, TAG, "Concluded dispense process.");
-    machine_.transition(DripMainFsmState_e::Listen);
     return;
 }
 
@@ -581,44 +676,42 @@ void MainStateController::handleDispenseRequestStateListen(DripRxMessageId_e id,
     VdgDispenseProcessTarget_t target = command->data();
 
     /** Begin the dispensation process. */
-    err = valveManager_.beginDispenseProcess(target, valveProcess);
-    if ( (err != ESP_OK) || (valveProcess != DRIP_VALVES_DISPENSE) ) {
+    valveManager_.handleEvent(DripValveManagerEventId_e::DispenseStart, message);
+    if (false == valveManager_.isDispensing() ) {
         dataContainer_.logError(err, TAG, "Failed to begin dispense process.");
-        goto err;
+        return;
     }
 
     /** Log info. */
     switch (target.targetType) {
-        case DRIP_DISPENSE_PROCESS_TARGET_TIME:
+        case DripDispenseProcessTargetType_e::Seconds:
             dataContainer_.logInfo(ESP_OK, TAG, "Beginning dispense process with a target: %.2f seconds, timeout: %ld miliseconds", target.target, target.timeoutMs);
             break;
 
-        case DRIP_DISPENSE_PROCESS_TARGET_VOLUME:
+        case DripDispenseProcessTargetType_e::Liters:
             dataContainer_.logInfo(ESP_OK, TAG, "Beginning dispense process with a target: %.2f liters, timeout: %ld miliseconds", target.target, target.timeoutMs);
             break;
 
         default:
-            dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Invalid value of VdgDispenseProcessTargetType_e.");
-            return;
+            dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Invalid value of DripDispenseProcessTargetType_e.");
+            break;
     }
 
     machine_.transition(DripMainFsmState_e::Dispense);
     return;
-
-err:
-    valveManager_.endProcess(valveProcess);
-    return;
 }
 
-void MainStateController::handleDeactivateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
+    machine_.transition(DripMainFsmState_e::Listen);
     return;
 }
 
 void MainStateController::handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+    machine_.transition(DripMainFsmState_e::Restart);
     return;
 }
 
-void MainStateController::handleConfigChangeRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleConfigUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
     return;
 }
 
@@ -630,7 +723,7 @@ void MainStateController::handleFlowCalibrateBeginRequestStateListen(DripRxMessa
     VdgDispenseProcessTarget_t dispenseTarget = {};
 
     /** Validate state. */
-    if (DripMainFsmState_e::Listen != machine_.getCurrentState()) {
+    if (DripMainFsmState_e::Listen != machine_.getCurrentState() ) {
         dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "FlowCalibrateBeginRxMessage handler called in invalid state.");
         return;
     }

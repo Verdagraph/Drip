@@ -101,7 +101,7 @@ struct StateHandlerMapEntry_t {
             StateHandlerEnterPtr<TStateController> entry,
             StateHandlerUpdatePtr<TStateController> update,
             StateHandlerExitFuncPtr<TStateController> exit,
-            uint32_t interval)
+            uint32_t interval = 1U)
         : 
             entryFunc(entry), 
             updateFunc(update), 

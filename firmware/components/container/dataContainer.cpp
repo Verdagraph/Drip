@@ -26,6 +26,13 @@ esp_err_t DataContainer::setConfig(const DripConfig_t &config) {
     return ESP_OK;
 }
 
+esp_err_t DataContainer::getDriverStatus(DripDriverStatus_t &status) {
+    return ESP_OK;
+}
+esp_err_t DataContainer::setDriverStatus(const DripDriverStatus_t &status) {
+    return ESP_OK;
+}
+
 /**
  * Measurement data.
  */

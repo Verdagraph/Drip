@@ -11,8 +11,15 @@ StateController<TStateId_e, TEventId_e, TEvent, TStateController>::StateControll
 ) : machine_(initialState, name, stateHandlerMap, eventHandlerMap, stateController, dataContainer) {}
 
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
+TStateId_e StateController<TStateId_e, TEventId_e, TEvent, TStateController>::getCurrentState() const {
+    return machine_.getCurrentState();
+}
+
+template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
 void StateController<TStateId_e, TEventId_e, TEvent, TStateController>::update() {
+    preUpdate();
     machine_.update();
+    postUpdate();
 }
 
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>

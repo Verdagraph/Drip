@@ -2,7 +2,6 @@
  * @file stateController.h
  * @author Nathaniel King
  * @brief Encapsulates the StateMachine.
- * @version 0.1
  * @date 2025-11-30
  * 
  * @copyright Copyright (c) 2025
@@ -30,13 +29,36 @@ public:
         const DataContainer &dataContainer
     );
 
+    /**
+     * @brief Get the Current FSM state.
+     * 
+     * @return TStateId_e Current state ID.
+     */
+    TStateId_e getCurrentState() const;
+
+    /**
+     * @brief Updates the state machine
+     */
     void update();
 
+    /**
+     * @brief Handles an event.
+     * 
+     * @param eventId Event ID.
+     * @param event Event object.
+     */
     void handleEvent(TEventId_e eventId, const TEvent *event);
 
 protected:
     StateMachine<TStateId_e, TEventId_e, TEvent, TStateController> machine_;
 
+    /**
+     * @brief Called prior to the state machine update.
+     */
     virtual void preUpdate();
+
+    /**
+     * @brief Called after the state machine update.
+     */
     virtual void postUpdate();
 };

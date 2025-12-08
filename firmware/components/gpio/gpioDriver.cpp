@@ -3,6 +3,7 @@
 #include "esp_err.h"
 
 #include "gpioDriver.h"
+#include "enums.h"
 #include "pins.h"
 
 static const char* TAG = "GpioDriver";
@@ -32,10 +33,12 @@ esp_err_t GpioDriver::initialize() {
     return err;
 }
 
-esp_err_t GpioDriver::setRelay1State(DripGpioToggleState_e state) {
+esp_err_t GpioDriver::setRelayState(DripRelays_e relay, DripGpioToggleState_e state) {
     esp_err_t err = ESP_OK;
     uint32_t level = 0U;
 
+    /** TODO */
+    
     if (state == DRIP_GPIO_TOGGLE_ON) {
         level = DRIP_GPIO_PIN_ENABLE;
     } else if (state == DRIP_GPIO_TOGGLE_OFF) {
@@ -43,20 +46,12 @@ esp_err_t GpioDriver::setRelay1State(DripGpioToggleState_e state) {
     } else {
         // handle
     }
-
+    
     err = gpio_set_level(DRIP_GPIO_PIN_RELAY1, level);
     if (err != ESP_OK) {
         // handle
     }
-
-    return ESP_OK;
-}
-
-esp_err_t GpioDriver::setRelay2State(DripGpioToggleState_e state) {
-    return ESP_OK;
-}
-
-esp_err_t GpioDriver::setRelay3State(DripGpioToggleState_e state) {
+    
     return ESP_OK;
 }
 
