@@ -106,7 +106,6 @@ public:
     esp_err_t getMeasurementData(DripMeasurementData_t &data);
     esp_err_t setMeasurementData(const DripMeasurementData_t &data);
     esp_err_t getDerivedData(DripDerivedData_t &data);
-    esp_err_t setDerivedData(const DripDerivedData_t &data);
 
     /**
      * Process data.

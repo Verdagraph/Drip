@@ -6,6 +6,7 @@ enum class DripValveManagerStateId_e {
     DispenseStart,
     DispenseSource,
     DispenseTank,
+    DispenseExit,
     DrainTank,
     Deactivate
 };
@@ -33,36 +34,9 @@ enum VdgValveProcess_e {
 };
 
 /**
- * @brief Describes which valve is currently open.
- */
-enum VdgOpenValveState_e {
-    DRIP_VALVE_OPEN_NONE,
-    DRIP_VALVE_OPEN_TANK_DISPENSE,
-    DRIP_VALVE_OPEN_TANK_DRAIN,
-    DRIP_VALVE_OPEN_SOURCE_DISPENSE
-};
-
-/**
  * Dispense process definitions.
  */
 
-/**
- * @brief Describes possible finite-state-machine states for the dispense process.
- */
-enum VdgDispenseFsmState_e {
-    DRIP_DISPENSE_FSM_MIN,
-
-    /** Initialization. */
-    DRIP_DISPENSE_FSM_INIT,
-    /** The tank is currently dispensing. */
-    DRIP_DISPENSE_FSM_TANK_DISPENSE,
-    /** The source is currently dispensing. */
-    DRIP_DISPENSE_FSM_SOURCE_DISPENSE,
-    /** Dispensing is stopped and the summary is available. */
-    DRIP_DISPENSE_FSM_STOP,
-
-    DRIP_DISPENSE_FSM_MAX,
-};
 
 /**
  * @brief Describes a type of target for a dispense process.
@@ -130,7 +104,6 @@ struct VdgDispenseProcessSummary_t {
  * @brief Holds all dispense process related data. 
  */
 struct VdgDispenseProcessData_t {
-    VdgDispenseFsmState_e state;
     VdgDispenseProcessTarget_t target;
     VdgDispenseProcessSlice_t slice;
     VdgDispenseProcessSummary_t summary;
@@ -139,22 +112,6 @@ struct VdgDispenseProcessData_t {
 /**
  * Drain process definitions.
  */
-
-/**
- * @brief Describes possible finite-state-machine states for the drain process.
- */
-enum VdgDrainFsmState_e {
-    DRIP_DRAIN_FSM_MIN,
-    
-    /** Initialization. */
-    DRIP_DRAIN_FSM_INIT,
-    /** The tank is currently being drained. */
-    DRIP_DRAIN_FSM_TANK_DRAIN,
-    /** Draining is stopped and the summary is available. */
-    DRIP_DRAIN_FSM_STOP,
-    
-    DRIP_DRAIN_FSM_MAX,
-};
 
 /**
  * @brief Describes a type of target fo a drain process.
@@ -212,7 +169,6 @@ struct VdgDrainProcessSummary_t {
  * @brief Holds all drain process related data. 
  */
 struct VdgDrainProcessData_t {
-    VdgDrainFsmState_e state;
     VdgDrainProcessTarget_t target;
     VdgDrainProcessSlice_t slice;
     VdgDrainProcessSummary_t summary;

@@ -134,13 +134,13 @@ constexpr FsmStateMap stateToHandlerMap { stateToHandlerMapValues };
 /**
  * @brief Event handler map.
  */
-constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController> eventToHandlerMapValues[] {
+constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController> eventToHandlerMapValues[] {
     etl::pair{
         EventHandlerMapKey_t<DripMainFsmState_e, DripRxMessageId_e>(
             DripMainFsmState_e::Listen, 
             DripRxMessageId_e::DispenseActivate
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleDispenseRequestStateListen
         )
     },
@@ -149,7 +149,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Dispense, 
             DripRxMessageId_e::Deactivate
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration
         )
     },
@@ -158,7 +158,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Drain, 
             DripRxMessageId_e::Deactivate
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration
         )
     },
@@ -167,7 +167,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::FlowSensorCalibrate, 
             DripRxMessageId_e::Deactivate
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration
         )
     },
@@ -176,7 +176,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Listen, 
             DripRxMessageId_e::Restart
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleRestartRequestStateListen
         )
     },
@@ -185,7 +185,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Listen, 
             DripRxMessageId_e::ConfigUpdate
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleConfigUpdateRequestStateListen
         )
     },
@@ -194,7 +194,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Listen, 
             DripRxMessageId_e::FlowCalibrateBegin
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleFlowCalibrateBeginRequestStateListen
         )
     },
@@ -203,7 +203,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::FlowSensorCalibrate, 
             DripRxMessageId_e::FlowCalibrateDispense
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleFlowCalibrateDispenseRequestStateFlowCalibration
         )
     },
@@ -212,7 +212,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::FlowSensorCalibrate, 
             DripRxMessageId_e::FlowCalibrateMeasure
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleFlowCalibrateMeasureRequestStateFlowCalibration
         )
     },
@@ -221,7 +221,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::FlowSensorCalibrate, 
             DripRxMessageId_e::FlowCalibrateEnd
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleFlowCalibrateEndRequestStateFlowCalibration
         )
     },
@@ -230,7 +230,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Listen, 
             DripRxMessageId_e::PressureCalibrateUpdate
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handlePressureCalibrateUpdateRequestStateListen
         )
     },
@@ -239,7 +239,7 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Listen, 
             DripRxMessageId_e::DrainActivate
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handleDrainRequestStateListen
         )
     },
@@ -248,12 +248,12 @@ constexpr EventHandlerMapPair<DripMainFsmState_e, DripRxMessageId_e, DripRxMessa
             DripMainFsmState_e::Listen, 
             DripRxMessageId_e::PressurePoll
         ),
-        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage, MainStateController>(
+        EventHandlerMapEntry_t<DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
             &MainStateController::handlePressurePollRequestStateListen
         )
     }
 };
-using FsmEventMap = EventHandlerMap<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController>;
+using FsmEventMap = EventHandlerMap<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>;
 constexpr FsmEventMap eventToHandlerMap { eventToHandlerMapValues };
 
 
@@ -268,7 +268,7 @@ MainStateController::MainStateController(
     const ValveManager &valveManager,
     const FlowSensorManager &flowSensorManager
 ) :
-    StateController<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController>(
+    StateController<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
         DripMainFsmState_e::Uninitialized,
         "MainFsm",
         stateToHandlerMap,
@@ -538,7 +538,7 @@ void MainStateController::dispenseExit() {
     esp_err_t err = ESP_OK;
     VdgValveProcess_e valveProcess = DRIP_VALVES_MIN;
     const DeactivateRxMessage message = DeactivateRxMessage();
-    const DripRxMessage *messagePtr = reinterpret_cast<const DripRxMessage*>(&message);
+    const DripRxMessage<DripMainFsmState_e> *messagePtr = reinterpret_cast<const DripRxMessage<DripMainFsmState_e>*>(&message);
 
     /** End the process if necessary. */
     if (true == valveManager_.isDispensing() ) {
@@ -649,7 +649,7 @@ void MainStateController::drainExit() {
 }
 
 
-void MainStateController::handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     esp_err_t err = ESP_OK;
     const DispenseActivateRxMessage *command = nullptr;
     DripFlowSensorCalibrationState_e flowSensorState = DRIP_FLOW_SENSOR_CALIBRATION_MIN;
@@ -701,21 +701,21 @@ void MainStateController::handleDispenseRequestStateListen(DripRxMessageId_e id,
     return;
 }
 
-void MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleDeactivateRequestStateDispenseDrainOrFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     machine_.transition(DripMainFsmState_e::Listen);
     return;
 }
 
-void MainStateController::handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     machine_.transition(DripMainFsmState_e::Restart);
     return;
 }
 
-void MainStateController::handleConfigUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleConfigUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     return;
 }
 
-void MainStateController::handleFlowCalibrateBeginRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleFlowCalibrateBeginRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     esp_err_t err = ESP_OK;
     const FlowCalibrateBeginRxMessage *command = nullptr;
     DripFlowSensorCalibrationState_e flowSensorState = DRIP_FLOW_SENSOR_CALIBRATION_MIN;
@@ -780,7 +780,7 @@ err:
     return;
 }
 
-void MainStateController::handleFlowCalibrateDispenseRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleFlowCalibrateDispenseRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     /*
     esp_err_t err = ESP_OK;
     char log[128];
@@ -819,23 +819,23 @@ void MainStateController::handleFlowCalibrateDispenseRequestStateFlowCalibration
     return;
 }
 
-void MainStateController::handleFlowCalibrateMeasureRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleFlowCalibrateMeasureRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     return;
 }
 
-void MainStateController::handleFlowCalibrateEndRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleFlowCalibrateEndRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     return;
 }
 
-void MainStateController::handlePressureCalibrateUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handlePressureCalibrateUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     return;
 }
 
-void MainStateController::handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     return;
 }
 
-void MainStateController::handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message) {
+void MainStateController::handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message) {
     return;
 }
 
@@ -860,7 +860,7 @@ void MainStateController::postUpdate() {
 
 esp_err_t MainStateController::handleReceivedMessages() {
     /** TODO: Smart pointer */
-    DripRxMessage *message = nullptr;
+    DripRxMessage<DripMainFsmState_e> *message = nullptr;
     esp_err_t err = ESP_OK;
 
     /** Check for new MQTT messages. */

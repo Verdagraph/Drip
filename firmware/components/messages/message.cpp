@@ -3,22 +3,24 @@
 /**
  * @defgroup DripRxMessage Incoming Message Object
  */
+template <typename TRxMessageId_e>
+DripRxMessage<TRxMessageId_e>::DripRxMessage(TRxMessageId_e id) : id_(id), isValid_(false) {}
 
-DripRxMessage::DripRxMessage(DripRxMessageId_e id) : id_(id), isValid_(false) {}
-
-DripRxMessageId_e DripRxMessage::id() const {
+template <typename TRxMessageId_e>
+TRxMessageId_e DripRxMessage<TRxMessageId_e>::id() const {
     return id_;
 }
 
-bool DripRxMessage::isValid() const {
+template <typename TRxMessageId_e>
+bool DripRxMessage<TRxMessageId_e>::isValid() const {
     return isValid_;
 }
 
-esp_err_t DripRxMessage::structure(
+template <typename TRxMessageId_e>
+esp_err_t DripRxMessage<TRxMessageId_e>::structure(
     uint8_t *payload, 
     size_t payloadLen, 
-    const DataContainer &container, 
-    const DripConfig_t &config
+    const DataContainer &container
 ) {
     esp_err_t err = ESP_OK;
 
@@ -31,7 +33,7 @@ esp_err_t DripRxMessage::structure(
         return ESP_FAIL;
     }
 
-    err = validate(container, config);
+    err = validate(container);
     if (err != ESP_OK) {
         return ESP_FAIL;
     }
@@ -48,16 +50,16 @@ esp_err_t DripRxMessage::structure(
  * @defgroup DripTxMessageContainer Outgoing Message Object
  */
 
-template <typename TData>
-DripTxMessageContainer<TData>::DripTxMessageContainer(DripTxMessageId_e id) : id(id), payload_{}, payloadLen_(0), isValid_(false) {}
+template <typename TTxMessageId_e, typename TData>
+DripTxMessageContainer<TTxMessageId_e, TData>::DripTxMessageContainer(TTxMessageId_e id) : id(id), payload_{}, payloadLen_(0), isValid_(false) {}
 
-template <typename TData>
-bool DripTxMessageContainer<TData>::isValid() const {
+template <typename TData, typename TTxMessageId_e>
+bool DripTxMessageContainer<TData, TTxMessageId_e>::isValid() const {
     return isValid_;
 }
 
-template <typename TData>
-esp_err_t DripTxMessageContainer<TData>::copyPayload(const uint8_t *buf, size_t bufLen) {
+template <typename TTxMessageId_e, typename TData>
+esp_err_t DripTxMessageContainer<TTxMessageId_e, TData>::copyPayload(const uint8_t *buf, size_t bufLen) {
     if (isValid_ == false) {
         return ESP_ERR_INVALID_STATE;
     }
@@ -70,11 +72,11 @@ esp_err_t DripTxMessageContainer<TData>::copyPayload(const uint8_t *buf, size_t 
     return ESP_OK;
 }
 
-template <typename TData>
-esp_err_t DripTxMessageContainer<TData>::unstructure(const TData data) {
+template <typename TTxMessageId_e, typename TData>
+esp_err_t DripTxMessageContainer<TTxMessageId_e, TData>::unstructure(const TData data, const DataContainer &container) {
     esp_err_t err = ESP_OK;
     
-    err = toJson(data);
+    err = toJson(data, container);
     if (err != ESP_OK) {
         return ESP_FAIL;
     } 

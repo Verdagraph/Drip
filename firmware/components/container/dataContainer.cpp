@@ -45,9 +45,6 @@ esp_err_t DataContainer::setMeasurementData(const DripMeasurementData_t &data) {
 esp_err_t DataContainer::getDerivedData(DripDerivedData_t &data) {
     return ESP_OK;
 }
-esp_err_t DataContainer::setDerivedData(const DripDerivedData_t &data) {
-    return ESP_OK;
-}
 
 
 /**

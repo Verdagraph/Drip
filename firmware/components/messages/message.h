@@ -13,15 +13,18 @@ constexpr size_t DRIP_MSG_MAX_PAYLOAD_BYTES = 512U;
 /**
  * @brief Specifies data structure and conversion to a JSON payload
  * for a structured application message data object.
+ * 
+ * @tparam TRxMessageId_e Enum type that describes the message IDs. 
  */
+template <typename TRxMessageId_e>
 class DripRxMessage {
 public:
 
-    DripRxMessage(DripRxMessageId_e id);
+    DripRxMessage(TRxMessageId_e id);
 
     ~DripRxMessage() = default;
 
-    DripRxMessageId_e id() const;
+    TRxMessageId_e id() const;
     
     /**
      * @brief Get the isValid flag.
@@ -37,7 +40,6 @@ public:
      * @param payload The unstructured data to set. 
      * @param payloadLen The length of payload.
      * @param container DataContainer context.
-     * @param config Config context.
      * 
      * @return ESP_OK If the data was stored and validated successfully.
      * @return ESP_ERR_INVALID_ARG If payload is null or
@@ -47,8 +49,7 @@ public:
     esp_err_t structure(
         uint8_t *payload, 
         size_t payloadLen, 
-        const DataContainer &container, 
-        const DripConfig_t &config
+        const DataContainer &container
     );
 
     /**
@@ -56,28 +57,28 @@ public:
      * 
      * @param payload The unstructured data to set. 
      * @param payloadLen The length of payload.
+     * @param container DataContainer context.
      * 
      * @return ESP_OK If the data was stored successfully.
      * @return ESP_ERR_INVALID_ARG If payload is null or
      * newPayloadLen is greater than the maximum supported length.
      * @return ESP_FAIL If parsing fails.
      */
-    virtual esp_err_t fromJson(uint8_t *payload, size_t payloadLen) = 0;
+    virtual esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) = 0;
 
     /**
      * @brief Validate the structured data.
      * 
      * @param container DataContainer context.
-     * @param config Config context.
-     * @return ESP_FAIL If validation fails.
      * 
+     * @return ESP_FAIL If validation fails.
      * @return ESP_OK If the struct is valid. 
      */
-    virtual esp_err_t validate(const DataContainer &container, const DripConfig_t &config) = 0;
+    virtual esp_err_t validate(const DataContainer &container) = 0;
 
 protected:
     /** @brief Message ID. */
-    DripRxMessageId_e id_;
+    TRxMessageId_e id_;
     /** @brief True if the struct data has been populated and validated. */
     bool isValid_;
 };
@@ -89,11 +90,11 @@ protected:
  * 
  * @tparam TData The type of struct represented. 
  */
-template <typename TData>
+template <typename TTxMessageId_e, typename TData>
 class DripTxMessageContainer {
 public:
 
-    DripTxMessageContainer(DripTxMessageId_e id);
+    DripTxMessageContainer(TTxMessageId_e id);
 
     ~DripTxMessageContainer() = default;
     
@@ -122,25 +123,27 @@ public:
      * JSON form.
      * 
      * @param data The data to pack.
+     * @param container DataContainer context.
      * 
      * @return ESP_OK If the data was packed successfully.
      * @return ESP_FAIL If a failure occurs while packing.  
      */
-    esp_err_t unstructure(const TData data);
+    esp_err_t unstructure(const TData data, const DataContainer &container);
 
     /**
      * @brief Dumps the struct data to JSON.
      * 
-     * @param data The data to contvert.
+     * @param data The data to convert.
+     * @param container DataContainer context.
      * 
      * @return ESP_OK If the data was packed successfully.
      * @return ESP_FAIL If a failure occurs while packing.  
      */
-    virtual esp_err_t toJson(const TData data) = 0;
+    virtual esp_err_t toJson(const TData data, const DataContainer &container) = 0;
 
 protected:
     /** @brief */
-    DripTxMessageId_e id;
+    TTxMessageId_e id;
     /** @brief A pointer to the unstructured JSON payload. */
     uint8_t payload_[DRIP_MSG_MAX_PAYLOAD_BYTES];
     /** @brief The number of bytes in the payload. */

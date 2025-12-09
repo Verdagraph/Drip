@@ -4,6 +4,7 @@
 #include "tiny-json.h"
 
 #include "message.h"
+#include "messageIds.h"
 #include "config.h"
 #include "dataContainer.h"
 #include "valveManager.h"
@@ -12,11 +13,11 @@
  * @brief Dispense activate command.
  */
 using DispenseActivateRxMessagePayload_t = VdgDispenseProcessTarget_t;
-class DispenseActivateRxMessage : public DripRxMessage {
+class DispenseActivateRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    DispenseActivateRxMessage() : DripRxMessage(DripRxMessageId_e::DispenseActivate) {}
+    DispenseActivateRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::DispenseActivate) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
 
         return ESP_OK;
     }
@@ -36,11 +37,11 @@ private:
 /**
  * @brief Process deactivation command.
  */
-class DeactivateRxMessage : public DripRxMessage {
+class DeactivateRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    DeactivateRxMessage() : DripRxMessage(DripRxMessageId_e::Deactivate) {}
+    DeactivateRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::Deactivate) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
 
         return ESP_OK;
     }
@@ -53,11 +54,11 @@ public:
 /**
  * @brief Process restart command.
  */
-class RestartRxMessage : public DripRxMessage {
+class RestartRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    RestartRxMessage() : DripRxMessage(DripRxMessageId_e::Restart) {}
+    RestartRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::Restart) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
 
         return ESP_OK;
     }
@@ -71,11 +72,11 @@ public:
  * @brief Config change command.
  */
 using ConfigUpdateRxMessagePayload_t = DripConfig_t;
-class ConfigUpdateRxMessage : public DripRxMessage {
+class ConfigUpdateRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    ConfigUpdateRxMessage() : DripRxMessage(DripRxMessageId_e::ConfigUpdate) {}
+    ConfigUpdateRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::ConfigUpdate) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
 
         return ESP_OK;
     }
@@ -95,11 +96,11 @@ private:
 /**
  * @brief Flow calibration begin command.
  */
-class FlowCalibrateBeginRxMessage : public DripRxMessage {
+class FlowCalibrateBeginRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    FlowCalibrateBeginRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateBegin) {}
+    FlowCalibrateBeginRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::FlowCalibrateBegin) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
         return ESP_OK;
     }
 
@@ -112,11 +113,11 @@ public:
  * @brief Flow calibration dispense command.
  */
 using FlowCalibrateDispenseRxMessagePayload_t = DripFlowCalibrationTarget_t;
-class FlowCalibrateDispenseRxMessage : public DripRxMessage {
+class FlowCalibrateDispenseRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    FlowCalibrateDispenseRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateDispense) {}
+    FlowCalibrateDispenseRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::FlowCalibrateDispense) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
         return ESP_OK;
     }
 
@@ -136,11 +137,11 @@ private:
  * @brief Flow calibration measure command.
  */
 using FlowCalibrateMeasureRxMessagePayload_t = DripFlowCalibrationMeasurement_t;
-class FlowCalibrateMeasureRxMessage : public DripRxMessage {
+class FlowCalibrateMeasureRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    FlowCalibrateMeasureRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateMeasure) {}
+    FlowCalibrateMeasureRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::FlowCalibrateMeasure) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
         return ESP_OK;
     }
 
@@ -159,11 +160,11 @@ private:
 /**
  * @brief Flow calibration end command.
  */
-class FlowCalibrateEndRxMessage : public DripRxMessage {
+class FlowCalibrateEndRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    FlowCalibrateEndRxMessage() : DripRxMessage(DripRxMessageId_e::FlowCalibrateEnd) {}
+    FlowCalibrateEndRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::FlowCalibrateEnd) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
         return ESP_OK;
     }
 
@@ -178,11 +179,11 @@ public:
 struct PressureCalibrateUpdateRxMessagePayload_t {
 
 };
-class PressureCalibrateUpdateRxMessage : public DripRxMessage {
+class PressureCalibrateUpdateRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    PressureCalibrateUpdateRxMessage() : DripRxMessage(DripRxMessageId_e::PressureCalibrateUpdate) {}
+    PressureCalibrateUpdateRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::PressureCalibrateUpdate) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
 
         return ESP_OK;
     }
@@ -203,11 +204,11 @@ private:
  * @brief Drain activate command.
  */
 using DrainActivateRxMessagePayload_t = VdgDrainProcessTarget_t;
-class DrainActivateRxMessage : public DripRxMessage {
+class DrainActivateRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    DrainActivateRxMessage() : DripRxMessage(DripRxMessageId_e::DrainActivate) {}
+    DrainActivateRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::DrainActivate) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
 
         return ESP_OK;
     }
@@ -227,11 +228,11 @@ private:
 /**
  * @brief Pressure poll command.
  */
-class PressurePollRxMessage : public DripRxMessage {
+class PressurePollRxMessage : public DripRxMessage<DripRxMessageId_e> {
 public:
-    PressurePollRxMessage() : DripRxMessage(DripRxMessageId_e::PressurePoll) {}
+    PressurePollRxMessage() : DripRxMessage<DripRxMessageId_e>(DripRxMessageId_e::PressurePoll) {}
 
-    esp_err_t fromJson(uint8_t *payload, size_t payloadLen) override {
+    esp_err_t fromJson(uint8_t *payload, size_t payloadLen, const DataContainer &container) override {
 
         return ESP_OK;
     }

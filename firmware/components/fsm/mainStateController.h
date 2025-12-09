@@ -46,7 +46,7 @@ struct DripMainFsmEventTimers_t {
  * @brief Defines main application routines.
  */
 
-class MainStateController : public StateController<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage, MainStateController> {
+class MainStateController : public StateController<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController> {
 public:
     /**
      * @brief Constructor.
@@ -153,7 +153,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type DispenseActivateRxMessage.
      */
-    void handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleDispenseRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a deactivation request in the dispense,
@@ -162,7 +162,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type DeactivateRxMessage.
      */
-    void handleDeactivateRequestStateDispenseDrainOrFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleDeactivateRequestStateDispenseDrainOrFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a restart request in the listen state.
@@ -170,7 +170,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type RestartRxMessage.
      */
-    void handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleRestartRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a config update request in the listen state.
@@ -178,7 +178,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type ConfigUpdateRxMessage.
      */
-    void handleConfigUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleConfigUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a flow calibrate begin request when in the listen state.
@@ -186,7 +186,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type FlowCalibrationBeginRxMessage.
      */
-    void handleFlowCalibrateBeginRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleFlowCalibrateBeginRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a flow calibrate dispense request when 
@@ -195,7 +195,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type FlowCalibrationDispenseRxMessage.
      */
-    void handleFlowCalibrateDispenseRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleFlowCalibrateDispenseRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a flow calibrate measure request when 
@@ -204,7 +204,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type FlowCalibrationMeasureRxMessage.
      */
-    void handleFlowCalibrateMeasureRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleFlowCalibrateMeasureRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a flow calibrate end request when 
@@ -213,7 +213,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type FlowCalibrationEndRxMessage.
      */
-    void handleFlowCalibrateEndRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleFlowCalibrateEndRequestStateFlowCalibration(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a pressure calibration update request when in the listen state.
@@ -221,7 +221,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type PressureCalibrateUpdateRxMessage.
      */
-    void handlePressureCalibrateUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
+    void handlePressureCalibrateUpdateRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a drain request when in the listen state.
@@ -229,7 +229,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type DrainActivateRxMessage.
      */
-    void handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
+    void handleDrainRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /**
      * @brief Handles state change for a pressure poll request when in the listen state.
@@ -237,7 +237,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type PressurePollRxMessage.
      */
-    void handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage *message);
+    void handlePressurePollRequestStateListen(DripRxMessageId_e id, const DripRxMessage<DripMainFsmState_e> *message);
 
     /** @} */
 

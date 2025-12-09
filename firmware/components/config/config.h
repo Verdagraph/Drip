@@ -50,6 +50,10 @@ struct DripValveConfig_t {
      * If SOURCE_DISPENSE, the source will always be used first in dispensation.
      */
     TWrap<DripValves_e> preferredDispenseValve;
+    /** @brief Maximum dispense targets. */
+    TWrap<float> maxDispenseTargetSeconds;
+    TWrap<float> maxDispenseTargetLiters;
+    TWrap<uint32_t> defaultDispenseTimeoutMin;
 };
 
 /**

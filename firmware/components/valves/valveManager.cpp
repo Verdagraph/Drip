@@ -1,6 +1,8 @@
 #include "esp_err.h"
+#include "freertos/task.h"
 
 #include "valveManager.h"
+#include "rxMessages.h"
 
 static const char* TAG = "ValveManager";
 
@@ -41,6 +43,14 @@ constexpr StateHandlerMapPair<DripValveManagerStateId_e, ValveManager> stateToHa
         },
     },
     etl::pair{
+        DripValveManagerStateId_e::DispenseExit, 
+        StateHandlerMapEntry_t<ValveManager>{
+            &ValveManager::dispenseExitEntry, 
+            &ValveManager::dispenseExitUpdate, 
+            &ValveManager::dispenseExitExit, 
+        },
+    },
+    etl::pair{
         DripValveManagerStateId_e::DrainTank, 
         StateHandlerMapEntry_t<ValveManager>{
             &ValveManager::drainTankEntry, 
@@ -63,13 +73,13 @@ constexpr FsmStateMap stateToHandlerMap { stateToHandlerMapValues };
 /**
  * @brief Event handler map.
  */
-constexpr EventHandlerMapPair<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage, ValveManager> eventToHandlerMapValues[] {
+constexpr EventHandlerMapPair<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager> eventToHandlerMapValues[] {
     etl::pair{
         EventHandlerMapKey_t<DripValveManagerStateId_e, DripValveManagerEventId_e>(
             DripValveManagerStateId_e::Idle, 
             DripValveManagerEventId_e::DispenseStart
         ),
-        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage, ValveManager>(
+        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>(
             &ValveManager::handleDispenseRequestStateIdle
         )
     },
@@ -78,7 +88,7 @@ constexpr EventHandlerMapPair<DripValveManagerStateId_e, DripValveManagerEventId
             DripValveManagerStateId_e::DispenseStart, 
             DripValveManagerEventId_e::Deactivate
         ),
-        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage, ValveManager>(
+        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>(
             &ValveManager::handleDeactivateRequestStateDispenseOrDrain
         )
     },
@@ -87,7 +97,7 @@ constexpr EventHandlerMapPair<DripValveManagerStateId_e, DripValveManagerEventId
             DripValveManagerStateId_e::DispenseSource, 
             DripValveManagerEventId_e::Deactivate
         ),
-        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage, ValveManager>(
+        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>(
             &ValveManager::handleDeactivateRequestStateDispenseOrDrain
         )
     },
@@ -96,7 +106,7 @@ constexpr EventHandlerMapPair<DripValveManagerStateId_e, DripValveManagerEventId
             DripValveManagerStateId_e::DispenseTank, 
             DripValveManagerEventId_e::Deactivate
         ),
-        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage, ValveManager>(
+        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>(
             &ValveManager::handleDeactivateRequestStateDispenseOrDrain
         )
     },
@@ -105,7 +115,7 @@ constexpr EventHandlerMapPair<DripValveManagerStateId_e, DripValveManagerEventId
             DripValveManagerStateId_e::DrainTank, 
             DripValveManagerEventId_e::Deactivate
         ),
-        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage, ValveManager>(
+        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>(
             &ValveManager::handleDeactivateRequestStateDispenseOrDrain
         )
     },
@@ -114,18 +124,18 @@ constexpr EventHandlerMapPair<DripValveManagerStateId_e, DripValveManagerEventId
             DripValveManagerStateId_e::Idle, 
             DripValveManagerEventId_e::DrainStart
         ),
-        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage, ValveManager>(
+        EventHandlerMapEntry_t<DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>(
             &ValveManager::handleDrainRequestStateIdle
         )
     },
 };
-using FsmEventMap = EventHandlerMap<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage, ValveManager>;
+using FsmEventMap = EventHandlerMap<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>;
 constexpr FsmEventMap eventToHandlerMap { eventToHandlerMapValues };
 
 ValveManager::ValveManager(
     DataContainer &dataContainer
 ) : 
-    StateController<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage, ValveManager>(
+    StateController<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager>(
         DripValveManagerStateId_e::Idle,
         "MainFsm",
         stateToHandlerMap,
@@ -134,8 +144,9 @@ ValveManager::ValveManager(
         dataContainer
     ),
 
+    eventTimers_{},
     dataContainer_(dataContainer),
-    openValve_(DRIP_VALVE_OPEN_NONE) {}
+    openValve_(DripValves_e::Null) {}
 
 esp_err_t ValveManager::initialize() {
     return ESP_OK;
@@ -177,25 +188,185 @@ void idleExit();
  * @brief Handlers for state dispense start.
  */
 void ValveManager::dispenseStartEntry() {
+    DripConfig_t config = {};
+    DripDriverStatus_t driverStatus = {};
+    VdgDispenseProcessData_t processData = {};
+    DripMeasurementData_t measurementData = {};
+    DripDerivedData_t derivedData = {};
+    DripValves_e valve = DripValves_e::Null;
+    esp_err_t err = ESP_OK; 
+
+    /** Retrieve container data. */
+    err = dataContainer_.getConfig(config);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve config.");
+        goto exit;
+    }
+    err = dataContainer_.getDriverStatus(driverStatus);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve driver status.");
+        goto exit;
+    }
+    err = dataContainer_.getDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve dispense process data.");
+        goto exit;
+    }
+    err = dataContainer_.getMeasurementData(measurementData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve measurement data.");
+        goto exit;
+    }
+    err = dataContainer_.getDerivedData(derivedData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve derived data.");
+        goto exit;
+    }
+
+    /** Select valve. */
+    if (driverStatus.sourceDispenseValveOnline && driverStatus.tankDispenseValveOnline) {
+        if (DripValves_e::SourceDispense == config.valves.preferredDispenseValve) {
+            valve = DripValves_e::SourceDispense;
+        } else if (DripValves_e::TankDispense == config.valves.preferredDispenseValve) {
+            valve = DripValves_e::TankDispense;
+        } else {
+            dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Invalid value of config.valves.preferredDispenseValve: %d", config.valves.preferredDispenseValve);
+            goto exit;
+
+        }
+    } else if (driverStatus.sourceDispenseValveOnline) {
+        valve = DripValves_e::SourceDispense;
+    } else if (driverStatus.tankDispenseValveOnline) {
+        valve = DripValves_e::TankDispense;
+    } else {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Attempted to enter dispensation with no valves online.");
+        goto exit;
+    }
+    
+    /** Update event timers. */
+    eventTimers_.dispenseBeganTicks = xTaskGetTickCount();
+
+    /** Reset flow measurement data. */
+    measurementData.flowSensorPulses = 0U;
+    err = dataContainer_.setMeasurementData(measurementData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to set measurement data.");
+        goto exit;
+    }
+
+    /** Update process data. */
+    processData.summary.initialTankLevel = derivedData.tankLevel;
+    processData.summary.initialTankVolume = derivedData.tankVolume;
+    err = dataContainer_.setDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to set dispense process data.");
+        goto exit;
+    }
+
+    /** Transistion to next state. */
+    switch (valve) {
+    case DripValves_e::SourceDispense:
+        machine_.transition(DripValveManagerStateId_e::DispenseSource);
+        return;
+    case DripValves_e::TankDispense:
+        machine_.transition(DripValveManagerStateId_e::DispenseTank);
+        return;
+    default:
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Invalid valve state.");
+        goto exit;
+    }
+
+    return;
+
+exit:
+    machine_.transition(DripValveManagerStateId_e::DispenseExit);
     return;
 }
-void ValveManager::dispenseStartUpdate() {
-    return;
-}
-void ValveManager::dispenseStartExit() {
-    return;
-}
+void ValveManager::dispenseStartUpdate() {}
+void ValveManager::dispenseStartExit() {}
 
 /**
  * @brief Handlers for state dispense source.
  */
 void ValveManager::dispenseSourceEntry() {
+    esp_err_t err = ESP_OK;
+
+    err = openSourceDispenseValve();
+    if (ESP_OK != err) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to open source dispense valve.");
+        goto exit;
+    }
+
+    return;
+
+exit:
+    machine_.transition(DripValveManagerStateId_e::DispenseExit);
     return;
 }
 void ValveManager::dispenseSourceUpdate() {
+    DripConfig_t config = {};
+    DripDriverStatus_t driverStatus = {};
+    VdgDispenseProcessData_t processData = {};
+    VdgDispenseProcessSlice_t previousSlice = {};
+    DripMeasurementData_t measurementData = {};
+    DripDerivedData_t derivedData = {};
+    DripValves_e valve = DripValves_e::Null;
+    esp_err_t err = ESP_OK; 
+
+    /** Update process slice data. */
+    err = updateDispenseProcessSlice();
+    if (ESP_OK != err) {
+        goto exit;
+    }
+
+    /** Retrieve container data. */
+    err = dataContainer_.getConfig(config);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve config.");
+        goto exit;
+    }
+    err = dataContainer_.getDriverStatus(driverStatus);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve driver status.");
+        goto exit;
+    }
+    err = dataContainer_.getDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve dispense process data.");
+        goto exit;
+    }
+    err = dataContainer_.getMeasurementData(measurementData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve measurement data.");
+        goto exit;
+    }
+    err = dataContainer_.getDerivedData(derivedData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve derived data.");
+        goto exit;
+    }
+
+
+
+    /** Enforce timeout condition. */
+    if ()
+
+exit:
+    machine_.transition(DripValveManagerStateId_e::DispenseExit);
     return;
 }
 void ValveManager::dispenseSourceExit() {
+    esp_err_t err = ESP_OK;
+
+    err = closeValves();
+    if (ESP_OK != err) {
+        goto exit;
+    }
+    
+    return;
+
+exit:
+    machine_.transition(DripValveManagerStateId_e::DispenseExit);
     return;
 }
 
@@ -203,14 +374,136 @@ void ValveManager::dispenseSourceExit() {
  * @brief Handlers for state dispense tank.
  */
 void ValveManager::dispenseTankEntry() {
+    esp_err_t err = ESP_OK;
+
+    err = openSourceDispenseValve();
+    if (ESP_OK != err) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to open source dispense valve.");
+        goto exit;
+    }
+    
+    return;
+
+exit:
+    machine_.transition(DripValveManagerStateId_e::Deactivate);
     return;
 }
 void ValveManager::dispenseTankUpdate() {
     return;
 }
 void ValveManager::dispenseTankExit() {
+    DripConfig_t config = {};
+    DripDriverStatus_t driverStatus = {};
+    VdgDispenseProcessData_t processData = {};
+    VdgDispenseProcessSlice_t previousSlice = {};
+    DripMeasurementData_t measurementData = {};
+    DripDerivedData_t derivedData = {};
+    DripValves_e valve = DripValves_e::Null;
+    esp_err_t err = ESP_OK; 
+
+    /** Retrieve container data. */
+    err = dataContainer_.getConfig(config);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve config.");
+        goto exit;
+    }
+    err = dataContainer_.getDriverStatus(driverStatus);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve driver status.");
+        goto exit;
+    }
+    err = dataContainer_.getDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve dispense process data.");
+        goto exit;
+    }
+    err = dataContainer_.getMeasurementData(measurementData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve measurement data.");
+        goto exit;
+    }
+    err = dataContainer_.getDerivedData(derivedData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve derived data.");
+        goto exit;
+    }
+
+    err = closeValves();
+    if (ESP_OK != err) {
+        goto exit;
+    }
+
+    /** Update process summary data. */
+    processData.summary.outputTankVolume = processData.slice.outputVolume;
+    processData.summary.tankSwitchoverTime = processData.slice.timeMs;
+    
+    return;
+
+exit:
+    machine_.transition(DripValveManagerStateId_e::Deactivate);
     return;
 }
+
+/**
+ * @brief Handlers for state dispense exit.
+ */
+void ValveManager::dispenseExitEntry() {
+    DripConfig_t config = {};
+    DripDriverStatus_t driverStatus = {};
+    VdgDispenseProcessData_t processData = {};
+    VdgDispenseProcessSlice_t previousSlice = {};
+    DripMeasurementData_t measurementData = {};
+    DripDerivedData_t derivedData = {};
+    DripValves_e valve = DripValves_e::Null;
+    esp_err_t err = ESP_OK; 
+
+    /** Update process slice data. */
+    err = updateDispenseProcessSlice();
+    if (ESP_OK != err) {
+        goto exit;
+    }
+
+    /** Retrieve container data. */
+    err = dataContainer_.getConfig(config);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve config.");
+        goto exit;
+    }
+    err = dataContainer_.getDriverStatus(driverStatus);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve driver status.");
+        goto exit;
+    }
+    err = dataContainer_.getDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve dispense process data.");
+        goto exit;
+    }
+    err = dataContainer_.getMeasurementData(measurementData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve measurement data.");
+        goto exit;
+    }
+    err = dataContainer_.getDerivedData(derivedData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve derived data.");
+        goto exit;
+    }
+
+    /** Update process slice data. */
+    updateDispenseProcessSlice();
+
+    /** Update process summary data. */
+    processData.summary.durationMs = processData.slice.timeMs;
+    processData.summary.outputVolume = processData.slice.outputVolume;
+    processData.summary.finalTankLevel = processData.slice.tankLevel;
+    processData.summary.finalTankVolume = processData.slice.tankVolume;
+
+    machine_.transition(DripValveManagerStateId_e::Deactivate);
+    return;
+}
+void ValveManager::dispenseExitUpdate() {}
+void ValveManager::dispenseExitExit() {}
 
 /**
  * @brief Handlers for state drain tank.
@@ -238,61 +531,102 @@ void ValveManager::deactivateTankExit() {
     return;
 }
     
-void ValveManager::handleDispenseRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage *message) {
+void ValveManager::handleDispenseRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage<DripValveManagerEventId_e> *message) {
     DripConfig_t config = {};
+    DripDriverStatus_t driverStatus = {};
+    const DispenseActivateRxMessage *command = nullptr;
     VdgDispenseProcessData_t processData = {};
     esp_err_t err = ESP_OK; 
+
+    /** Validate state. */
+    if (DripValveManagerStateId_e::Idle != machine_.getCurrentState()) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "DispenseActivateRxMessage handler called in invalid state.");
+        return;
+    }
     
+    /** Validate payload. */
+    if (nullptr == message){
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Null message passed to handleDispenseRequestStateIdle.");
+        return;
+    }
+    if (message->id() != DripValveManagerEventId_e::DispenseStart) {
+        dataContainer_.logError(ESP_ERR_INVALID_ARG, TAG, "Incorrect message type: %d passed to handleDispenseRequestStateIdle.", message->id());
+        return; 
+    }
+
+    /** Typecast the payload. */
+    command = reinterpret_cast<const DispenseActivateRxMessage*>(message);
+    VdgDispenseProcessTarget_t target = command->data();
+    
+    /** Retrieve container data. */
     err = dataContainer_.getConfig(config);
     if (err != ESP_OK) {
-        // log error
-        return err;
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve config.");
+        return;
+    }
+    err = dataContainer_.getDriverStatus(driverStatus);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve driver status.");
+        return;
     }
     
     /** Validate config. */
-    
-    /** Validate parameters. */
-    
-    
-    
-    processData.state = DRIP_DISPENSE_FSM_INIT;
-    processData.target = target;
-    
-    
-    switch (config.valves.preferredDispenseValve) {
-        case SOURCE_DISPENSE:
-            err = openSourceDispenseValve();
-            if (err != ESP_OK) {
-                return err;
-            }
-            processData.state = DRIP_DISPENSE_FSM_SOURCE_DISPENSE;
-            break;
-        case TANK_DISPENSE:
-            err = openTankDispenseValve();
-            if (err != ESP_OK) {
-                return err;
-            }
-            processData.state = DRIP_DISPENSE_FSM_TANK_DISPENSE;
-            break;
-        default:
-            return ESP_ERR_INVALID_STATE;
+    if ( (false == driverStatus.sourceDispenseValveOnline) && 
+         (false == driverStatus.tankDispenseValveOnline) ) {
+        dataContainer_.logWarning(ESP_ERR_INVALID_STATE, TAG, "Dispense attempted while both dispense valves are disabled.");
+        return;
     }
     
-    
-    
-    
-    
-    
-    currentProcess_ = DRIP_VALVES_DISPENSE;
-    process = currentProcess_;
+    if ( (false == driverStatus.sourceDispenseValveOnline) && 
+         (config.valves.preferredDispenseValve == DripValves_e::SourceDispense) ) {
+        dataContainer_.logWarning(ESP_ERR_INVALID_STATE, TAG, "Source dispense valve is preferred but disabled.");
+    } else if ( (false == driverStatus.tankDispenseValveOnline) && 
+                (config.valves.preferredDispenseValve == DripValves_e::SourceDispense) ) {
+        dataContainer_.logWarning(ESP_ERR_INVALID_STATE, TAG, "Tank dispense valve is preferred but disabled.");
+    }
+        
+    /** Validate parameters. */
+    if ( (DripDispenseProcessTargetType_e::Liters == target.targetType) && 
+         (false == driverStatus.flowSensorOnline) ) {
+        dataContainer_.logWarning(ESP_ERR_INVALID_ARG, TAG, "Dispense requested with a volume target but the flow sensor is disabled.");
+        return;
+    }
+
+    if (target.target <= 0.0f) {
+        dataContainer_.logWarning(ESP_ERR_INVALID_ARG, TAG, "Dispense requested with null target.");
+        return;
+    } else if ( (target.targetType == DripDispenseProcessTargetType_e::Seconds) && 
+                (target.target > config.valves.maxDispenseTargetSeconds) ) {
+        dataContainer_.logWarning(ESP_ERR_INVALID_ARG, TAG, "Dispense requested with target greater than the maximum of %.2f seconds.", config.valves.maxDispenseTargetSeconds);
+        return;
+    } else if ( (target.targetType == DripDispenseProcessTargetType_e::Liters) && 
+                (target.target > config.valves.maxDispenseTargetLiters) ) {
+        dataContainer_.logWarning(ESP_ERR_INVALID_ARG, TAG, "Dispense requested with target greater than the maximum of %.2f liters.", config.valves.maxDispenseTargetLiters);
+        return;
+    }
+
+    if (target.timeoutMs <= 0) {
+        dataContainer_.logWarning(ESP_OK, TAG, "Dispense requested with null timeout, using default of %d minutes.", config.valves.defaultDispenseTimeoutMin);
+        target.timeoutMs = config.valves.defaultDispenseTimeoutMin * 60U * 1000U;
+    }
+
+    /* Update the process data. */
+    processData.target = target;
+    err = dataContainer_.setDispenseProcessData(processData);
+    if (ESP_OK != err) {
+        dataContainer_.logError(err, TAG, "Failed to set dispense process data.");
+        return;
+    }
+
+    machine_.transition(DripValveManagerStateId_e::DispenseStart);
     return;
 }
 
-void ValveManager::handleDrainRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage *message) {
+void ValveManager::handleDrainRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage<DripValveManagerEventId_e> *message) {
     return;
 }
 
-void ValveManager::handleDeactivateRequestStateDispenseOrDrain(DripValveManagerEventId_e id, const DripRxMessage *message) {
+void ValveManager::handleDeactivateRequestStateDispenseOrDrain(DripValveManagerEventId_e id, const DripRxMessage<DripValveManagerEventId_e> *message) {
     return;
 }
 
@@ -307,27 +641,23 @@ esp_err_t ValveManager::closeValves() {
         return err;
     }
 
-    if (driverStatus.sourceDispenseValveOnline) {
-        err = setValveState(DripValves_e::SourceDispense, DRIP_GPIO_TOGGLE_OFF);
-        if (err != ESP_OK) {
-            dataContainer_.logError(ESP_FAIL, TAG, "Failed to close source dispense valve");
-            return ESP_FAIL;
-        }
+    err = setValveState(DripValves_e::SourceDispense, DRIP_GPIO_TOGGLE_OFF);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_FAIL, TAG, "Failed to close source dispense valve");
+        return ESP_FAIL;
     }
-    if (driverStatus.tankDispenseValveOnline) {
-        err = setValveState(DripValves_e::TankDispense, DRIP_GPIO_TOGGLE_OFF);
-        if (err != ESP_OK) {
-            dataContainer_.logError(ESP_FAIL, TAG, "Failed to close tank dispense valve");
-            return ESP_FAIL;
-        }
+    err = setValveState(DripValves_e::TankDispense, DRIP_GPIO_TOGGLE_OFF);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_FAIL, TAG, "Failed to close tank dispense valve");
+        return ESP_FAIL;
     }
-    if (driverStatus.tankDrainValveOnline) {
-        err = setValveState(DripValves_e::TankDrain, DRIP_GPIO_TOGGLE_OFF);
-        if (err != ESP_OK) {
-            dataContainer_.logError(ESP_FAIL, TAG, "Failed to close tank drain valve");
-            return ESP_FAIL;
-        }
+    err = setValveState(DripValves_e::TankDrain, DRIP_GPIO_TOGGLE_OFF);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_FAIL, TAG, "Failed to close tank drain valve");
+        return ESP_FAIL;
     }
+
+    openValve_ = DripValves_e::Null;
     
     return ESP_OK;
 }
@@ -431,6 +761,10 @@ esp_err_t ValveManager::setValveState(DripValves_e valve, DripGpioToggleState_e 
     DripRelays_e relay = DripRelays_e::Relay1;
     esp_err_t err = ESP_OK;
 
+    if (DripValves_e::Null == valve) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
     err = dataContainer_.getConfig(config);
     if (err != ESP_OK) {
         return err;
@@ -444,17 +778,17 @@ esp_err_t ValveManager::setValveState(DripValves_e valve, DripGpioToggleState_e 
     switch (valve) {
         case DripValves_e::SourceDispense:
             if (false == driverStatus.sourceDispenseValveOnline) {
-                dataContainer_.logWarning(ESP_ERR_INVALID_STATE, TAG, "Source dispense valve attempted to be closed while disabled.");
+                dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Source dispense valve attempted to be closed while disabled.");
             }
             return ESP_ERR_INVALID_STATE;
         case DripValves_e::TankDispense:
             if (false == driverStatus.tankDispenseValveOnline) {
-                dataContainer_.logWarning(ESP_ERR_INVALID_STATE, TAG, "Tank dispense valve attempted to be closed while disabled.");
+                dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Tank dispense valve attempted to be closed while disabled.");
             }
             return ESP_ERR_INVALID_STATE;
         case DripValves_e::TankDrain:
             if (false == driverStatus.tankDrainValveOnline) {
-                dataContainer_.logWarning(ESP_ERR_INVALID_STATE, TAG, "Tank drain valve attempted to be closed while disabled.");
+                dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Tank drain valve attempted to be closed while disabled.");
             }
             return ESP_ERR_INVALID_STATE;
         default:
@@ -481,6 +815,48 @@ esp_err_t ValveManager::setValveState(DripValves_e valve, DripGpioToggleState_e 
     if (ESP_OK != err) {
         return err;
     }
+    
+    if (DRIP_GPIO_TOGGLE_ON == state) {
+        openValve_ = valve;
+    }
 
     return ESP_OK;
+}
+
+esp_err_t ValveManager::updateDispenseProcessSlice() {
+    VdgDispenseProcessData_t processData = {};
+    VdgDispenseProcessSlice_t previousSlice = {};
+    DripDerivedData_t derivedData = {};
+    esp_err_t err = ESP_OK; 
+
+    /** Retrieve container data. */
+    err = dataContainer_.getDerivedData(derivedData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve derived data.");
+        return err;
+    }
+    err = dataContainer_.getDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to retrieve dispense process data.");
+        return err;
+    }
+
+    /** Update process variables. */
+    previousSlice = processData.slice;
+
+    processData.slice.timeMs = pdTICKS_TO_MS(xTaskGetTickCount() - eventTimers_.dispenseBeganTicks);
+    processData.slice.outputVolume = derivedData.volumeOutputLiters;
+    processData.slice.flowRate = (processData.slice.outputVolume - previousSlice.outputVolume) / 
+                                 ( (processData.slice.timeMs - previousSlice.timeMs) / 1000U);
+    processData.slice.tankLevel = derivedData.tankLevel;
+    processData.slice.tankVolume = derivedData.tankVolume;
+
+    /** Set container data. */
+    err = dataContainer_.setDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to set process data.");
+        return err;
+    }
+
+    return;
 }

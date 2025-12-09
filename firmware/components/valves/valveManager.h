@@ -22,7 +22,7 @@ struct DripValveManagerFsmEventTimers_t {
 /**
  * @brief Handles the dispensation and draining process.
  */
-class ValveManager : public StateController<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage, ValveManager> {
+class ValveManager : public StateController<DripValveManagerStateId_e, DripValveManagerEventId_e, DripRxMessage<DripValveManagerEventId_e>, ValveManager> {
 public:
     /**
      * @brief Constructor.
@@ -84,6 +84,13 @@ public:
     void dispenseTankExit();
 
     /**
+     * @brief Handlers for state dispense exit.
+     */
+    void dispenseExitEntry();
+    void dispenseExitUpdate();
+    void dispenseExitExit();
+
+    /**
      * @brief Handlers for state drain tank.
      */
     void drainTankEntry();
@@ -109,7 +116,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type DispenseActivateRxMessage.
      */
-    void handleDispenseRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage *message);
+    void handleDispenseRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage<DripValveManagerEventId_e> *message);
 
     /**
      * @brief Handles state change for a drain request when in the idle state.
@@ -117,7 +124,7 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type DrainActivateRxMessage.
      */
-    void handleDrainRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage *message);
+    void handleDrainRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage<DripValveManagerEventId_e> *message);
 
     /**
      * @brief Handles state change for a deactivation request in the dispense or drain state.
@@ -125,15 +132,17 @@ public:
      * @param[in] id Message ID.
      * @param[in] message MQTT received message of type DeactivateRxMessage.
      */
-    void handleDeactivateRequestStateDispenseOrDrain(DripValveManagerEventId_e id, const DripRxMessage *message);
+    void handleDeactivateRequestStateDispenseOrDrain(DripValveManagerEventId_e id, const DripRxMessage<DripValveManagerEventId_e> *message);
 
     /** @} */
 
 
 private:
+    DripValveManagerFsmEventTimers_t eventTimers_;
+
     DataContainer dataContainer_;
 
-    VdgOpenValveState_e openValve_;
+    DripValves_e openValve_;
 
     
     /**
@@ -173,6 +182,8 @@ private:
      * @retval ESP_OK If the valve state was set successfully.
      */
     esp_err_t setValveState(DripValves_e valve, DripGpioToggleState_e state);
+
+    esp_err_t updateDispenseProcessSlice();
 };
 
 #endif
