@@ -68,6 +68,8 @@ struct VdgDispenseProcessTarget_t {
  * @brief Describes the realtime variables of a dispensation process;
  */
 struct VdgDispenseProcessSlice_t {
+    /** Currently open valve. */
+    DripValves_e openValve;
     /** Current time in miliseconds. */
     uint32_t timeMs;
     /** Current output volume in liters. */
@@ -90,8 +92,6 @@ struct VdgDispenseProcessSummary_t {
     float outputVolume;
     /** Total volume output from the tank. */
     float outputTankVolume;
-    /** Time timestamp in miliseconds that the tank yielded. */
-    uint32_t tankSwitchoverTime;
     /** The initial and final tank level in meters. */
     float initialTankLevel;
     float finalTankLevel;

@@ -7,6 +7,16 @@
 #define ENUMS_H
 
 /**
+ * @brief Describes the two types of valves controlled by this application.
+ */
+enum class DripValveType_e {
+    /** @brief Used to output a target water time or duration. */
+    Dispense,
+    /** @brief Used to empty rain barrels or other variable water supplies. */
+    Drain
+};
+
+/**
  * @brief Describes the supported shapes for a tank,
  * for the purposes of volume calculation.
  */

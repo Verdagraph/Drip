@@ -1,0 +1,5 @@
+# .clang-tidy
+Checks: 'readability-yoda-condition'
+FixIt: true
+CheckOptions:
+  readability-yoda-condition.ArgumentThreshold: 0

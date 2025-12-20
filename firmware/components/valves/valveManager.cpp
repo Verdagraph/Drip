@@ -61,9 +61,9 @@ constexpr StateHandlerMapPair<DripValveManagerStateId_e, ValveManager> stateToHa
     etl::pair{
         DripValveManagerStateId_e::Deactivate, 
         StateHandlerMapEntry_t<ValveManager>{
-            &ValveManager::deactivateTankEntry, 
-            &ValveManager::deactivateTankUpdate, 
-            &ValveManager::deactivateTankExit, 
+            &ValveManager::deactivateEntry, 
+            &ValveManager::deactivateUpdate, 
+            &ValveManager::deactivateExit, 
         },
     },
 };
@@ -244,6 +244,7 @@ void ValveManager::dispenseStartEntry() {
     }
     
     /** Update event timers. */
+    eventTimers_ = {};
     eventTimers_.dispenseBeganTicks = xTaskGetTickCount();
 
     /** Reset flow measurement data. */
@@ -297,6 +298,9 @@ void ValveManager::dispenseSourceEntry() {
         goto exit;
     }
 
+    /** Update event timers. */
+    eventTimers_.dispenseSourceBeganTicks = xTaskGetTickCount();
+
     return;
 
 exit:
@@ -311,6 +315,7 @@ void ValveManager::dispenseSourceUpdate() {
     DripMeasurementData_t measurementData = {};
     DripDerivedData_t derivedData = {};
     DripValves_e valve = DripValves_e::Null;
+    TickType_t currentTick = 0U;
     esp_err_t err = ESP_OK; 
 
     /** Update process slice data. */
@@ -347,9 +352,34 @@ void ValveManager::dispenseSourceUpdate() {
     }
 
 
+    /** Check target. */
+    if ( (DripDispenseProcessTargetType_e::Seconds == processData.target.targetType) && ( (processData.slice.timeMs / 1000.0f) >= processData.target.target) ) {
+
+        dataContainer_.logInfo(ESP_OK, TAG, "Dispense process hit target of %.2f seconds.", processData.target.target);
+        goto exit;
+
+    } else if ( (DripDispenseProcessTargetType_e::Liters == processData.target.targetType) && ( (processData.slice.outputVolume) >= processData.target.target) ) {
+
+        dataContainer_.logInfo(ESP_OK, TAG, "Dispense process hit target of %.2f liters.", processData.target.target);
+        goto exit;
+
+    }
 
     /** Enforce timeout condition. */
-    if ()
+    if (processData.slice.timeMs > processData.target.timeoutMs) {
+        dataContainer_.logInfo(ESP_OK, TAG, "Dispense process timed out at %d miliseconds.", processData.slice.timeMs);
+        goto exit;
+    }
+
+    /** Determine if the source is empty. */
+    currentTick = xTaskGetTickCount();
+    if (processData.slice.flowRate >= config.flowSensor.minFlowRateLps) {
+        eventTimers_.lastFlowSensorAboveMinimumFlowTicks = currentTick;
+    } else if ( (currentTick - eventTimers_.lastFlowSensorAboveMinimumFlowTicks) > pdMS_TO_TICKS(config.flowSensor.minFlowRateTimeoutMs) ) {
+
+        if ()
+
+    }
 
 exit:
     machine_.transition(DripValveManagerStateId_e::DispenseExit);
@@ -358,10 +388,6 @@ exit:
 void ValveManager::dispenseSourceExit() {
     esp_err_t err = ESP_OK;
 
-    err = closeValves();
-    if (ESP_OK != err) {
-        goto exit;
-    }
     
     return;
 
@@ -381,11 +407,14 @@ void ValveManager::dispenseTankEntry() {
         dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to open source dispense valve.");
         goto exit;
     }
+
+    /** Update event timers. */
+    eventTimers_.dispenseTankBeganTicks = xTaskGetTickCount();
     
     return;
 
 exit:
-    machine_.transition(DripValveManagerStateId_e::Deactivate);
+    machine_.transition(DripValveManagerStateId_e::DispenseExit);
     return;
 }
 void ValveManager::dispenseTankUpdate() {
@@ -428,19 +457,19 @@ void ValveManager::dispenseTankExit() {
         goto exit;
     }
 
-    err = closeValves();
-    if (ESP_OK != err) {
+    /** Update process summary data. */
+    /** can't assume tank is being used first - track source and tank outputs seperately */
+    //processData.summary.outputTankVolume = processData.slice.outputVolume;
+    err = dataContainer_.setDispenseProcessData(processData);
+    if (err != ESP_OK) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to set dispense process data.");
         goto exit;
     }
 
-    /** Update process summary data. */
-    processData.summary.outputTankVolume = processData.slice.outputVolume;
-    processData.summary.tankSwitchoverTime = processData.slice.timeMs;
-    
     return;
 
 exit:
-    machine_.transition(DripValveManagerStateId_e::Deactivate);
+    machine_.transition(DripValveManagerStateId_e::DispenseExit);
     return;
 }
 
@@ -490,15 +519,21 @@ void ValveManager::dispenseExitEntry() {
         goto exit;
     }
 
-    /** Update process slice data. */
-    updateDispenseProcessSlice();
-
     /** Update process summary data. */
     processData.summary.durationMs = processData.slice.timeMs;
     processData.summary.outputVolume = processData.slice.outputVolume;
     processData.summary.finalTankLevel = processData.slice.tankLevel;
     processData.summary.finalTankVolume = processData.slice.tankVolume;
+    err = dataContainer_.setDispenseProcessData(processData);
+    if (ESP_OK != err) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to set dispense process data.");
+        goto exit;
+    }
 
+    machine_.transition(DripValveManagerStateId_e::Deactivate);
+    return;
+
+exit:
     machine_.transition(DripValveManagerStateId_e::Deactivate);
     return;
 }
@@ -521,15 +556,21 @@ void ValveManager::drainTankExit() {
 /**
  * @brief Handlers for state deactivate.
  */
-void ValveManager::deactivateTankEntry() {
+void ValveManager::deactivateEntry() {
+    esp_err_t err = ESP_OK;
+
+    err = closeValves();
+    if (ESP_OK != err) {
+        dataContainer_.logError(ESP_ERR_INVALID_STATE, TAG, "Failed to deactivate valves.");
+        goto exit;
+    }
+
+exit:
+    machine_.transition(DripValveManagerStateId_e::Idle);
     return;
 }
-void ValveManager::deactivateTankUpdate() {
-    return;
-}
-void ValveManager::deactivateTankExit() {
-    return;
-}
+void ValveManager::deactivateUpdate() {}
+void ValveManager::deactivateExit() {}
     
 void ValveManager::handleDispenseRequestStateIdle(DripValveManagerEventId_e id, const DripRxMessage<DripValveManagerEventId_e> *message) {
     DripConfig_t config = {};
@@ -634,6 +675,7 @@ void ValveManager::handleDeactivateRequestStateDispenseOrDrain(DripValveManagerE
 esp_err_t ValveManager::closeValves() {
     DripConfig_t config = {};
     DripDriverStatus_t driverStatus = {};
+    bool failed = false;
     esp_err_t err = ESP_OK;
 
     err = dataContainer_.getDriverStatus(driverStatus);
@@ -644,16 +686,19 @@ esp_err_t ValveManager::closeValves() {
     err = setValveState(DripValves_e::SourceDispense, DRIP_GPIO_TOGGLE_OFF);
     if (err != ESP_OK) {
         dataContainer_.logError(ESP_FAIL, TAG, "Failed to close source dispense valve");
-        return ESP_FAIL;
+        failed = true;
     }
     err = setValveState(DripValves_e::TankDispense, DRIP_GPIO_TOGGLE_OFF);
     if (err != ESP_OK) {
         dataContainer_.logError(ESP_FAIL, TAG, "Failed to close tank dispense valve");
-        return ESP_FAIL;
+        failed = true;
     }
     err = setValveState(DripValves_e::TankDrain, DRIP_GPIO_TOGGLE_OFF);
     if (err != ESP_OK) {
         dataContainer_.logError(ESP_FAIL, TAG, "Failed to close tank drain valve");
+        failed = true;
+    }
+    if (failed) {
         return ESP_FAIL;
     }
 
@@ -844,6 +889,7 @@ esp_err_t ValveManager::updateDispenseProcessSlice() {
     /** Update process variables. */
     previousSlice = processData.slice;
 
+    processData.slice.openValve = openValve_;
     processData.slice.timeMs = pdTICKS_TO_MS(xTaskGetTickCount() - eventTimers_.dispenseBeganTicks);
     processData.slice.outputVolume = derivedData.volumeOutputLiters;
     processData.slice.flowRate = (processData.slice.outputVolume - previousSlice.outputVolume) / 

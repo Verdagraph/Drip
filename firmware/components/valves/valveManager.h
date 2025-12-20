@@ -16,7 +16,10 @@
 
 struct DripValveManagerFsmEventTimers_t {
     uint32_t dispenseBeganTicks;
+    uint32_t dispenseSourceBeganTicks;
+    uint32_t dispenseTankBeganTicks;
     uint32_t drainBeganTicks;
+    uint32_t lastFlowSensorAboveMinimumFlowTicks;
 };
 
 /**
@@ -100,9 +103,9 @@ public:
     /**
      * @brief Handlers for state deactivate.
      */
-    void deactivateTankEntry();
-    void deactivateTankUpdate();
-    void deactivateTankExit();
+    void deactivateEntry();
+    void deactivateUpdate();
+    void deactivateExit();
 
     /** @} */
 

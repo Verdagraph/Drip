@@ -33,6 +33,13 @@ struct DripSystemConfig_t {
     TWrap<uint32_t> processSliceUploadIntervalMs;
 };
 
+template <template <typename> typename TWrap> 
+struct DripRelayConfig_t {
+    /** @brief Relay indices should match the silkscreens on the PCBs, (RELAY1, RELAY2, ...) */
+    TWrap<uint16_t> index;
+    TWrap<gpio_num_t> gpioPin;
+};
+
 /**
  * @brief Valve configuration.
  */
@@ -133,6 +140,8 @@ struct DripFlowSensorConfig_t {
     TWrap<float> calibratedPulsesPerLiter;
     /** @brief The lowest flow measurement from the sensor to trust in liters per second. */
     TWrap<float> minFlowRateLps;
+    /** @brief The number of miliseconds for the flow rate to be less than minFlowRateLps before the flow is considered ended. */
+    TWrap<uint32_t> minFlowRateTimeoutMs;
     /** @brief The number of miliseconds to wait in the calibration process before a measurement is received. */
     TWrap<float> calibrationTimeoutMs;
     /** @brief The maximum amount of volume to allow per calibration step in liters. */

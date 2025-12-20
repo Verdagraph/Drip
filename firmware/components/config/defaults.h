@@ -41,6 +41,7 @@ constexpr DripConfig_t getDefaultConfig() {
             .defaultPulsesPerLiter = 0U,
             .calibratedPulsesPerLiter = 0U,
             .minFlowRateLps = 0.0f,
+            .minFlowRateTimeoutMs = 10000U,
             .calibrationTimeoutMs = 120000U,
             .calibrateMaxVolume = 6.0f
         },
