@@ -52,8 +52,8 @@ public:
      * @brief Constructor.
      */
     MainStateController(
-        const ConfigManager &configManager,
         const DataContainer &dataContainer,
+        const ConfigManager &configManager,
         const WifiManager &wifiManager, 
         const MqttManager &mqttManager,
         const ValveManager &valveManager,

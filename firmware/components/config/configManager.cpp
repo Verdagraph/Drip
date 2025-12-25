@@ -7,7 +7,7 @@ static const char* TAG = "ConfigManager";
 /**
  * @brief Constructor.
  */
-ConfigManager::ConfigManager() {
+ConfigManager::ConfigManager(DataContainer &dataContainer) {
     return;
 }
 

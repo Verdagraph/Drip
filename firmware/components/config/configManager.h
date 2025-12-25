@@ -3,6 +3,7 @@
 
 #include "esp_err.h"
 #include "config.h"
+#include "dataContainer.h"
 
 /**
  * @brief Handles reading from and writing to the persistent config.
@@ -12,7 +13,7 @@ public:
     /**
      * @brief Constructor.
      */
-    ConfigManager();
+    ConfigManager(DataContainer &dataContainer);
  
     /**
      * @brief Begins the ConfigManager.
@@ -46,6 +47,8 @@ public:
 
 private:
     DripConfig_t config;
+
+    DataContainer container_;
 };
 
 #endif

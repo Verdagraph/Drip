@@ -2,10 +2,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "stateManager.h"
+#include "mainStateController.h"
 
 /** Main task stack size, in words (4 bytes on Esp32c3) */
-#define STACK_SIZE 512
+constexpr size_t STACK_SIZE = 512U;
 
 /**
  * @brief Runs the finite state machine.
@@ -13,13 +13,26 @@
  * @param pvParameters Allows parameters to be passed from the main function. Currently unused. 
  */
 void vMainTask(void *pvParameters) {
+    DataContainer dataContainer = DataContainer();
+    ConfigManager configManager = ConfigManager(dataContainer);
+    MqttManager mqttManager(dataContainer);
+    WifiManager wifiManager(dataContainer);
+    ValveManager valveManager(dataContainer);
+    FlowSensorManager flowSensorManager;
+
     /** Initialize the FSM. */
-    StateManager stateManager = StateManager();
-    stateManager.initialize();
+    MainStateController mainStateController = MainStateController(
+        dataContainer,
+        configManager,
+        wifiManager,
+        mqttManager,
+        valveManager,
+        flowSensorManager
+    );
     
     /** Run the FSM. */
     while (true) {
-        stateManager.update();
+        mainStateController.update();
     }
 
     /** Should not reach here. */

@@ -4,27 +4,22 @@
  * @brief Encapsulates the StateMachine.
  * @date 2025-11-30
  * 
- * @copyright Copyright (c) 2025
- * 
  */
 
+#ifndef STATE_CONTROLLER_H
+#define STATE_CONTROLLER_H
+
+#include "dataContainer.h"
 #include "stateMachine.h"
 
 template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
 class StateController {
 public:
-    using StateMapKey = TStateId_e;
-    using StateMapEntry_t = StateHandlerMapEntry_t<TStateController>;
-    using StateHandlerMap = StateHandlerMap<TStateId_e, TStateController, TStateMapSize>;
-    using EventMapKey = EventHandlerMapKey_t<TStateId_e, TEventId_e>;
-    using EventMapEntry_t = EventHandlerMapEntry_t<TEventId_e, TEvent, TStateController>;
-    using EventHandlerMap = EventHandlerMap<TStateId_e, TEventId_e, TEvent, TStateController, TEventMapSize>;
-
     StateController(
         TStateId_e initialState,
         const char* name,
-        const StateHandlerMap &stateHandlerMap, 
-        const EventHandlerMap &eventHandlerMap,
+        const StateHandlerMap<TStateId_e, TStateController> &stateHandlerMap, 
+        const EventHandlerMap<TStateId_e, TEventId_e, TEvent, TStateController> &eventHandlerMap,
         const TStateController &stateController,
         const DataContainer &dataContainer
     );
@@ -62,3 +57,5 @@ protected:
      */
     virtual void postUpdate();
 };
+
+#endif

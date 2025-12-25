@@ -89,7 +89,7 @@ using StateHandlerEventFuncPtr = void (TStateController::*)(TEventId_e eventId, 
 template <typename TStateController>
 struct StateHandlerMapEntry_t {
     /** @brief The state entry function. */
-    const StateHandlerEnterPtr<TStateControlaler> entryFunc;
+    const StateHandlerEnterPtr<TStateController> entryFunc;
     /** @brief The state update function. */
     const StateHandlerUpdatePtr<TStateController> updateFunc;
     /** @brief The state exit function. */
@@ -124,7 +124,6 @@ using StateHandlerMapPair = etl::pair<TStateId_e, StateHandlerMapEntry_t<TStateC
  * 
  * @tparam TStateId_e The enumerated ID of the state.
  * @tparam TStateController Parent state controller class.
- * @tparam TStateMapSize Size of the map.
  */
 template <typename TStateId_e, typename TStateController>
 using StateHandlerMap = etl::const_map<TStateId_e, StateHandlerMapEntry_t<TStateController>, DRIP_STATE_MAP_MAX_SIZE>;
@@ -242,12 +241,12 @@ template <
 >
 class StateMachine {
 public:
-    using StateMapKey = TStateId_e;
-    using StateMapEntry_t = StateHandlerMapEntry_t<TStateController>;
-    using StateHandlerMap = StateHandlerMap<TStateId_e, TStateController, TStateMapSize>;
-    using EventMapKey = EventHandlerMapKey_t<TStateId_e, TEventId_e>;
-    using EventMapEntry_t = EventHandlerMapEntry_t<TEventId_e, TEvent, TStateController>;
-    using EventHandlerMap = EventHandlerMap<TStateId_e, TEventId_e, TEvent, TStateController, TEventMapSize>;
+    using StateMachineStateMapKey = TStateId_e;
+    using StateMachineStateMapEntry_t = StateHandlerMapEntry_t<TStateController>;
+    using StateMachineStateHandlerMap = StateHandlerMap<TStateId_e, TStateController>;
+    using StateMachineEventMapKey = EventHandlerMapKey_t<TStateId_e, TEventId_e>;
+    using StateMachineEventMapEntry_t = EventHandlerMapEntry_t<TEventId_e, TEvent, TStateController>;
+    using StateMachineEventHandlerMap = EventHandlerMap<TStateId_e, TEventId_e, TEvent, TStateController>;
 
     /**
      * @brief Constructor.
@@ -263,8 +262,8 @@ public:
     StateMachine(
         TStateId_e initialState,
         const char* name,
-        const StateHandlerMap &stateHandlerMap, 
-        const EventHandlerMap &eventHandlerMap,
+        const StateMachineStateHandlerMap &stateHandlerMap, 
+        const StateMachineEventHandlerMap &eventHandlerMap,
         const TStateController &stateController,
         const DataContainer &dataContainer
     );
@@ -316,8 +315,8 @@ private:
     /** @brief Title for the state machine. */
     const char name_[DRIP_FSM_NAME_MAX_LEN];
     /** @brief The state and event handler maps. */
-    const StateHandlerMap &stateMap_;
-    const EventHandlerMap &eventMap_;
+    const StateMachineStateHandlerMap &stateMap_;
+    const StateMachineEventHandlerMap &eventMap_;
     /** @brief Reference to the parent StateController class. */
     TStateController &stateController_;
     /** @brief Reference to the DataContainer. */

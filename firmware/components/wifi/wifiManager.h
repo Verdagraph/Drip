@@ -7,6 +7,8 @@
 #pragma once
 #include "sdk_compat.h"
 
+#include "dataContainer.h"
+
 /**
  * @class WifiManager
  * @brief Manages all aspects of Wi-Fi connectivity, including Station (STA), Access Point (AP), and provisioning via web server.
@@ -18,7 +20,7 @@ public:
      *
      * Initializes the event group for Wi-Fi event handling.
      */
-    WifiManager();
+    WifiManager(DataContainer &dataContainer);
 
     /**
      * @brief Destroys the WifiManager object.

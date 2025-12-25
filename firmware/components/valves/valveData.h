@@ -1,6 +1,8 @@
 #ifndef VALVE_DATA_H
 #define VALVE_DATA_H
 
+#include "enums.h"
+
 enum class DripValveManagerStateId_e {
     Idle,
     DispenseStart,

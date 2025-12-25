@@ -1,5 +1,5 @@
 idf_component_register(SRCS "valveManager.cpp"
 						INCLUDE_DIRS .
-						REQUIRES config gpio container
+						REQUIRES config gpio container messages
 						PRIV_REQUIRES
 )

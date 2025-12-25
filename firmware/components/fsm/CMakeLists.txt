@@ -1,5 +1,5 @@
-idf_component_register(SRCS "mainStateController.cpp"
+idf_component_register(SRCS "stateController.cpp" "stateMachine.cpp"
 						INCLUDE_DIRS .
-						REQUIRES esp_common config messages utils container mqtt wifi valves flow
+						REQUIRES container
 						PRIV_REQUIRES freertos
 )

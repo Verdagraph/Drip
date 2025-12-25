@@ -6,8 +6,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "etl/optional.h"
-
 #include "consts.h"
 #include "enums.h"
 
@@ -31,13 +29,6 @@ struct DripSystemConfig_t {
      * In the dispense and drain processes.
      */
     TWrap<uint32_t> processSliceUploadIntervalMs;
-};
-
-template <template <typename> typename TWrap> 
-struct DripRelayConfig_t {
-    /** @brief Relay indices should match the silkscreens on the PCBs, (RELAY1, RELAY2, ...) */
-    TWrap<uint16_t> index;
-    TWrap<gpio_num_t> gpioPin;
 };
 
 /**
@@ -151,7 +142,6 @@ struct DripFlowSensorConfig_t {
 /**
  * @brief An entry in the pressure sensor calibration table.
  */
-template <template <typename> typename TWrap> 
 struct DripPressureSensorCalibrationPoint_t {
     /** @brief The analog voltage measured by the ADC. */
     uint16_t analogVoltage;
@@ -174,7 +164,7 @@ struct DripPressureSensorConfig_t {
     /** @brief If broadcastEnabled, the interval in miliseconds to report the pressure. */
     TWrap<float> broadcastIntervalMs;
     /** @brief The pressure calibration table. */
-    std::optional<DripPressureSensorCalibrationPoint_t> pressureCalibrationTable[MAX_PRESSURE_CALIBRATION_POINTS];
+    TWrap<DripPressureSensorCalibrationPoint_t> pressureCalibrationTable[MAX_PRESSURE_CALIBRATION_POINTS];
 };
 
 /** @brief Device configuration. */
@@ -189,10 +179,9 @@ struct DripConfigBase_t {
 };
 
 /** 
- * @brief Define a base config with all attributes guarnteed to be defined,
- * and a version with all attributes as optional, for the purposes of updating.
+ * @brief Define a base config with all attributes guarnteed to be defined.
+ * In the messages define a version with all attributes as optional, for the purposes of updating.
  */
 using DripConfig_t = DripConfigBase_t<Identity>;
-using DripConfigUpdate_t = DripConfigBase_t<etl::optional>;
 
 #endif

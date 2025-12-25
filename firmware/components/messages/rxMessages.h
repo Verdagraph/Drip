@@ -22,7 +22,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 
@@ -46,7 +46,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 };
@@ -63,7 +63,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 };
@@ -81,7 +81,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 
@@ -104,7 +104,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 };
@@ -121,7 +121,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 
@@ -145,7 +145,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 
@@ -168,7 +168,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 };
@@ -188,7 +188,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 
@@ -213,7 +213,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 
@@ -237,7 +237,7 @@ public:
         return ESP_OK;
     }
 
-    esp_err_t validate(const DataContainer &container, const DripConfig_t &config) {
+    esp_err_t validate(const DataContainer &container) {
         return ESP_OK;
     }
 };

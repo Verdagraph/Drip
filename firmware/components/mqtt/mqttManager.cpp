@@ -7,7 +7,7 @@ static const char* TAG = "MqttManager";
 /**
  * @brief Constructor.
  */
-MqttManager::MqttManager() {
+MqttManager::MqttManager(DataContainer &dataContainer) {
     return;
 }
 
@@ -43,11 +43,11 @@ esp_err_t MqttManager::connect() {
  * @param message Output parameter for the message object.
  * @return esp_err_t Return code.
  */
-esp_err_t MqttManager::getNextMessage(DripRxMessage *&message) {
+esp_err_t MqttManager::getNextMessage(DripRxMessage<DripRxMessageId_e> *&message) {
     return ESP_OK;
 }
 
-esp_err_t MqttManager::freeMessage(DripRxMessage *&message) {
+esp_err_t MqttManager::freeMessage(DripRxMessage<DripRxMessageId_e> *&message) {
     return ESP_OK;
 }
 

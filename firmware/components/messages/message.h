@@ -4,7 +4,6 @@
 #include "messageIds.h"
 #include "config.h"
 #include "dataContainer.h"
-#include "valveManager.h"
 
 
 /** @brief The maximum supported size for the message payload. */

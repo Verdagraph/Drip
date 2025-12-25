@@ -6,7 +6,9 @@
 #ifndef CONSTS_H
 #define CONSTS_H
 
-constexpr size_t MAX_PRESSURE_CALIBRATION_POINTS = 50;
+#include <cstdint>
+
+constexpr uint32_t MAX_PRESSURE_CALIBRATION_POINTS = 512;
 
 /**
  * @defgroup WiFiProvisioning Wi-Fi Provisioning Configuration

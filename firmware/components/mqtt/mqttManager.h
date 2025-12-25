@@ -3,6 +3,7 @@
 
 #include "message.h"
 #include "valveManager.h"
+#include "dataContainer.h"
 
 /**
  * @brief Handles transmitting and receiving MQTT messages.
@@ -12,7 +13,7 @@ public:
     /**
      * @brief Constructor.
      */
-    MqttManager();
+    MqttManager(DataContainer &dataContainer);
 
     /**
      * @brief Begin the MqttManager.
@@ -50,9 +51,9 @@ public:
      * @param message Output parameter for the message object.
      * @return esp_err_t Return code.
      */
-    esp_err_t getNextMessage(DripRxMessage *&message);
+    esp_err_t getNextMessage(DripRxMessage<DripRxMessageId_e> *&message);
 
-    esp_err_t freeMessage(DripRxMessage *&message);
+    esp_err_t freeMessage(DripRxMessage<DripRxMessageId_e> *&message);
 
     esp_err_t uploadLogs();
 
@@ -81,3 +82,4 @@ private:
 };
 
 #endif
+

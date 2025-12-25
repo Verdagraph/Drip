@@ -24,7 +24,7 @@ static const char* TAG = "WifiManager";
  *
  * Initializes the event group and sets default values for member variables.
  */
-WifiManager::WifiManager() : 
+WifiManager::WifiManager(DataContainer &dataContainer) : 
     m_server(nullptr),
     m_is_connected(false),
     m_retry_num(0)

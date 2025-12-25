@@ -4,8 +4,8 @@ template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TS
 StateController<TStateId_e, TEventId_e, TEvent, TStateController>::StateController(
     TStateId_e initialState,
     const char* name,
-    const StateHandlerMap &stateHandlerMap, 
-    const EventHandlerMap &eventHandlerMap,
+    const StateHandlerMap<TStateId_e, TStateController> &stateHandlerMap, 
+    const EventHandlerMap<TStateId_e, TEventId_e, TEvent, TStateController> &eventHandlerMap,
     const TStateController &stateController,
     const DataContainer &dataContainer
 ) : machine_(initialState, name, stateHandlerMap, eventHandlerMap, stateController, dataContainer) {}
