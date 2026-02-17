@@ -4,8 +4,8 @@
 #include "esp_err.h"
 
 #include "config.h"
-#include "valveData.h"
-#include "flowManager.h"
+//#include "valveData.h"
+//#include "flowManager.h"
 
 /** The maximum number of characters in each log message. */
 constexpr size_t DRIP_LOG_MESSAGE_BUFFER_BYTES = 512U;
@@ -110,12 +110,12 @@ public:
     /**
      * Process data.
      */
-    esp_err_t getDispenseProcessData(VdgDispenseProcessData_t &data);
-    esp_err_t setDispenseProcessData(VdgDispenseProcessData_t data);
-    esp_err_t getDrainProcessData(VdgDrainProcessData_t &data);
-    esp_err_t setDrainProcessData(VdgDrainProcessData_t data);
-    esp_err_t getFlowCalibrationProcessData(DripFlowCalibrationProcessData_t &data);
-    esp_err_t setFlowCalibrationProcessData(DripFlowCalibrationProcessData_t data);
+    //esp_err_t getDispenseProcessData(VdgDispenseProcessData_t &data);
+    //esp_err_t setDispenseProcessData(VdgDispenseProcessData_t data);
+    //esp_err_t getDrainProcessData(VdgDrainProcessData_t &data);
+    //esp_err_t setDrainProcessData(VdgDrainProcessData_t data);
+    //esp_err_t getFlowCalibrationProcessData(DripFlowCalibrationProcessData_t &data);
+    //esp_err_t setFlowCalibrationProcessData(DripFlowCalibrationProcessData_t data);
 
     /**
      * Logging.
@@ -183,9 +183,9 @@ private:
     DripDerivedData_t derivedData_;
 
     /** Process data. */
-    VdgDispenseProcessData_t dispenseProcess_;
-    VdgDrainProcessData_t drainProcess_;
-    DripFlowCalibrationProcessData_t flowCalibrationProcess_;
+    //VdgDispenseProcessData_t dispenseProcess_;
+    //VdgDrainProcessData_t drainProcess_;
+    //DripFlowCalibrationProcessData_t flowCalibrationProcess_;
 
     /** Logging. */
     size_t numInfoLogs;

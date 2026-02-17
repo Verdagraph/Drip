@@ -11,12 +11,12 @@
 #include "etl/span.h"
 
 #include "utils.h"
-#include "dataContainer.h"
-#include "configManager.h"
-#include "mqttManager.h"
-#include "wifiManager.h"
-#include "valveManager.h"
-#include "flowManager.h"
+//#include "dataContainer.h"
+//#include "configManager.h"
+//#include "mqttManager.h"
+//#include "wifiManager.h"
+//#include "valveManager.h"
+//#include "flowManager.h"
 
 #include "mainStateController.h"
 
@@ -261,12 +261,12 @@ constexpr FsmEventMap eventToHandlerMap { eventToHandlerMapValues };
  * @brief Constructor
  */
 MainStateController::MainStateController(
-    const DataContainer &dataContainer,
-    const ConfigManager &configManager,
-    const WifiManager &wifiManager, 
-    const MqttManager &mqttManager,
-    const ValveManager &valveManager,
-    const FlowSensorManager &flowSensorManager
+    DataContainer &dataContainer,
+    ConfigManager &configManager,
+    WifiManager &wifiManager, 
+    MqttManager &mqttManager,
+    ValveManager &valveManager,
+    FlowSensorManager &flowSensorManager
 ) :
     StateController<DripMainFsmState_e, DripRxMessageId_e, DripRxMessage<DripMainFsmState_e>, MainStateController>(
         DripMainFsmState_e::Uninitialized,

@@ -97,6 +97,13 @@ struct StateHandlerMapEntry_t {
     /** @brief An interval, in miliseconds, on which to call the update function while in this state. */
     uint32_t handlingIntervalMs;
 
+    constexpr StateHandlerMapEntry_t()
+            : entryFunc(nullptr), 
+            updateFunc(nullptr), 
+            exitFunc(nullptr), 
+            handlingIntervalMs(0) 
+            {}
+
     constexpr StateHandlerMapEntry_t(
             StateHandlerEnterPtr<TStateController> entry,
             StateHandlerUpdatePtr<TStateController> update,
@@ -147,6 +154,9 @@ struct EventHandlerMapEntry_t {
     /** @brief The event handler function. */
     const StateHandlerEventFuncPtr<TEventId_e, TEvent, TStateController> handleFunc;
 
+    constexpr EventHandlerMapEntry_t()
+            : handleFunc(nullptr) {}
+
     constexpr EventHandlerMapEntry_t(StateHandlerEventFuncPtr<TEventId_e, TEvent, TStateController> func) : 
             handleFunc(func) {}
 };
@@ -156,13 +166,19 @@ struct EventHandlerMapEntry_t {
  * which maps an event to be handled and the state
  * in which it is handled to a specific handler function
  * 
- * @tparam TStateId_e The enumerated ID of the state.
- * @tparam TEventId_e The enumerated ID of the event.
+ * @tparam TStateId_e The enumerated ID of the state. 0 must be an invalid value.
+ * @tparam TEventId_e The enumerated ID of the event. 0 must be an invalid value.
  */
 template <typename TStateId_e, typename TEventId_e>
 struct EventHandlerMapKey_t {
     TStateId_e stateId;
     TEventId_e eventId;
+
+    constexpr EventHandlerMapKey_t()
+        : 
+            stateId{},
+            eventId{}
+        {}
 
     constexpr EventHandlerMapKey_t(
             TStateId_e state,
@@ -253,7 +269,7 @@ public:
      * 
      * @param initialState The initial state of the state machine. 
      * @param name A name for the FSM, used as the "TAG" parameter when logging.
-     * Must be null terminated.
+     * Must be a pointer to a const null terminated string.
      * @param stateHandlerMap State handler map.
      * @param eventHandlerMap Event handler map.
      * @param stateController Reference to the parent StateController class.
@@ -264,8 +280,8 @@ public:
         const char* name,
         const StateMachineStateHandlerMap &stateHandlerMap, 
         const StateMachineEventHandlerMap &eventHandlerMap,
-        const TStateController &stateController,
-        const DataContainer &dataContainer
+        TStateController &stateController,
+        DataContainer &dataContainer
     );
 
     /**
@@ -310,10 +326,12 @@ public:
 private:
     /** @brief The current state. */
     TStateId_e currentState_;
+    /** @brief The next state. */
+    TStateId_e nextState_;
     /** @brief Stores the last tick at which the current state was handled. */
     TickType_t lastStateHandlingTimestampTicks_;
     /** @brief Title for the state machine. */
-    const char name_[DRIP_FSM_NAME_MAX_LEN];
+    const char *name_;
     /** @brief The state and event handler maps. */
     const StateMachineStateHandlerMap &stateMap_;
     const StateMachineEventHandlerMap &eventMap_;
@@ -322,5 +340,178 @@ private:
     /** @brief Reference to the DataContainer. */
     DataContainer &dataContainer_;
 };
+
+/*************************
+ * Implementation
+ ************************/
+
+template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
+StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::StateMachine(
+    TStateId_e initialState,
+    const char* name,
+    const StateHandlerMap<TStateId_e, TStateController> &stateMap, 
+    const EventHandlerMap<TStateId_e, TEventId_e, TEvent, TStateController> &eventMap,
+    TStateController &stateController,
+    DataContainer &dataContainer
+) : 
+    currentState_(initialState), 
+    lastStateHandlingTimestampTicks_(0U), 
+    name_(name),
+    stateMap_(stateMap), 
+    eventMap_(eventMap), 
+    stateController_(stateController),
+    dataContainer_(dataContainer) {
+}
+template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
+TStateId_e StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::getCurrentState() const {
+    return currentState_;
+}
+
+template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
+esp_err_t StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::update() {
+    TickType_t currentTick = xTaskGetTickCount();
+
+    /** Catch invalid state map. */
+    if (!stateMap_.contains(currentState_)) {
+        dataContainer_.logError(
+            ESP_ERR_INVALID_STATE, 
+            name_, 
+            "Error when updating FSM state: %d. State is not contained within the handler map.", 
+            static_cast<int>(currentState_)
+        );
+        return ESP_ERR_INVALID_STATE;
+    }
+    
+    /** Retrieve state map entry. */
+    const StateMachineStateMapEntry_t currentStateMapEntry = stateMap_.at(currentState_);
+
+    /** Catch invalid state map. */
+    if ( (currentStateMapEntry.entryFunc == nullptr) || 
+         (currentStateMapEntry.updateFunc == nullptr) || 
+         (currentStateMapEntry.exitFunc == nullptr) ) {
+        dataContainer_.logError(
+            ESP_ERR_INVALID_STATE, 
+            name_, 
+            "Error when updating FSM state: %d. State has an undefined handler function.", 
+            static_cast<int>(currentState_)
+        );
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    /* Handle transitions first. */
+    if (nextState_ != currentState_) {
+        /** Retrieve state map entry. */
+        const StateMachineStateMapEntry_t nextStateMapEntry = stateMap_.at(nextState_);
+
+        /** Catch invalid state map. */
+        if ( (nextStateMapEntry.entryFunc == nullptr) || 
+            (nextStateMapEntry.updateFunc == nullptr) || 
+            (nextStateMapEntry.exitFunc == nullptr) ) {
+            dataContainer_.logError(
+                ESP_ERR_INVALID_STATE, 
+                name_, 
+                "Error when updating FSM state: %d to %d. Next state has an undefined handler function.", 
+                static_cast<int>(currentState_),
+                static_cast<int>(nextState_)
+            );
+            return ESP_ERR_INVALID_STATE;
+        }
+
+        /** Exit the current state. */
+        dataContainer_.logInfo(ESP_OK, name_, "Exiting FSM state: %d", static_cast<int>(currentState_));
+        (stateController_.*currentStateMapEntry.exitFunc)();
+
+        /** Enter the next state. */
+        currentState_ = nextState_;
+        lastStateHandlingTimestampTicks_ = 0U;
+        dataContainer_.logInfo(ESP_OK, name_, "Entering FSM state: %d", static_cast<int>(currentState_));
+        (stateController_.*nextStateMapEntry.entryFunc)();
+
+    } else {
+        /** Handle the current state on its handling interval. */
+        if ( (currentTick - lastStateHandlingTimestampTicks_) >= pdMS_TO_TICKS(currentStateMapEntry.handlingIntervalMs) ) {
+            lastStateHandlingTimestampTicks_ = currentTick;
+            
+            /** Update the state. */
+            dataContainer_.logInfo(ESP_OK, name_, "Updating FSM state: %d", static_cast<int>(currentState_));
+            (stateController_.*currentStateMapEntry.updateFunc)();
+        }
+    }
+
+
+    return ESP_OK;
+}
+
+template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
+esp_err_t StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::transition(TStateId_e newState) {
+    /** Ignore no-op transitions. */
+    if (newState == currentState_) {
+        return ESP_OK;
+    }
+
+    /** Catch invalid state map. */
+    if (!stateMap_.contains(currentState_)) {
+        dataContainer_.logError(
+            ESP_ERR_INVALID_STATE, 
+            name_, 
+            "Error when exiting FSM state: %d. State is not contained within the handler map.", 
+            static_cast<int>(currentState_)
+        );
+        return ESP_ERR_INVALID_STATE;
+        
+    } else if (!stateMap_.contains(newState)) {
+        dataContainer_.logError(
+            ESP_ERR_INVALID_STATE, 
+            name_, 
+            "Error when entering FSM state: %d. State is not contained within the handler map.", 
+            static_cast<int>(newState)
+        );
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    /** Register pending transition. */
+    nextState_ = newState;
+
+    return ESP_OK;
+}
+
+template <typename TStateId_e, typename TEventId_e, typename TEvent, typename TStateController>
+esp_err_t StateMachine<TStateId_e, TEventId_e, TEvent, TStateController>::handleEvent(TEventId_e eventId, const TEvent *event) {
+    /** Ignore invalid events. */
+    if (nullptr == event) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    
+    const StateMachineEventMapKey key = {
+        .stateId = currentState_,
+        .eventId = eventId
+    };
+    StateMachineEventMapEntry_t eventMapEntry = {};
+
+    /** Ignore events in invalid states. */
+    if (!eventMap_.contains(key)) {
+        return ESP_OK;
+    }
+
+    /** Retrieve event map entry. */
+    eventMapEntry = eventMap_.at(key);
+
+    /** Catch invalid event map. */
+    if (eventMapEntry.handleFunc == nullptr) {
+        dataContainer_.logError(
+            ESP_ERR_INVALID_STATE, 
+            name_, 
+            "Error when handling FSM event: %d in state: %d. Event has no defined handler function.", 
+            static_cast<int>(eventId),
+            static_cast<int>(currentState_)
+        );
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    /** Handle the event. */
+    (stateController_.*eventMapEntry.handleFunc)(eventId, event);
+
+    return ESP_OK;
+}
 
 #endif

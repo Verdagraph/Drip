@@ -5,6 +5,7 @@
  * @brief Set of incoming messages.
  */
 enum class DripRxMessageId_e {
+    Unknown = 0U,
     DispenseActivate,
     Deactivate,
     Restart,

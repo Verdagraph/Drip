@@ -1,20 +1,19 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
-  "idf.espIdfPath": "/home/nathaniel/esp/v5.5.1/esp-idf",
-  "idf.pythonInstallPath": "/usr/bin/python3",
-  "idf.openOcdConfigs": [
-    "board/esp32c3-builtin.cfg"
-  ],
-  "idf.port": "detect",
-  "idf.toolsPath": "/home/nathaniel/.espressif",
-  "idf.customExtraVars": {
-    "IDF_TARGET": "esp32c3"
-  },
   "clangd.path": "/home/nathaniel/.espressif/tools/esp-clang/esp-19.1.2_20250312/esp-clang/bin/clangd",
   "clangd.arguments": [
     "--background-index",
     "--query-driver=**",
-    "--compile-commands-dir=/home/nathaniel/Documents/dev/Drip/project-name/build"
+    "--compile-commands-dir=/home/nathaniel/Documents/dev/Drip/firmware/build"
   ],
-  "idf.flashType": "JTAG"
+  "idf.currentSetup": "/home/nathaniel/esp/v5.5.2/esp-idf",
+  "idf.pythonInstallPath": "/usr/bin/python3",
+  "idf.openOcdConfigs": [
+    "board/esp32c3-builtin.cfg"
+  ],
+  "idf.customExtraVars": {
+    "IDF_TARGET": "esp32c3"
+  },
+  "idf.flashType": "JTAG",
+  "idf.port": "/dev/ttyACM0"
 }

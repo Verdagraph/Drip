@@ -1,3 +1,6 @@
 [submodule "firmware/components/esp_littlefs"]
 	path = firmware/components/esp_littlefs
 	url = https://github.com/joltwallet/esp_littlefs.git
+[submodule "firmware/components/etl/etl"]
+	path = firmware/components/etl/etl
+	url = https://github.com/ETLCPP/etl

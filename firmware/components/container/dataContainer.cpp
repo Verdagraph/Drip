@@ -50,6 +50,8 @@ esp_err_t DataContainer::getDerivedData(DripDerivedData_t &data) {
 /**
  * Process data.
  */
+/**
+
 esp_err_t DataContainer::getDispenseProcessData(VdgDispenseProcessData_t &data) {
     return ESP_OK;
 }
@@ -68,6 +70,7 @@ esp_err_t DataContainer::getFlowCalibrationProcessData(DripFlowCalibrationProces
 esp_err_t DataContainer::setFlowCalibrationProcessData(DripFlowCalibrationProcessData_t data) {
     return ESP_OK;
 }
+*/
 
 /**
  * Logging.
