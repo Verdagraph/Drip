@@ -5,7 +5,7 @@
 #include "mainStateController.h"
 
 /** Main task stack size, in words (4 bytes on Esp32c3) */
-constexpr size_t STACK_SIZE = 512U;
+constexpr size_t STACK_SIZE = 1024U;
 
 /**
  * @brief Runs the finite state machine.
@@ -32,7 +32,10 @@ void vMainTask(void *pvParameters) {
     
     /** Run the FSM. */
     while (true) {
+        printf("Hello from FSM Task! Free Heap: %" PRIu32 "\n", esp_get_free_heap_size());
         mainStateController.update();
+        ESP_LOGI("Updating", "Updating");
+        vTaskDelay(1U);
     }
 
     /** Should not reach here. */
@@ -45,6 +48,19 @@ void vMainTask(void *pvParameters) {
 extern "C" void app_main(void) {
     BaseType_t xReturned;
     TaskHandle_t xHandle = NULL;
+    ESP_LOGI("Updating", "Updating");
+    ESP_LOGI("Updating", "Updating");
+    ESP_LOGI("Updating", "Updating");
+    ESP_LOGI("Updating", "Updating");
+
+    ESP_LOGI("Updating", "Updating");
+
+    printf("Hello from FSM Task! Free Heap: %" PRIu32 "\n", esp_get_free_heap_size());
+    printf("Hello from FSM Task! Free Heap: %" PRIu32 "\n", esp_get_free_heap_size());
+    printf("Hello from FSM Task! Free Heap: %" PRIu32 "\n", esp_get_free_heap_size());
+    printf("Hello from FSM Task! Free Heap: %" PRIu32 "\n", esp_get_free_heap_size());
+    printf("Hello from FSM Task! Free Heap: %" PRIu32 "\n", esp_get_free_heap_size());
+    printf("Hello from FSM Task! Free Heap: %" PRIu32 "\n", esp_get_free_heap_size());
 
     /** Run task through FreeRTOS. */
     xReturned = xTaskCreate(vMainTask, 
@@ -55,8 +71,5 @@ extern "C" void app_main(void) {
         &xHandle
     );
 
-    /** Should not reach here. */
-    if (xReturned == pdPASS) {
-        vTaskDelete(xHandle);
-    }
+    return;
 }

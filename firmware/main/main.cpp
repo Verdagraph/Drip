@@ -5,58 +5,44 @@
 #include "mainStateController.h"
 
 /** Main task stack size, in words (4 bytes on Esp32c3) */
-constexpr size_t STACK_SIZE = 512U;
+constexpr size_t STACK_SIZE = 1024U;
+
+/** ETL configuration. */
+#define ETL_NO_STL
 
 /**
- * @brief Runs the finite state machine.
+ * @brief Runs the connection manager.
  * 
  * @param pvParameters Allows parameters to be passed from the main function. Currently unused. 
  */
-void vMainTask(void *pvParameters) {
-    DataContainer dataContainer = DataContainer();
-    ConfigManager configManager = ConfigManager(dataContainer);
-    //MqttManager mqttManager(dataContainer);
-    //WifiManager wifiManager(dataContainer);
-    //ValveManager valveManager(dataContainer);
-    //FlowSensorManager flowSensorManager;
+void vConnectionTask(void *pvParameters) {
 
-    /** Initialize the FSM. */
-    MainStateController mainStateController = MainStateController(
-        dataContainer,
-        configManager
-        //wifiManager,
-        //mqttManager,
-        //valveManager,
-        //flowSensorManager
-    );
-    
     /** Run the FSM. */
     while (true) {
         mainStateController.update();
+        vTaskDelay(1U);
     }
 
     /** Should not reach here. */
     vTaskDelete( NULL );
-}
 
 /**
  * @brief Entrypoint. 
  */
 extern "C" void app_main(void) {
-    BaseType_t xReturned;
-    TaskHandle_t xHandle = NULL;
+    TaskHandle_t connectionTaskHandle = NULL;
+
+    /** Define all inter-task constructs. */
+    DataContainer dataContainer = new DataContainer();
 
     /** Run task through FreeRTOS. */
-    xReturned = xTaskCreate(vMainTask, 
+    xTaskCreate(vConnectionTask, 
         "FSM", 
         STACK_SIZE, 
         (void*) nullptr, 
         tskIDLE_PRIORITY, 
-        &xHandle
+        &connectionTaskHandle
     );
 
-    /** Should not reach here. */
-    if (xReturned == pdPASS) {
-        vTaskDelete(xHandle);
-    }
+    return;
 }
